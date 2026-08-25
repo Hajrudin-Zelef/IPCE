@@ -52,7 +52,7 @@ function renderInboxCard(collecte) {
             <div class="inbox-rdv-item">
               <div class="inbox-rdv-dot"></div>
               <span class="inbox-rdv-prospect">${r.prospect}</span>
-              <span class="inbox-rdv-details">${r.date} — ${r.montant}M — ${r.statut}</span>
+              <span class="inbox-rdv-details">${r.date ? formatDate(r.date) : '—'} — ${r.montant != null ? r.montant + 'M' : '—'} — ${r.statut || '—'}</span>
             </div>
           `).join('')}
         </div>

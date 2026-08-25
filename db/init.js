@@ -96,6 +96,9 @@ function initDB() {
   `);
 
   db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run('ca_objectif', '100000000');
+  db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run('offres_objectif', '6');
+  db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run('bc_objectif', '6');
+  db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run('rdv_objectif', '6');
   db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run('theme', 'light');
   db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run('notifications_enabled', 'true');
 

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapport Mensuel — Pilotage Commercial</title>
+<link rel="stylesheet" href="assets/rapport.css">
+</head>
+<body>
+
+<div class="band" id="band" style="display:none;">
+  <span class="band-ref" id="band-ref">—</span>
+  <div class="band-status">
+    <span class="band-dot" id="band-dot"></span>
+    <span id="band-text">RAPPORT MENSUEL</span>
+  </div>
+</div>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div class="seal">
+      <div class="seal-mark">IP</div>
+      <div>
+        <div class="seal-text-eyebrow">Évolution Mensuelle — Direction Commerciale</div>
+        <div class="seal-text-title">Rapport Mensuel</div>
+      </div>
+    </div>
+    <div class="masthead-meta">
+      Édité le
+      <strong id="masthead-date">—</strong>
+    </div>
+  </header>
+
+  <p class="dek" id="dek">Chargement de l'historique mensuel…</p>
+
+  <section id="kpi-section" style="display:none;">
+    <div class="section-head">
+      <span class="section-num">1</span>
+      <span class="section-title">Mois en Cours vs Mois Précédent</span>
+    </div>
+    <div class="kpi-grid" id="kpi-grid">
+    </div>
+  </section>
+
+  <section id="table-section" style="display:none;">
+    <div class="section-head">
+      <span class="section-num">2</span>
+      <span class="section-title">Historique Mensuel</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="editorial-table" id="monthly-table">
+        <thead>
+          <tr>
+            <th>Mois</th>
+            <th>CA (M FCFA)</th>
+            <th>Offres</th>
+            <th>BC</th>
+            <th>Collectes</th>
+            <th>Δ CA</th>
+          </tr>
+        </thead>
+        <tbody id="monthly-body">
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>TOTAL</td>
+            <td id="total-ca">—</td>
+            <td id="total-offres">—</td>
+            <td id="total-bc">—</td>
+            <td id="total-collectes">—</td>
+            <td>—</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section id="projection-section" style="display:none;">
+    <div class="section-head">
+      <span class="section-num">3</span>
+      <span class="section-title">Projection Fin de Mois</span>
+    </div>
+    <div class="leader" id="projection-strip">
+    </div>
+  </section>
+
+  <div class="signatures">
+    <div class="sig">
+      <div class="sig-label">Responsable Commercial</div>
+      <div class="sig-line">Nom, date et signature</div>
+    </div>
+    <div class="sig">
+      <div class="sig-label">Directeur</div>
+      <div class="sig-line">Nom, date et signature</div>
+    </div>
+  </div>
+
+  <div class="colophon">
+    <span>IPCE — Rapport Mensuel</span>
+    <span id="colophon-ref">Document interne</span>
+  </div>
+
+</div>
+
+<script src="assets/rapport-common.js"></script>
+<script>
+(() => {
+  'use strict';
+
+  function docRef() {
+    return 'RPT-' + new Date().toISOString().split('T')[0] + '-IPCE';
+  }
+
+  async function init() {
+    const auth = await Rapport.checkAuth();
+    if (!auth) return;
+
+    const [evolution, statsData] = await Promise.all([
+      Rapport.fetchEvolution(),
+      Rapport.fetchStats()
+    ]);
+
+    if (!statsData) {
+      document.body.innerHTML = '<div class="rapport-empty">Erreur de chargement des données</div>';
+      return;
+    }
+
+    const settings = statsData.settings;
+    const caObj = Rapport.getSetting(settings, 'ca_objectif', 1e8);
+
+    if (!evolution.length) {
+      document.getElementById('dek').textContent = 'Aucune donnée mensuelle disponible pour générer le rapport.';
+      document.getElementById('projection-section').style.display = 'block';
+      document.getElementById('projection-strip').innerHTML = `
+        <div style="text-align:center; width:100%; padding:40px; color:var(--ink-soft);">
+          Aucune donnée historique pour calculer la projection.
+        </div>
+      `;
+      Rapport.buildToolbar();
+      return;
+    }
+
+    const now = new Date();
+    const curMonth = now.toISOString().slice(0, 7);
+    const curIdx = evolution.findIndex(e => e.month === curMonth);
+    const cur = curIdx >= 0 ? evolution[curIdx] : evolution[evolution.length - 1];
+    const prev = curIdx > 0 ? evolution[curIdx - 1] : (evolution[0] || null);
+
+    function monthLabel(ym) {
+      const [y, m] = ym.split('-');
+      return new Date(y, m - 1).toLocaleDateString('fr-FR', { month: 'long', year: '2-digit' });
+    }
+
+    // Band
+    const deltaCA = prev ? ((cur.ca - prev.ca) / Math.max(prev.ca, 1)) * 100 : 0;
+    const trend = deltaCA > 0 ? 'en hausse' : deltaCA < 0 ? 'en baisse' : 'stable';
+    const band = document.getElementById('band');
+    band.style.display = 'flex';
+    document.getElementById('band-ref').textContent = 'RÉF. ' + docRef();
+    document.getElementById('band-dot').className = 'band-dot' + (deltaCA < -10 ? '' : ' ok');
+    document.getElementById('band-text').textContent = `${monthLabel(cur.month).toUpperCase()} — ${trend}`;
+
+    // Masthead
+    document.getElementById('masthead-date').textContent = Rapport.todayLabel();
+
+    // KPI Grid
+    const kpiGrid = document.getElementById('kpi-grid');
+    const deltaOffres = prev ? ((cur.offres - prev.offres) / Math.max(prev.offres, 1)) * 100 : 0;
+    const deltaBC = prev ? ((cur.bc - prev.bc) / Math.max(prev.bc, 1)) * 100 : 0;
+    const deltaCollectes = prev ? ((cur.collectes - prev.collectes) / Math.max(prev.collectes, 1)) * 100 : 0;
+
+    const kpis = [
+      { label: 'CA du mois', value: cur.ca, of: caObj, delta: deltaCA },
+      { label: 'Offres', value: cur.offres, of: null, delta: deltaOffres },
+      { label: 'BC', value: cur.bc, of: null, delta: deltaBC },
+      { label: 'Collectes', value: cur.collectes, of: null, delta: deltaCollectes }
+    ];
+
+    kpiGrid.innerHTML = kpis.map(k => {
+      const deltaClass = k.delta > 0 ? 'delta-pos' : k.delta < 0 ? 'delta-neg' : 'delta-neutral';
+      const deltaSign = k.delta > 0 ? '+' : '';
+      const pctObj = k.of ? ((k.value / k.of) * 100) : 0;
+      function kpiClass(pct) {
+        if (pct < 40) return 'alert';
+        if (pct < 70) return 'warn';
+        return '';
+      }
+      return `
+        <div class="kpi ${k.of ? kpiClass(pctObj) : ''}">
+          <div class="kpi-label">${k.label}</div>
+          <div class="kpi-figure">
+            <span class="kpi-value">${k.of ? Rapport.formatM(k.value) : Rapport.formatNum(k.value)}</span>
+            ${k.of ? `<span class="kpi-of">/ ${Rapport.formatM(k.of)}</span>` : ''}
+          </div>
+          <div class="kpi-pct">
+            <span>${k.of ? 'Réalisation' : 'vs Mois-1'}</span>
+            <b class="${deltaClass}">${deltaSign}${k.delta.toFixed(1)}%</b>
+          </div>
+          ${k.of ? `<div class="track"><div class="fill" style="width:${Math.min(pctObj, 100)}%"></div></div>` : ''}
+        </div>
+      `;
+    }).join('');
+    document.getElementById('kpi-section').style.display = 'block';
+
+    // Monthly table
+    const tbody = document.getElementById('monthly-body');
+    let totalCA = 0, totalOffres = 0, totalBC = 0, totalCollectes = 0;
+    tbody.innerHTML = evolution.map((e, i) => {
+      totalCA += e.ca;
+      totalOffres += e.offres;
+      totalBC += e.bc;
+      totalCollectes += e.collectes;
+      const prevE = i > 0 ? evolution[i - 1] : null;
+      const delta = prevE ? ((e.ca - prevE.ca) / Math.max(prevE.ca, 1)) * 100 : 0;
+      const deltaClass = delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : 'delta-neutral';
+      const deltaSign = delta > 0 ? '+' : '';
+      return `
+        <tr>
+          <td>${monthLabel(e.month)}</td>
+          <td>${Rapport.formatM(e.ca)}</td>
+          <td>${Rapport.formatNum(e.offres)}</td>
+          <td>${Rapport.formatNum(e.bc)}</td>
+          <td>${Rapport.formatNum(e.collectes)}</td>
+          <td class="${deltaClass}">${i === 0 ? '—' : deltaSign + delta.toFixed(1) + '%'}</td>
+        </tr>
+      `;
+    }).join('');
+
+    document.getElementById('total-ca').textContent = Rapport.formatM(totalCA);
+    document.getElementById('total-offres').textContent = Rapport.formatNum(totalOffres);
+    document.getElementById('total-bc').textContent = Rapport.formatNum(totalBC);
+    document.getElementById('total-collectes').textContent = Rapport.formatNum(totalCollectes);
+    document.getElementById('table-section').style.display = 'block';
+
+    // Projection
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const daysElapsed = now.getDate();
+    const ratio = daysElapsed / daysInMonth;
+    const projection = ratio > 0 ? cur.ca / ratio : 0;
+    const pctProj = caObj > 0 ? (projection / caObj) * 100 : 0;
+    const projColor = projection >= caObj ? 'var(--success)' : projection >= caObj * 0.7 ? 'var(--warn)' : 'var(--danger)';
+
+    const projectionStrip = document.getElementById('projection-strip');
+    projectionStrip.innerHTML = `
+      <div class="leader-rank" style="background:${projColor};">${pctProj.toFixed(0)}%</div>
+      <div class="leader-info">
+        <div class="leader-eyebrow">Projection d'atteinte de l'objectif mensuel</div>
+        <div class="leader-name">${monthLabel(cur.month)}</div>
+      </div>
+      <div class="leader-value" style="color:${projColor};">
+        ${Rapport.formatM(projection)}
+        <span>CA projeté / Objectif ${Rapport.formatM(caObj)}</span>
+      </div>
+    `;
+    document.getElementById('projection-section').style.display = 'block';
+
+    // Dek
+    document.getElementById('dek').textContent =
+      `Évolution mensuelle des indicateurs commerciaux — ${monthLabel(cur.month)} ${trend} (${deltaCA > 0 ? '+' : ''}${deltaCA.toFixed(1)}% vs ${prev ? monthLabel(prev.month) : 'mois précédent'}).`;
+
+    // Colophon ref
+    document.getElementById('colophon-ref').textContent = 'Document interne — ' + docRef();
+
+    // Exports
+    Rapport.exportHandlers.csv = () => {
+      const rows = [
+        ['Mois', 'CA (FCFA)', 'Offres', 'BC', 'Collectes', 'Δ CA (%)']
+      ];
+      evolution.forEach((e, i) => {
+        const prevE = i > 0 ? evolution[i - 1] : null;
+        const delta = prevE ? ((e.ca - prevE.ca) / Math.max(prevE.ca, 1)) * 100 : 0;
+        rows.push([
+          monthLabel(e.month),
+          e.ca.toLocaleString('fr-FR'),
+          e.offres,
+          e.bc,
+          e.collectes,
+          i === 0 ? '' : delta.toFixed(1)
+        ]);
+      });
+      Rapport.exportCSV(rows, `rapport_mensuel_${Rapport.todayLabel().replace(/ /g, '_')}.csv`);
+    };
+
+    Rapport.buildToolbar();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>

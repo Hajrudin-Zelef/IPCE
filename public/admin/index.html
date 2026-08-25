@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin — IPCE Dashboard</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/admin/img/logo-ipce-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/admin/img/logo-ipce-192.png">
+  <link rel="apple-touch-icon" href="/admin/img/logo-ipce-192.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +17,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 </head>
 <body>
   <div class="loading" id="loading">Chargement...</div>
@@ -36,7 +40,7 @@
 
       <!-- Header -->
       <div class="sidebar-header">
-        <div class="sidebar-logo">IP</div>
+        <div class="sidebar-logo"><img src="/admin/img/logo-ipce-64.png" alt="IPCE" width="40" height="40" style="border-radius:10px;"></div>
         <div class="sidebar-brand">
           <span class="sidebar-brand-name">IPCE Dashboard</span>
           <span class="sidebar-brand-role" id="sidebar-role">Admin</span>
@@ -240,6 +244,19 @@
                 <span class="export-dropdown-icon">📋</span>
                 <span class="export-dropdown-label">PDF</span>
               </button>
+              <div class="export-dropdown-divider"></div>
+              <button class="export-dropdown-item" onclick="window.__exportEditorialPDF()">
+                <span class="export-dropdown-icon">📰</span>
+                <span class="export-dropdown-label">Rapport PDF</span>
+              </button>
+              <button class="export-dropdown-item" onclick="window.__exportEditorialJPEG()">
+                <span class="export-dropdown-icon">🖼️</span>
+                <span class="export-dropdown-label">Rapport JPEG</span>
+              </button>
+              <button class="export-dropdown-item" onclick="window.__exportEditorialCSV()">
+                <span class="export-dropdown-icon">📊</span>
+                <span class="export-dropdown-label">Rapport CSV</span>
+              </button>
             </div>
           </div>
         </div>
@@ -378,7 +395,6 @@
   <script src="js/reminders.js"></script>
   <script src="js/commercial-suivi.js"></script>
   <script src="js/validation-section.js"></script>
-  <script src="js/insights-section.js"></script>
   <script src="js/docs.js"></script>
   <script src="js/users.js"></script>
   <script src="js/logs.js"></script>

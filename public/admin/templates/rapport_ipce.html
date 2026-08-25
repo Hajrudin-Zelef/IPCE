@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapport de Pilotage Commercial</title>
+<link rel="stylesheet" href="assets/rapport.css">
+</head>
+<body>
+
+<div class="band" id="band" style="display:none;">
+  <span class="band-ref" id="band-ref">—</span>
+  <div class="band-status">
+    <span class="band-dot" id="band-dot"></span>
+    <span id="band-text">Chargement…</span>
+  </div>
+</div>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div class="seal">
+      <div class="seal-mark">IP</div>
+      <div>
+        <div class="seal-text-eyebrow">Rapport de Pilotage — Direction Commerciale</div>
+        <div class="seal-text-title">Performance Commerciale</div>
+      </div>
+    </div>
+    <div class="masthead-meta">
+      Édité le
+      <strong id="masthead-date">—</strong>
+    </div>
+  </header>
+
+  <p class="dek" id="dek">Chargement des indicateurs…</p>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">1</span>
+      <span class="section-title">Résumé Exécutif</span>
+    </div>
+    <div class="kpi-grid" id="kpi-grid">
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">2</span>
+      <span class="section-title">Leader du Classement</span>
+    </div>
+    <div class="leader" id="leader-card" style="display:none;">
+      <div class="leader-rank" id="leader-rank">1</div>
+      <div class="leader-info">
+        <div class="leader-eyebrow">Meilleure performance individuelle</div>
+        <div class="leader-name" id="leader-name">—</div>
+      </div>
+      <div class="leader-value">
+        <span id="leader-ca">0,0 M</span>
+        <span>Chiffre d'affaires</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">3</span>
+      <span class="section-title">Points Critiques</span>
+    </div>
+    <div class="crit-list" id="critical-list">
+    </div>
+  </section>
+
+  <div class="signatures">
+    <div class="sig">
+      <div class="sig-label">Responsable Commercial</div>
+      <div class="sig-line">Nom, date et signature</div>
+    </div>
+    <div class="sig">
+      <div class="sig-label">Directeur</div>
+      <div class="sig-line">Nom, date et signature</div>
+    </div>
+  </div>
+
+  <div class="colophon">
+    <span>IPCE — Rapport de Pilotage Commercial</span>
+    <span id="colophon-ref">Document interne</span>
+  </div>
+
+</div>
+
+<script src="assets/rapport-common.js"></script>
+<script>
+(() => {
+  'use strict';
+
+  function docRef() {
+    return 'RPT-' + new Date().toISOString().split('T')[0] + '-IPCE';
+  }
+
+  function kpiClass(pct) {
+    if (pct < 40) return 'alert';
+    if (pct < 70) return 'warn';
+    return '';
+  }
+
+  async function init() {
+    const auth = await Rapport.checkAuth();
+    if (!auth) return;
+
+    const data = await Rapport.fetchStats();
+    if (!data) {
+      document.body.innerHTML = '<div class="rapport-empty">Erreur de chargement des données</div>';
+      return;
+    }
+    const { stats, settings } = data;
+    const t = stats.totals;
+    const users = stats.users;
+
+    const caObj = Rapport.getSetting(settings, 'ca_objectif', 1e8);
+    const offresObj = Rapport.getSetting(settings, 'offres_objectif', 6);
+    const bcObj = Rapport.getSetting(settings, 'bc_objectif', 6);
+    const rdvObj = Rapport.getSetting(settings, 'rdv_objectif', 6);
+
+    const pctCA = caObj > 0 ? (t.ca / caObj) * 100 : 0;
+    const pctOffres = offresObj > 0 ? (t.offres / offresObj) * 100 : 0;
+    const pctBC = bcObj > 0 ? (t.bc / bcObj) * 100 : 0;
+    const pctRDV = rdvObj > 0 ? (t.rdvCount / rdvObj) * 100 : 0;
+
+    const anyAlert = pctCA < 70 || pctOffres < 70 || pctBC < 70 || pctRDV < 70;
+
+    // Band
+    const band = document.getElementById('band');
+    band.style.display = 'flex';
+    document.getElementById('band-ref').textContent = 'RÉF. ' + docRef();
+    document.getElementById('band-dot').className = 'band-dot' + (anyAlert ? '' : ' ok');
+    document.getElementById('band-text').textContent = anyAlert
+      ? 'PÉRIMÈTRE EN ALERTE'
+      : 'PÉRIMÈTRE SOUS CONTRÔLE';
+
+    // Masthead
+    document.getElementById('masthead-date').textContent = Rapport.todayLabel();
+
+    // KPI Grid
+    const kpiGrid = document.getElementById('kpi-grid');
+    const kpis = [
+      { label: 'Chiffre d\'affaires', value: t.ca, of: caObj, pct: pctCA },
+      { label: 'Offres émises', value: t.offres, of: offresObj, pct: pctOffres },
+      { label: 'BC signés', value: t.bc, of: bcObj, pct: pctBC },
+      { label: 'Rendez-vous', value: t.rdvCount, of: rdvObj, pct: pctRDV }
+    ];
+    kpiGrid.innerHTML = kpis.map(k => `
+      <div class="kpi ${kpiClass(k.pct)}">
+        <div class="kpi-label">${k.label}</div>
+        <div class="kpi-figure">
+          <span class="kpi-value">${Rapport.formatM(k.value)}</span>
+          <span class="kpi-of">/ ${Rapport.formatM(k.of)}</span>
+        </div>
+        <div class="kpi-pct"><span>Réalisation</span><b>${k.pct.toFixed(0)}%</b></div>
+        <div class="track"><div class="fill" style="width:${Math.min(k.pct, 100)}%"></div></div>
+      </div>
+    `).join('');
+
+    // Leader
+    const sorted = [...users].sort((a, b) => b.ca - a.ca);
+    const leader = sorted[0];
+    if (leader) {
+      document.getElementById('leader-name').textContent = leader.nom;
+      document.getElementById('leader-ca').textContent = Rapport.formatM(leader.ca);
+      document.getElementById('leader-card').style.display = 'flex';
+    }
+
+    // Points Critiques
+    const criticalPoints = Rapport.computeGlobalCriticalPoints(stats, settings);
+    const criticalList = document.getElementById('critical-list');
+    criticalList.innerHTML = criticalPoints.map(p => `
+      <div class="crit-item">
+        <div class="crit-subject">${p.subject} <span class="tag ${p.tagClass}">${p.tag}</span></div>
+        <div class="crit-detail">${p.detail}</div>
+      </div>
+    `).join('');
+
+    // Dek
+    document.getElementById('dek').textContent = anyAlert
+      ? 'Des écarts significatifs sont observés sur les indicateurs clés face aux objectifs fixés pour la période.'
+      : 'Les indicateurs clés sont globalement conformes aux objectifs fixés pour la période.';
+
+    // Colophon ref
+    document.getElementById('colophon-ref').textContent = 'Document interne — ' + docRef();
+
+    // Exports
+    Rapport.exportHandlers.csv = () => {
+      const rows = [
+        ['Commercial', 'CA (FCFA)', 'Offres', 'BC', 'RDV', '% CA total']
+      ];
+      users.forEach(u => {
+        const pct = t.ca > 0 ? ((u.ca / t.ca) * 100).toFixed(1) : '0.0';
+        rows.push([u.nom, u.ca.toLocaleString('fr-FR'), u.offres, u.bc, u.rdvCount, pct]);
+      });
+      rows.push(['TOTAL', t.ca.toLocaleString('fr-FR'), t.offres, t.bc, t.rdvCount, '100.0']);
+      Rapport.exportCSV(rows, `rapport_global_${Rapport.todayLabel().replace(/ /g, '_')}.csv`);
+    };
+
+    Rapport.buildToolbar();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>

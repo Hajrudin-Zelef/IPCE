@@ -11,6 +11,18 @@ window.__load_settings = async function() {
           <label>Objectif CA mensuel (FCFA)</label>
           <input type="number" id="set-ca-objectif" value="${settings.ca_objectif || 100000000}">
         </div>
+        <div class="settings-field">
+          <label>Objectif Offres mensuelles</label>
+          <input type="number" id="set-offres-objectif" value="${settings.offres_objectif || 6}" min="1">
+        </div>
+        <div class="settings-field">
+          <label>Objectif BC mensuels</label>
+          <input type="number" id="set-bc-objectif" value="${settings.bc_objectif || 6}" min="1">
+        </div>
+        <div class="settings-field">
+          <label>Objectif RDV mensuels</label>
+          <input type="number" id="set-rdv-objectif" value="${settings.rdv_objectif || 6}" min="1">
+        </div>
       </div>
       <div class="settings-card">
         <h3>🎨 Apparence</h3>
@@ -45,6 +57,9 @@ window.__toggleNotif = function() {
 
 window.__saveSettings = async function() {
   const ca_objectif = document.getElementById('set-ca-objectif').value;
+  const offres_objectif = document.getElementById('set-offres-objectif').value;
+  const bc_objectif = document.getElementById('set-bc-objectif').value;
+  const rdv_objectif = document.getElementById('set-rdv-objectif').value;
   const theme = document.getElementById('set-theme-toggle').classList.contains('active') ? 'dark' : 'light';
   const notifications_enabled = document.getElementById('set-notif-toggle').classList.contains('active') ? 'true' : 'false';
 
@@ -52,7 +67,7 @@ window.__saveSettings = async function() {
     method: 'PATCH',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ca_objectif, theme, notifications_enabled })
+    body: JSON.stringify({ ca_objectif, offres_objectif, bc_objectif, rdv_objectif, theme, notifications_enabled })
   });
 
   document.documentElement.setAttribute('data-theme', theme);

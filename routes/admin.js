@@ -96,6 +96,21 @@ function createAdminRouter(db) {
     res.json({ users: stats, totals });
   });
 
+  router.get('/evolution', authenticate, requireRole('admin'), (req, res) => {
+    const rows = db.prepare(`
+      SELECT strftime('%Y-%m', c.created_at) as month,
+        SUM(c.ca) as ca,
+        SUM(c.offres) as offres,
+        SUM(c.bc) as bc,
+        COUNT(DISTINCT c.id) as collectes
+      FROM collectes c
+      WHERE c.statut IN ('validee', 'approuvee')
+      GROUP BY month
+      ORDER BY month ASC
+    `).all();
+    res.json(rows);
+  });
+
   router.get('/pending', authenticate, requireRole('admin'), (req, res) => {
     const collectes = db.prepare(`
       SELECT c.*, u.nom as commercial,

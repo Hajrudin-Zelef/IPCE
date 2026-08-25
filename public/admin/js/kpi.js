@@ -265,8 +265,8 @@ function renderDetailPanel(key, users, totals) {
         <div class="detail-insight">${insights[key]}</div>
       </div>
       <div class="detail-actions">
-        <button class="btn-detail-primary" onclick="window.__exportPDF()">Exporter PDF</button>
-        <button class="btn-detail-secondary" onclick="window.__exportCSV()">Exporter CSV</button>
+        <button class="btn-detail-primary" onclick="window.__exportEditorialPDF()">Exporter PDF</button>
+        <button class="btn-detail-secondary" onclick="window.__exportEditorialXLSX()">Exporter CSV</button>
       </div>
     </div>
   `;

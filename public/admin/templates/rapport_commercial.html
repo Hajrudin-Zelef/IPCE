@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiche Commercial — Pilotage Commercial</title>
+<link rel="stylesheet" href="assets/rapport.css">
+</head>
+<body>
+
+<div class="band" id="band" style="display:none;">
+  <span class="band-ref" id="band-ref">—</span>
+  <div class="band-status">
+    <span class="band-dot" id="band-dot"></span>
+    <span id="band-text">FICHE COMMERCIAL</span>
+  </div>
+</div>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div class="seal">
+      <div class="seal-mark">IP</div>
+      <div>
+        <div class="seal-text-eyebrow">Fiche Individuelle — Pilotage Commercial</div>
+        <div class="seal-text-title"><span id="masthead-name">—</span> — Commercial</div>
+      </div>
+    </div>
+    <div class="masthead-meta">
+      Édité le
+      <strong id="masthead-date">—</strong>
+    </div>
+  </header>
+
+  <p class="dek" id="dek">Sélectionnez un commercial pour afficher sa fiche de performance.</p>
+
+  <div class="commercial-picker" id="commercial-picker" style="display:none;">
+    <label for="commercial-select">Commercial :</label>
+    <select id="commercial-select" aria-label="Choisir un commercial">
+      <option value="">— Choisir —</option>
+    </select>
+  </div>
+
+  <section id="kpi-section" style="display:none;">
+    <div class="section-head">
+      <span class="section-num">1</span>
+      <span class="section-title">Indicateurs Clés</span>
+    </div>
+    <div class="kpi-grid" id="kpi-grid">
+    </div>
+  </section>
+
+  <section id="conversions-section" style="display:none;">
+    <div class="section-head">
+      <span class="section-num">2</span>
+      <span class="section-title">Taux de Conversion</span>
+    </div>
+    <div class="kpi-grid" id="conversions-grid">
+    </div>
+  </section>
+
+  <section id="ranking-section" style="display:none;">
+    <div class="section-head">
+      <span class="section-num">3</span>
+      <span class="section-title">Classement</span>
+    </div>
+    <div class="leader" id="ranking-strip">
+    </div>
+  </section>
+
+  <section id="critical-section" style="display:none;">
+    <div class="section-head">
+      <span class="section-num">4</span>
+      <span class="section-title">Points de Vigilance</span>
+    </div>
+    <div class="crit-list" id="critical-list">
+    </div>
+  </section>
+
+  <div class="signatures">
+    <div class="sig">
+      <div class="sig-label">Responsable Commercial</div>
+      <div class="sig-line">Nom, date et signature</div>
+    </div>
+    <div class="sig">
+      <div class="sig-label">Directeur</div>
+      <div class="sig-line">Nom, date et signature</div>
+    </div>
+  </div>
+
+  <div class="colophon">
+    <span>IPCE — Fiche Commercial</span>
+    <span id="colophon-ref">Document interne</span>
+  </div>
+
+</div>
+
+<script src="assets/rapport-common.js"></script>
+<script>
+(() => {
+  'use strict';
+
+  let currentCommercial = null;
+  let allUsers = [];
+  let allStats = null;
+  let allSettings = null;
+
+  function docRef() {
+    return 'RPT-' + new Date().toISOString().split('T')[0] + '-IPCE';
+  }
+
+  function kpiClass(pct) {
+    if (pct < 40) return 'alert';
+    if (pct < 70) return 'warn';
+    return '';
+  }
+
+  function getUrlParam(name) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name);
+  }
+
+  async function init() {
+    const auth = await Rapport.checkAuth();
+    if (!auth) return;
+
+    const data = await Rapport.fetchStats();
+    if (!data) {
+      document.body.innerHTML = '<div class="rapport-empty">Erreur de chargement des données</div>';
+      return;
+    }
+    allStats = data.stats;
+    allSettings = data.settings;
+    allUsers = data.stats.users;
+
+    const urlName = getUrlParam('nom');
+    if (urlName) {
+      const found = allUsers.find(u => u.nom === decodeURIComponent(urlName));
+      if (found) currentCommercial = found;
+    }
+
+    const select = document.getElementById('commercial-select');
+    allUsers.forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.nom;
+      opt.textContent = u.nom;
+      if (currentCommercial && u.nom === currentCommercial.nom) opt.selected = true;
+      select.appendChild(opt);
+    });
+
+    select.addEventListener('change', () => {
+      const name = select.value;
+      if (name) {
+        const found = allUsers.find(u => u.nom === name);
+        if (found) {
+          currentCommercial = found;
+          const url = new URL(window.location.href);
+          url.searchParams.set('nom', name);
+          window.history.replaceState({}, '', url);
+          render();
+        }
+      } else {
+        currentCommercial = null;
+        render();
+      }
+    });
+
+    if (!currentCommercial) {
+      document.getElementById('commercial-picker').style.display = 'flex';
+      document.getElementById('dek').textContent = 'Sélectionnez un commercial dans la liste pour afficher sa fiche de performance.';
+    } else {
+      document.getElementById('commercial-picker').style.display = 'flex';
+      render();
+    }
+
+    Rapport.exportHandlers.csv = () => {
+      if (!currentCommercial) return;
+      const t = allStats.totals;
+      const caObj = Rapport.getSetting(allSettings, 'ca_objectif', 1e8);
+      const offresObj = Rapport.getSetting(allSettings, 'offres_objectif', 6);
+      const bcObj = Rapport.getSetting(allSettings, 'bc_objectif', 6);
+      const rdvObj = Rapport.getSetting(allSettings, 'rdv_objectif', 6);
+      const rows = [
+        ['Métrique', 'Valeur', 'Objectif', 'Réalisation'],
+        ['Chiffre d\'affaires', currentCommercial.ca.toLocaleString('fr-FR'), caObj.toLocaleString('fr-FR'), Rapport.formatPct(currentCommercial.ca, caObj)],
+        ['Offres', currentCommercial.offres, offresObj, Rapport.formatPct(currentCommercial.offres, offresObj / allUsers.length)],
+        ['BC', currentCommercial.bc, bcObj, Rapport.formatPct(currentCommercial.bc, bcObj / allUsers.length)],
+        ['RDV', currentCommercial.rdvCount, rdvObj, Rapport.formatPct(currentCommercial.rdvCount, rdvObj / allUsers.length)]
+      ];
+      Rapport.exportCSV(rows, `fiche_${currentCommercial.nom}_${Rapport.todayLabel().replace(/ /g, '_')}.csv`);
+    };
+
+    Rapport.buildToolbar();
+  }
+
+  function render() {
+    if (!currentCommercial) return;
+
+    const t = allStats.totals;
+    const caObj = Rapport.getSetting(allSettings, 'ca_objectif', 1e8);
+    const offresObj = Rapport.getSetting(allSettings, 'offres_objectif', 6);
+    const bcObj = Rapport.getSetting(allSettings, 'bc_objectif', 6);
+    const rdvObj = Rapport.getSetting(allSettings, 'rdv_objectif', 6);
+
+    const pctCA = caObj > 0 ? (currentCommercial.ca / caObj) * 100 : 0;
+    const pctOffres = offresObj > 0 ? (currentCommercial.offres / (offresObj / allUsers.length)) * 100 : 0;
+    const pctBC = bcObj > 0 ? (currentCommercial.bc / (bcObj / allUsers.length)) * 100 : 0;
+    const pctRDV = rdvObj > 0 ? (currentCommercial.rdvCount / (rdvObj / allUsers.length)) * 100 : 0;
+
+    const convRdvOffre = currentCommercial.rdvCount > 0 ? ((currentCommercial.offres / currentCommercial.rdvCount) * 100) : 0;
+    const convOffreBc = currentCommercial.offres > 0 ? ((currentCommercial.bc / currentCommercial.offres) * 100) : 0;
+
+    const sorted = [...allUsers].sort((a, b) => b.ca - a.ca);
+    const rank = sorted.findIndex(u => u.nom === currentCommercial.nom) + 1;
+    const leader = sorted[0];
+    const prev = rank > 1 ? sorted[rank - 2] : null;
+    const gapLeader = leader ? currentCommercial.ca - leader.ca : 0;
+    const gapPrev = prev ? currentCommercial.ca - prev.ca : 0;
+
+    const anyAlert = pctCA < 70 || pctOffres < 70 || pctBC < 70 || pctRDV < 70;
+
+    // Band
+    const band = document.getElementById('band');
+    band.style.display = 'flex';
+    document.getElementById('band-ref').textContent = 'RÉF. ' + docRef();
+    document.getElementById('band-dot').className = 'band-dot' + (anyAlert ? '' : ' ok');
+    document.getElementById('band-text').textContent = `FICHE COMMERCIAL — RANG ${rank}/${allUsers.length}`;
+
+    // Masthead
+    document.getElementById('masthead-name').textContent = currentCommercial.nom;
+    document.getElementById('masthead-date').textContent = Rapport.todayLabel();
+
+    // KPI Grid
+    const kpiGrid = document.getElementById('kpi-grid');
+    const kpis = [
+      { label: 'Chiffre d\'affaires', value: currentCommercial.ca, of: caObj, pct: pctCA },
+      { label: 'Offres émises', value: currentCommercial.offres, of: offresObj / allUsers.length, pct: pctOffres },
+      { label: 'BC signés', value: currentCommercial.bc, of: bcObj / allUsers.length, pct: pctBC },
+      { label: 'Rendez-vous', value: currentCommercial.rdvCount, of: rdvObj / allUsers.length, pct: pctRDV }
+    ];
+    kpiGrid.innerHTML = kpis.map(k => `
+      <div class="kpi ${kpiClass(k.pct)}">
+        <div class="kpi-label">${k.label}</div>
+        <div class="kpi-figure">
+          <span class="kpi-value">${Rapport.formatM(k.value)}</span>
+          <span class="kpi-of">/ ${Rapport.formatM(k.of)}</span>
+        </div>
+        <div class="kpi-pct"><span>Part d'objectif</span><b>${k.pct.toFixed(0)}%</b></div>
+        <div class="track"><div class="fill" style="width:${Math.min(k.pct, 100)}%"></div></div>
+      </div>
+    `).join('');
+    document.getElementById('kpi-section').style.display = 'block';
+
+    // Conversions
+    const convGrid = document.getElementById('conversions-grid');
+    convGrid.innerHTML = `
+      <div class="kpi">
+        <div class="kpi-label">RDV → Offre</div>
+        <div class="kpi-figure">
+          <span class="kpi-value">${convRdvOffre.toFixed(0)}%</span>
+        </div>
+        <div class="kpi-pct"><span>Seuil 50%</span><b>${convRdvOffre >= 50 ? '✓' : '✗'}</b></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Offre → BC</div>
+        <div class="kpi-figure">
+          <span class="kpi-value">${convOffreBc.toFixed(0)}%</span>
+        </div>
+        <div class="kpi-pct"><span>Seuil 50%</span><b>${convOffreBc >= 50 ? '✓' : '✗'}</b></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">CA / RDV</div>
+        <div class="kpi-figure">
+          <span class="kpi-value">${currentCommercial.rdvCount > 0 ? Rapport.formatM(currentCommercial.ca / currentCommercial.rdvCount) : '—'}</span>
+        </div>
+        <div class="kpi-pct"><span>Moyenne</span><b>—</b></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Part du CA total</div>
+        <div class="kpi-figure">
+          <span class="kpi-value">${t.ca > 0 ? ((currentCommercial.ca / t.ca) * 100).toFixed(1) : 0}%</span>
+        </div>
+        <div class="kpi-pct"><span>Équipe</span><b>${allUsers.length} comm.</b></div>
+      </div>
+    `;
+    document.getElementById('conversions-section').style.display = 'block';
+
+    // Ranking strip
+    const rankingStrip = document.getElementById('ranking-strip');
+    rankingStrip.innerHTML = `
+      <div class="leader-rank">${rank}</div>
+      <div class="leader-info">
+        <div class="leader-eyebrow">Position au classement général</div>
+        <div class="leader-name">${currentCommercial.nom}</div>
+      </div>
+      <div class="leader-value">
+        ${Rapport.formatM(currentCommercial.ca)}
+        <span>Chiffre d'affaires</span>
+      </div>
+    `;
+    if (gapLeader < 0) {
+      const extra = document.createElement('div');
+      extra.style.cssText = 'font-size:12px; color:var(--ink-soft); margin-top:8px; padding-left:80px;';
+      extra.textContent = `Écart au leader (${leader.nom}) : ${Rapport.formatM(Math.abs(gapLeader))}`;
+      rankingStrip.appendChild(extra);
+    }
+    if (prev && gapPrev > 0) {
+      const extra = document.createElement('div');
+      extra.style.cssText = 'font-size:12px; color:var(--accent); margin-top:4px; padding-left:80px;';
+      extra.textContent = `Avance sur ${prev.nom} : ${Rapport.formatM(gapPrev)}`;
+      rankingStrip.appendChild(extra);
+    }
+    document.getElementById('ranking-section').style.display = 'block';
+
+    // Critical points
+    const criticalPoints = Rapport.computeCommercialCriticalPoints(currentCommercial, allStats, allSettings);
+    const criticalList = document.getElementById('critical-list');
+    criticalList.innerHTML = criticalPoints.map(p => `
+      <div class="crit-item">
+        <div class="crit-subject">${p.subject} <span class="tag ${p.tagClass}">${p.tag}</span></div>
+        <div class="crit-detail">${p.detail}</div>
+      </div>
+    `).join('');
+    document.getElementById('critical-section').style.display = 'block';
+
+    // Dek
+    const alerts = [];
+    if (pctCA < 70) alerts.push(`CA à ${pctCA.toFixed(0)}% de la part d'objectif`);
+    if (convOffreBc < 50) alerts.push(`fermeture à ${convOffreBc.toFixed(0)}%`);
+    if (convRdvOffre < 50) alerts.push(`RDV→Offre à ${convRdvOffre.toFixed(0)}%`);
+    document.getElementById('dek').textContent =
+      alerts.length
+        ? `Analyse individuelle de ${currentCommercial.nom} — ${alerts.join(' ; ')}.`
+        : `Analyse individuelle de ${currentCommercial.nom} — performance satisfaisante sur l'ensemble des indicateurs.`;
+
+    // Colophon ref
+    document.getElementById('colophon-ref').textContent = 'Document interne — ' + docRef();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
