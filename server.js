@@ -48,6 +48,8 @@ app.use('/api/auth/login', (req, res, next) => {
   next();
 });
 
+app.get('/admin.html', (req, res) => res.redirect(301, '/admin/index.html'));
+
 app.use(express.static(path.join(__dirname, 'public'), {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.html')) {

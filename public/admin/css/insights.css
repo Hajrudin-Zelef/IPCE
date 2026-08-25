@@ -1,0 +1,89 @@
+.insights-section {
+  margin-bottom: 32px;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.insight-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.insight-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.insight-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.insight-card.opportunity::before {
+  background: var(--success);
+}
+
+.insight-card.attention::before {
+  background: var(--warning);
+}
+
+.insight-card.forecast::before {
+  background: var(--primary);
+}
+
+.insight-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  margin-bottom: 14px;
+}
+
+.insight-card.opportunity .insight-icon {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.insight-card.attention .insight-icon {
+  background: var(--warning-light);
+  color: var(--warning);
+}
+
+.insight-card.forecast .insight-icon {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--primary);
+}
+
+.insight-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.insight-card.opportunity .insight-label { color: var(--success); }
+.insight-card.attention .insight-label { color: var(--warning); }
+.insight-card.forecast .insight-label { color: var(--primary); }
+
+.insight-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}

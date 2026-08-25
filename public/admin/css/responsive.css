@@ -1,0 +1,135 @@
+@media (max-width: 1024px) {
+  .kpi-section {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-panel {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 360px;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+    z-index: var(--z-modal);
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .detail-panel.open {
+    right: 0;
+  }
+
+  .detail-panel-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: calc(var(--z-modal) - 1);
+  }
+
+  .detail-panel-overlay.visible {
+    display: block;
+  }
+
+  .detail-panel-close {
+    display: flex;
+  }
+
+  .dashboard-header {
+    padding: 20px 24px;
+  }
+
+  .header-title {
+    font-size: 20px;
+  }
+
+  .header-date {
+    display: none;
+  }
+
+  .insights-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    border-radius: var(--radius-lg);
+    padding: 20px;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-value {
+    font-size: 28px;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .leaderboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inbox-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .inbox-actions {
+    flex-direction: column;
+  }
+
+  .detail-panel {
+    width: 100%;
+    right: -100%;
+    border-radius: 0;
+  }
+
+  .validation-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-right {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .kpi-card {
+    padding: 18px;
+  }
+
+  .kpi-value {
+    font-size: 24px;
+  }
+
+  .inbox-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .leader-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .leader-card {
+    padding: 18px;
+  }
+
+  .detail-panel {
+    width: 100%;
+  }
+}
