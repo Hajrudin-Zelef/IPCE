@@ -160,6 +160,72 @@ function createCollectesRouter(db) {
     res.json({ message: 'Collecte validée — notification envoyée à l\'administrateur' });
   });
 
+  // --- RDV Calendar Endpoints ---
+
+  router.get('/rdvs', authenticate, (req, res) => {
+    const { from, to } = req.query;
+    let sql = `
+      SELECT r.id, r.prospect, r.date, r.montant, r.statut, r.collecte_id, c.statut as collecte_statut
+      FROM rdvs r
+      JOIN collectes c ON c.id = r.collecte_id
+      WHERE c.user_id = ?
+    `;
+    const params = [req.user.id];
+
+    if (from) {
+      sql += ` AND r.date >= ?`;
+      params.push(from);
+    }
+    if (to) {
+      sql += ` AND r.date <= ?`;
+      params.push(to);
+    }
+
+    sql += ` ORDER BY r.date ASC`;
+    const rdvs = db.prepare(sql).all(...params);
+    res.json(rdvs);
+  });
+
+  router.patch('/rdvs/:id', authenticate, (req, res) => {
+    const rdv = db.prepare(`
+      SELECT r.*, c.statut as collecte_statut, c.user_id
+      FROM rdvs r JOIN collectes c ON c.id = r.collecte_id
+      WHERE r.id = ?
+    `).get(req.params.id);
+
+    if (!rdv) return res.status(404).json({ error: 'RDV non trouvé' });
+    if (rdv.user_id !== req.user.id) return res.status(403).json({ error: 'Accès refusé' });
+    if (rdv.collecte_statut !== 'brouillon') {
+      return res.status(400).json({ error: 'Impossible de modifier un RDV d\'une collecte déjà validée' });
+    }
+
+    const { statut } = req.body;
+    const allowed = ['Prevu', 'Realise', 'Offre', 'BC Signe'];
+    if (!allowed.includes(statut)) {
+      return res.status(400).json({ error: 'Statut invalide' });
+    }
+
+    db.prepare('UPDATE rdvs SET statut = ? WHERE id = ?').run(statut, req.params.id);
+    res.json({ message: 'Statut mis à jour' });
+  });
+
+  router.delete('/rdvs/:id', authenticate, (req, res) => {
+    const rdv = db.prepare(`
+      SELECT r.*, c.statut as collecte_statut, c.user_id
+      FROM rdvs r JOIN collectes c ON c.id = r.collecte_id
+      WHERE r.id = ?
+    `).get(req.params.id);
+
+    if (!rdv) return res.status(404).json({ error: 'RDV non trouvé' });
+    if (rdv.user_id !== req.user.id) return res.status(403).json({ error: 'Accès refusé' });
+    if (rdv.collecte_statut !== 'brouillon') {
+      return res.status(400).json({ error: 'Impossible de supprimer un RDV d\'une collecte déjà validée' });
+    }
+
+    db.prepare('DELETE FROM rdvs WHERE id = ?').run(req.params.id);
+    res.json({ message: 'RDV supprimé' });
+  });
+
   return router;
 }
 
