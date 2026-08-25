@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion — IPCE Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1e3c72, #2a5298); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .box { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); width: 100%; max-width: 400px; }
+    .box h1 { text-align: center; color: #1e3c72; margin-bottom: 8px; font-size: 22px; }
+    .box p { text-align: center; color: #666; font-size: 13px; margin-bottom: 30px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 6px; }
+    .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+    .form-group input:focus { outline: none; border-color: #2a5298; }
+    .btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: #fff; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; }
+    .btn:hover { opacity: 0.9; }
+    .error { background: #ffebee; color: #c62828; padding: 10px; border-radius: 6px; font-size: 13px; margin-bottom: 15px; display: none; }
+    .success { background: #e8f5e9; color: #2e7d32; padding: 10px; border-radius: 6px; font-size: 13px; margin-bottom: 15px; display: none; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: #fff; padding: 40px; border-radius: 12px; width: 100%; max-width: 420px; }
+    .modal h2 { color: #1e3c72; margin-bottom: 5px; font-size: 18px; }
+    .modal .subtitle { color: #c62828; font-size: 13px; margin-bottom: 25px; }
+    .warning { background: #fff3e0; color: #e65100; padding: 12px; border-radius: 6px; font-size: 12px; margin-bottom: 20px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>IPCE Dashboard</h1>
+    <p>Pilotage Commercial</p>
+    <div class="error" id="error"></div>
+    <form onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label>Nom d'utilisateur</label>
+        <input type="text" id="login-nom" required autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" id="login-pass" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn">Se connecter</button>
+    </form>
+  </div>
+
+  <div class="modal-overlay" id="change-modal">
+    <div class="modal">
+      <h2>Changement de mot de passe obligatoire</h2>
+      <p class="subtitle">Vous utilisez le mot de passe par defaut. Changez-le pour continuer.</p>
+      <div class="warning">Votre nouveau mot de passe doit contenir au moins 8 caracteres et etre different de l'ancien.</div>
+      <div class="error" id="change-error"></div>
+      <div class="success" id="change-success"></div>
+      <form onsubmit="doChangePassword(event)">
+        <div class="form-group">
+          <label>Mot de passe actuel</label>
+          <input type="password" id="current-pass" required>
+        </div>
+        <div class="form-group">
+          <label>Nouveau mot de passe</label>
+          <input type="password" id="new-pass" required minlength="8">
+        </div>
+        <div class="form-group">
+          <label>Confirmer le nouveau mot de passe</label>
+          <input type="password" id="confirm-pass" required minlength="8">
+        </div>
+        <button type="submit" class="btn">Changer le mot de passe</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function showError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    function hideError(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    async function doLogin(e) {
+      e.preventDefault();
+      hideError('error');
+      const nom = document.getElementById('login-nom').value;
+      const password = document.getElementById('login-pass').value;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ nom, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) return showError('error', data.error);
+
+        if (data.user.must_change_password) {
+          document.getElementById('change-modal').classList.add('active');
+          return;
+        }
+
+        redirectUser(data.user.role);
+      } catch {
+        showError('error', 'Erreur de connexion au serveur');
+      }
+    }
+
+    async function doChangePassword(e) {
+      e.preventDefault();
+      hideError('change-error');
+      document.getElementById('change-success').style.display = 'none';
+
+      const current = document.getElementById('current-pass').value;
+      const newPass = document.getElementById('new-pass').value;
+      const confirm = document.getElementById('confirm-pass').value;
+
+      if (newPass !== confirm) {
+        return showError('change-error', 'Les mots de passe ne correspondent pas');
+      }
+
+      try {
+        const res = await fetch('/api/auth/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ currentPassword: current, newPassword: newPass }),
+        });
+        const data = await res.json();
+        if (!res.ok) return showError('change-error', data.error);
+
+        const el = document.getElementById('change-success');
+        el.textContent = 'Mot de passe change ! Redirection...';
+        el.style.display = 'block';
+
+        setTimeout(() => {
+          const nom = document.getElementById('login-nom').value;
+          fetch('/api/auth/me', { credentials: 'include' }).then(r => r.json()).then(d => {
+            redirectUser(d.user.role);
+          });
+        }, 1500);
+      } catch {
+        showError('change-error', 'Erreur serveur');
+      }
+    }
+
+    function redirectUser(role) {
+      if (role === 'admin') window.location.href = '/admin.html';
+      else window.location.href = '/dashboard.html';
+    }
+
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user.must_change_password) {
+            document.getElementById('change-modal').classList.add('active');
+            return;
+          }
+          redirectUser(data.user.role);
+        }
+      } catch {}
+    }
+
+    checkAuth();
+  </script>
+</body>
+</html>
