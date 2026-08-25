@@ -223,3 +223,9 @@ export function renderCharts(users, totals) {
   renderDonutChart(users);
   renderHorizontalBarChart(users);
 }
+
+window.__load_graphs = function () {
+  if (window.__chartsData) {
+    renderCharts(window.__chartsData.users, window.__chartsData.totals);
+  }
+};

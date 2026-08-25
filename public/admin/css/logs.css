@@ -1,0 +1,8 @@
+.logs-filters{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.logs-table-wrapper{background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius-lg);overflow:hidden}
+.log-action-badge{display:inline-flex;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.log-action-badge.approve{background:var(--success-light);color:var(--success)}
+.log-action-badge.reject{background:var(--danger-light);color:var(--danger)}
+.log-action-badge.create{background:rgba(37,99,235,0.1);color:var(--primary)}
+.log-action-badge.delete{background:var(--danger-light);color:var(--danger)}
+.log-action-badge.update{background:var(--warning-light);color:var(--warning)}

@@ -5,6 +5,66 @@ const { authenticate, requireRole } = require('../middleware/auth');
 function createAdminRouter(db) {
   const router = express.Router();
 
+  // --- Notification helper ---
+  function createNotification(userId, type, title, message, link) {
+    db.prepare(
+      'INSERT INTO notifications (user_id, type, title, message, link) VALUES (?, ?, ?, ?, ?)'
+    ).run(userId, type, title, message, link || null);
+  }
+
+  // Expose for other routers
+  router._createNotification = createNotification;
+
+  // --- Notifications API ---
+  router.get('/notifications', authenticate, (req, res) => {
+    const { unread_only, limit } = req.query;
+    let sql = 'SELECT * FROM notifications WHERE user_id = ?';
+    const params = [req.user.id];
+    if (unread_only === 'true') { sql += ' AND is_read = 0'; }
+    sql += ' ORDER BY created_at DESC';
+    if (limit) { sql += ' LIMIT ?'; params.push(parseInt(limit)); }
+    else { sql += ' LIMIT 50'; }
+    res.json(db.prepare(sql).all(...params));
+  });
+
+  router.get('/notifications/unread-count', authenticate, (req, res) => {
+    const row = db.prepare('SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = 0').get(req.user.id);
+    res.json({ count: row.count });
+  });
+
+  router.patch('/notifications/:id/read', authenticate, (req, res) => {
+    const notif = db.prepare('SELECT * FROM notifications WHERE id = ? AND user_id = ?').get(req.params.id, req.user.id);
+    if (!notif) return res.status(404).json({ error: 'Notification introuvable' });
+    db.prepare('UPDATE notifications SET is_read = 1 WHERE id = ?').run(req.params.id);
+    res.json({ message: 'Marquee comme lue' });
+  });
+
+  router.patch('/notifications/read-all', authenticate, (req, res) => {
+    db.prepare('UPDATE notifications SET is_read = 1 WHERE user_id = ? AND is_read = 0').run(req.user.id);
+    res.json({ message: 'Toutes les notifications marquees comme lues' });
+  });
+
+  router.delete('/notifications/:id', authenticate, (req, res) => {
+    const notif = db.prepare('SELECT * FROM notifications WHERE id = ? AND user_id = ?').get(req.params.id, req.user.id);
+    if (!notif) return res.status(404).json({ error: 'Notification introuvable' });
+    db.prepare('DELETE FROM notifications WHERE id = ?').run(req.params.id);
+    res.json({ message: 'Notification supprimee' });
+  });
+
+  router.delete('/notifications', authenticate, (req, res) => {
+    db.prepare('DELETE FROM notifications WHERE user_id = ?').run(req.user.id);
+    res.json({ message: 'Toutes les notifications supprimees' });
+  });
+
+  router.get('/notifications/stats', authenticate, (req, res) => {
+    const total = db.prepare('SELECT COUNT(*) as count FROM notifications WHERE user_id = ?').get(req.user.id).count;
+    const unread = db.prepare('SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = 0').get(req.user.id).count;
+    const byType = db.prepare(
+      'SELECT type, COUNT(*) as count FROM notifications WHERE user_id = ? GROUP BY type'
+    ).all(req.user.id);
+    res.json({ total, unread, byType });
+  });
+
   router.get('/stats', authenticate, requireRole('admin'), (req, res) => {
     const users = db.prepare('SELECT id, nom, role FROM users WHERE role = ?').all('commercial');
 
@@ -66,6 +126,17 @@ function createAdminRouter(db) {
     }
 
     db.prepare('UPDATE collectes SET statut = ? WHERE id = ?').run('approuvee', req.params.id);
+    db.prepare('INSERT INTO validation_history (collecte_id, user_id, action) VALUES (?, ?, ?)').run(req.params.id, req.user.id, 'approve');
+    db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'approve_collecte', 'collecte:' + req.params.id, 'Collecte approuvée');
+
+    createNotification(
+      collecte.user_id,
+      'collecte_approved',
+      'Collecte approuvee',
+      `Votre collecte du ${new Date(collecte.created_at).toLocaleDateString('fr-FR')} a ete approuvee par l'admin.`,
+      '#validation'
+    );
+
     res.json({ message: 'Collecte approuvée' });
   });
 
@@ -76,6 +147,17 @@ function createAdminRouter(db) {
     }
 
     db.prepare('UPDATE collectes SET statut = ? WHERE id = ?').run('rejetee', req.params.id);
+    db.prepare('INSERT INTO validation_history (collecte_id, user_id, action) VALUES (?, ?, ?)').run(req.params.id, req.user.id, 'reject');
+    db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'reject_collecte', 'collecte:' + req.params.id, 'Collecte rejetée');
+
+    createNotification(
+      collecte.user_id,
+      'collecte_rejected',
+      'Collecte rejetee',
+      `Votre collecte du ${new Date(collecte.created_at).toLocaleDateString('fr-FR')} a ete rejetee par l'admin.`,
+      '#validation'
+    );
+
     res.json({ message: 'Collecte rejetée' });
   });
 
@@ -300,6 +382,148 @@ function createAdminRouter(db) {
     );
 
     res.json({ message: 'Toutes les donnees ont ete reinitialisees' });
+  });
+
+  router.get('/rdvs', authenticate, requireRole('admin'), (req, res) => {
+    const { commercial, statut, from, to } = req.query;
+    let sql = `
+      SELECT r.*, u.nom as commercial, c.id as collecte_id
+      FROM rdvs r
+      JOIN collectes c ON c.id = r.collecte_id
+      JOIN users u ON u.id = c.user_id
+      WHERE c.statut IN ('validee', 'approuvee')
+    `;
+    const params = [];
+    if (commercial) { sql += ' AND u.nom = ?'; params.push(commercial); }
+    if (statut) { sql += ' AND r.statut = ?'; params.push(statut); }
+    if (from) { sql += ' AND r.date >= ?'; params.push(from); }
+    if (to) { sql += ' AND r.date <= ?'; params.push(to); }
+    sql += ' ORDER BY r.date DESC';
+    res.json(db.prepare(sql).all(...params));
+  });
+
+  router.get('/users', authenticate, requireRole('admin'), (req, res) => {
+    const users = db.prepare('SELECT id, nom, role, must_change_password FROM users ORDER BY role, nom').all();
+    res.json(users);
+  });
+
+  router.delete('/users/:id', authenticate, requireRole('admin'), (req, res) => {
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
+    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    if (user.role === 'admin') return res.status(400).json({ error: 'Impossible de supprimer un admin' });
+    db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id);
+    res.json({ message: 'Utilisateur supprimé' });
+  });
+
+  router.patch('/users/:id', authenticate, requireRole('admin'), (req, res) => {
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
+    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    const { role, reset_password } = req.body;
+    if (role) {
+      db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, req.params.id);
+    }
+    if (reset_password) {
+      const bcrypt = require('bcryptjs');
+      const hash = bcrypt.hashSync(reset_password, 12);
+      db.prepare('UPDATE users SET password = ?, must_change_password = 1 WHERE id = ?').run(hash, req.params.id);
+    }
+    res.json({ message: 'Utilisateur mis à jour' });
+  });
+
+  router.get('/reminders', authenticate, requireRole('admin'), (req, res) => {
+    const reminders = db.prepare('SELECT * FROM reminders WHERE user_id = ? ORDER BY due_date ASC').get(req.user.id) || [];
+    res.json(db.prepare('SELECT * FROM reminders ORDER BY due_date ASC').all());
+  });
+
+  router.post('/reminders', authenticate, requireRole('admin'), (req, res) => {
+    const { title, description, due_date, priority } = req.body;
+    if (!title) return res.status(400).json({ error: 'Titre requis' });
+    const result = db.prepare(
+      'INSERT INTO reminders (user_id, title, description, due_date, priority) VALUES (?, ?, ?, ?, ?)'
+    ).run(req.user.id, title, description || null, due_date || null, priority || 'medium');
+
+    // Create notification for the reminder
+    if (due_date) {
+      createNotification(
+        req.user.id,
+        'reminder',
+        'Nouveau rappel cree',
+        `Rappel : "${title}" prevu pour le ${new Date(due_date).toLocaleDateString('fr-FR')}.`,
+        '#reminders'
+      );
+    }
+
+    res.json({ id: result.lastInsertRowid, message: 'Rappel créé' });
+  });
+
+  router.patch('/reminders/:id', authenticate, requireRole('admin'), (req, res) => {
+    const reminder = db.prepare('SELECT * FROM reminders WHERE id = ?').get(req.params.id);
+    if (!reminder) return res.status(404).json({ error: 'Rappel non trouvé' });
+    const { title, description, due_date, priority, completed } = req.body;
+    if (title !== undefined) db.prepare('UPDATE reminders SET title = ? WHERE id = ?').run(title, req.params.id);
+    if (description !== undefined) db.prepare('UPDATE reminders SET description = ? WHERE id = ?').run(description, req.params.id);
+    if (due_date !== undefined) db.prepare('UPDATE reminders SET due_date = ? WHERE id = ?').run(due_date, req.params.id);
+    if (priority !== undefined) db.prepare('UPDATE reminders SET priority = ? WHERE id = ?').run(priority, req.params.id);
+    if (completed !== undefined) db.prepare('UPDATE reminders SET completed = ? WHERE id = ?').run(completed ? 1 : 0, req.params.id);
+    res.json({ message: 'Rappel mis à jour' });
+  });
+
+  router.delete('/reminders/:id', authenticate, requireRole('admin'), (req, res) => {
+    const reminder = db.prepare('SELECT * FROM reminders WHERE id = ?').get(req.params.id);
+    if (!reminder) return res.status(404).json({ error: 'Rappel non trouvé' });
+    db.prepare('DELETE FROM reminders WHERE id = ?').run(req.params.id);
+    res.json({ message: 'Rappel supprimé' });
+  });
+
+  router.get('/logs', authenticate, requireRole('admin'), (req, res) => {
+    const { action, user_id, limit } = req.query;
+    let sql = 'SELECT l.*, u.nom as user_nom FROM logs l LEFT JOIN users u ON u.id = l.user_id';
+    const conditions = [];
+    const params = [];
+    if (action) { conditions.push('l.action = ?'); params.push(action); }
+    if (user_id) { conditions.push('l.user_id = ?'); params.push(user_id); }
+    if (conditions.length) sql += ' WHERE ' + conditions.join(' AND ');
+    sql += ' ORDER BY l.created_at DESC';
+    if (limit) { sql += ' LIMIT ?'; params.push(parseInt(limit)); }
+    else { sql += ' LIMIT 100'; }
+    res.json(db.prepare(sql).all(...params));
+  });
+
+  router.get('/settings', authenticate, requireRole('admin'), (req, res) => {
+    const rows = db.prepare('SELECT * FROM settings').all();
+    const settings = {};
+    rows.forEach(r => { settings[r.key] = r.value; });
+    res.json(settings);
+  });
+
+  router.patch('/settings', authenticate, requireRole('admin'), (req, res) => {
+    const updates = req.body;
+    const upsert = db.prepare('INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)');
+    const tx = db.transaction(() => {
+      for (const [key, value] of Object.entries(updates)) {
+        upsert.run(key, String(value));
+      }
+    });
+    tx();
+    res.json({ message: 'Paramètres mis à jour' });
+  });
+
+  router.get('/history', authenticate, requireRole('admin'), (req, res) => {
+    const { collecte_id, action } = req.query;
+    let sql = `
+      SELECT vh.*, u.nom as user_nom, c.user_id as commercial_id, cu.nom as commercial
+      FROM validation_history vh
+      JOIN users u ON u.id = vh.user_id
+      JOIN collectes c ON c.id = vh.collecte_id
+      JOIN users cu ON cu.id = c.user_id
+    `;
+    const conditions = [];
+    const params = [];
+    if (collecte_id) { conditions.push('vh.collecte_id = ?'); params.push(collecte_id); }
+    if (action) { conditions.push('vh.action = ?'); params.push(action); }
+    if (conditions.length) sql += ' WHERE ' + conditions.join(' AND ');
+    sql += ' ORDER BY vh.created_at DESC LIMIT 100';
+    res.json(db.prepare(sql).all(...params));
   });
 
   return router;

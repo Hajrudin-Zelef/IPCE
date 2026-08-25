@@ -1,0 +1,7 @@
+.docs-content{max-width:800px}
+.docs-section{background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px}
+.docs-section h3{font-size:16px;font-weight:700;color:var(--text);margin:0 0 12px 0;display:flex;align-items:center;gap:8px}
+.docs-section p{font-size:14px;color:var(--text-secondary);line-height:1.6;margin:0 0 12px 0}
+.docs-section ul{padding-left:20px;margin:0}
+.docs-section li{font-size:13px;color:var(--text-secondary);line-height:1.8}
+.docs-kbd{display:inline-block;padding:2px 8px;background:var(--bg);border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:monospace}

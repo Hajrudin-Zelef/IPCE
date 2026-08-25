@@ -1,0 +1,12 @@
+.prospect-card{background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:20px;transition:all var(--transition-fast)}
+.prospect-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.prospect-status{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600}
+.prospect-status.rdv{background:rgba(37,99,235,0.1);color:var(--primary)}
+.prospect-status.offre{background:var(--warning-light);color:var(--warning)}
+.prospect-status.bc{background:var(--success-light);color:var(--success)}
+.prospect-status.perdu{background:var(--danger-light);color:var(--danger)}
+.prospect-pipeline{display:flex;align-items:center;gap:4px;margin-top:12px}
+.prospect-pipeline-step{flex:1;height:4px;border-radius:2px;background:var(--border-light)}
+.prospect-pipeline-step.done{background:var(--success)}
+.prospect-pipeline-step.current{background:var(--primary);animation:pipelinePulse 1.5s ease infinite}
+@keyframes pipelinePulse{0%,100%{opacity:1}50%{opacity:0.5}}

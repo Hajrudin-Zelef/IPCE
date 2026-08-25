@@ -1,0 +1,18 @@
+.reminder-card{display:flex;align-items:flex-start;gap:16px;padding:16px 20px;background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius-lg);transition:all var(--transition-fast);margin-bottom:8px}
+.reminder-card:hover{box-shadow:var(--shadow-sm)}
+.reminder-card.completed{opacity:0.5}
+.reminder-priority{width:4px;min-height:40px;border-radius:2px;flex-shrink:0}
+.reminder-priority.high{background:var(--danger)}
+.reminder-priority.medium{background:var(--warning)}
+.reminder-priority.low{background:var(--success)}
+.reminder-content{flex:1}
+.reminder-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.reminder-date{font-size:12px;color:var(--muted)}
+.reminder-actions{display:flex;gap:8px}
+.reminder-btn{width:32px;height:32px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--transition-fast)}
+.reminder-btn:hover{background:var(--primary);border-color:var(--primary);color:white}
+.reminder-btn.danger:hover{background:var(--danger);border-color:var(--danger)}
+.reminder-create-form{background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px}
+.reminder-form-row{display:flex;gap:12px;margin-bottom:12px}
+.reminder-form-row input,.reminder-form-row select,.reminder-form-row textarea{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:var(--font-sans)}
+.reminder-form-row textarea{min-height:60px;resize:vertical}

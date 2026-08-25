@@ -22,6 +22,8 @@ async function loadStats() {
     renderCharts(users, totals);
     renderInsights(users, totals);
 
+    window.__chartsData = { users, totals };
+
     setupKPIClicks();
     animateCounters();
   } catch {

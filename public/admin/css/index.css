@@ -1,5 +1,7 @@
 @import url('variables.css');
 @import url('base.css');
+@import url('section-shared.css');
+@import url('sidebar.css');
 @import url('header.css');
 @import url('kpi.css');
 @import url('detail-panel.css');
@@ -9,4 +11,14 @@
 @import url('insights.css');
 @import url('export.css');
 @import url('animations.css');
+@import url('performance.css');
+@import url('executive.css');
+@import url('reports.css');
+@import url('calendar.css');
+@import url('prospects.css');
+@import url('reminders.css');
+@import url('docs.css');
+@import url('users.css');
+@import url('logs.css');
+@import url('settings.css');
 @import url('responsive.css');

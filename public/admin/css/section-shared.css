@@ -1,0 +1,27 @@
+.dashboard-section{padding:0 0 24px 0}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.section-header .section-title{font-size:22px;font-weight:700;color:var(--text);margin:0}
+.section-subtitle{font-size:13px;color:var(--muted);margin-top:4px}
+.section-content{min-height:200px}
+.section-card{background:var(--card);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-sm);border:1px solid var(--border-light);margin-bottom:16px}
+.section-grid{display:grid;gap:16px}
+.section-grid-2{grid-template-columns:repeat(2,1fr)}
+.section-grid-3{grid-template-columns:repeat(3,1fr)}
+.section-grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:768px){.section-grid-2,.section-grid-3,.section-grid-4{grid-template-columns:1fr}}
+.section-filters{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.section-filter{padding:8px 16px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--card);color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer;transition:all var(--transition-fast)}
+.section-filter:hover,.section-filter.active{background:var(--primary);border-color:var(--primary);color:white}
+.section-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--muted);text-align:center}
+.section-empty svg{width:48px;height:48px;margin-bottom:16px;opacity:0.4}
+.section-table{width:100%;border-collapse:collapse}
+.section-table th,.section-table td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border-light);font-size:13px}
+.section-table th{font-weight:600;color:var(--text);background:var(--bg);position:sticky;top:0}
+.section-table tr:hover td{background:rgba(37,99,235,0.04)}
+.section-badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.section-badge.success{background:var(--success-light);color:var(--success)}
+.section-badge.warning{background:var(--warning-light);color:var(--warning)}
+.section-badge.danger{background:var(--danger-light);color:var(--danger)}
+.section-badge.info{background:rgba(37,99,235,0.1);color:var(--primary)}
+@keyframes sectionFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.section-animate-in{animation:sectionFadeIn 0.3s ease forwards}

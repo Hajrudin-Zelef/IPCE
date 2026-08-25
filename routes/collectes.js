@@ -142,6 +142,21 @@ function createCollectesRouter(db) {
       rdvCount,
     });
 
+    // Notify all admins
+    const admins = db.prepare('SELECT id FROM users WHERE role = ?').all('admin');
+    const insertNotif = db.prepare(
+      'INSERT INTO notifications (user_id, type, title, message, link) VALUES (?, ?, ?, ?, ?)'
+    );
+    for (const admin of admins) {
+      insertNotif.run(
+        admin.id,
+        'collecte_pending',
+        'Nouvelle collecte a valider',
+        `${req.user.nom} a soumis une collecte de ${(collecte.ca / 1e6).toFixed(1)}M FCFA — ${collecte.offres} offres, ${collecte.bc} BC, ${rdvCount} RDV.`,
+        '#validation'
+      );
+    }
+
     res.json({ message: 'Collecte validée — notification envoyée à l\'administrateur' });
   });
 

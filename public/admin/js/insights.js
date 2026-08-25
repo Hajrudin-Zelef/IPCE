@@ -78,13 +78,12 @@ function renderInsightCard(type, items) {
 }
 
 export function renderInsights(users, totals) {
-  const container = document.getElementById('insights');
+  const container = document.getElementById('section-insights-content');
   if (!container) return;
 
   const { opportunities, attentions, forecasts } = analyzeInsights(users, totals);
 
   container.innerHTML = `
-    <div class="section-title animate-fade-in">Business Insights</div>
     <div class="insights-grid">
       ${renderInsightCard('opportunity', opportunities)}
       ${renderInsightCard('attention', attentions)}
@@ -92,3 +91,9 @@ export function renderInsights(users, totals) {
     </div>
   `;
 }
+
+window.__load_insights = function () {
+  if (window.__chartsData) {
+    renderInsights(window.__chartsData.users, window.__chartsData.totals);
+  }
+};

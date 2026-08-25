@@ -1,0 +1,7 @@
+.performance-table-wrapper{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border-light)}
+.performance-bar{height:8px;background:var(--border-light);border-radius:4px;overflow:hidden}
+.performance-bar-fill{height:100%;border-radius:4px;transition:width 0.6s ease}
+.performance-bar-fill.excellent{background:var(--success)}
+.performance-bar-fill.good{background:var(--primary)}
+.performance-bar-fill.warning{background:var(--warning)}
+.performance-bar-fill.danger{background:var(--danger)}

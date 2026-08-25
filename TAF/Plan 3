@@ -1,0 +1,228 @@
+# Plan 3 — Remplissage des modules sidebar
+
+## Objectif
+Les modules du sidebar sont vides. Il faut : (1) créer un système de sections routables, (2) déplacer le contenu existant, (3) créer les pages manquantes.
+
+## Problème actuel
+- Pas de container `id="section-xxx"` dans le HTML
+- `sidebar.js` cherche des sections qui n'existent pas
+- Tout est sur une seule page plate — les clics sidebar ne mènent nulle part
+- Pas de données historiques pour les tendances
+- Pas de tables DB pour logs, reminders, settings
+
+---
+
+## Priorité 1 — Structure (indispensable)
+
+### 1.1 Système de sections dans index.html
+- Ajouter un container `<div id="section-{name}">` pour chaque section sidebar
+- Le dashboard actuel devient la section `dashboard`
+- Les autres sections sont cachées par défaut
+
+### 1.2 Routing sidebar (sidebar.js)
+- Au clic : masquer toutes les sections, afficher la section cible
+- Ajouter classe `.section-hidden { display: none; }`
+- Garder l'URL hash (#graphs, #validation, etc.)
+- Transition fluide entre sections
+
+---
+
+## Priorité 2 — Contenu existant (réutiliser)
+
+### 2.1 Commercial > Graphiques (`id="section-graphs"`)
+- Déplacer la grid `charts-grid` (4 graphiques) dans cette section
+- Ajouter filtres : période (semaine/mois/trimestre/année)
+
+### 2.2 Commercial > Suivi par Commercial (`id="section-commercial-suivi"`)
+- Déplacer le leaderboard dans cette section
+- Ajouter : recherche par nom, tri par CA/offres/RDV
+
+### 2.3 Commercial > Performance (`id="section-performance"`)
+- Tableau classement avec métriques avancées
+- Comparaison mois précédent vs actuel
+- Taux de conversion par commercial
+- Objectifs vs réalisé (barre de progression)
+
+### 2.4 Validation Center (`id="section-validation"`)
+- Onglets : En attente | Historique
+- En attente = contenu existant (validation.js)
+- Historique = nouvelles cartes avec statut validé/rejeté + date
+- Filtres : par commercial, par date
+
+### 2.5 Business Insights (`id="section-insights"`)
+- Contenu existant (insights.js) déplacé ici
+- Ajouter graphiques tendances (pas juste du texte)
+
+---
+
+## Priorité 3 — Nouvelles pages
+
+### 3.1 Rapports > Analyse Executive (`id="section-executive"`)
+- Vue synthétique : top 5 métriques + tendances
+- Graphiques : évolution CA mensuel, taux conversion, objectifs
+- Export PDF/executive summary
+- **Fichier :** `executive.js` + `executive.css`
+
+### 3.2 Rapports > Rapports personnalisés (`id="section-custom-reports"`)
+- Filtres : date range, commerciaux, métriques
+- Prévisualisation avant export
+- Sauvegarder un modèle de rapport
+- **Fichier :** `reports.js` + `reports.css`
+
+### 3.3 RDV > Calendrier (`id="section-calendar"`)
+- Grille mensuelle CSS (pas de lib externe)
+- Points colorés par jour (nombre de RDV)
+- Clic sur jour → liste des RDV
+- **API :** `GET /api/admin/rdvs` (à créer)
+- **Fichier :** `calendar.js` + `calendar.css`
+
+### 3.4 RDV > Suivi prospects (`id="section-prospects"`)
+- Liste/tableau des prospects
+- Statuts : prospect → RDV signé → offre → BC signé
+- Filtres : statut, commercial, date
+- **Fichier :** `prospects.js` + `prospects.css`
+
+### 3.5 RDV > Rappels (`id="section-reminders"`)
+- Liste de rappels avec création/modification
+- Rappels = tâches avec date + priorité
+- **Table DB :** `reminders` (id, user_id, title, date, priority, completed)
+- **API :** GET/POST/PATCH/DELETE `/api/admin/reminders`
+- Badge sidebar alimenté par cette table
+
+### 3.6 Documentation (`id="section-docs"`)
+- Page statique intégrée au dashboard
+- Contenu : guide navigation, explication KPI, workflow validation
+- **Fichier :** `docs.js` + `docs.css`
+
+### 3.7 Admin > Gestion utilisateurs (`id="section-users"`)
+- Tableau des utilisateurs (nom, email, rôle, date création)
+- Actions : modifier rôle, supprimer, réinitialiser mot de passe
+- **API :** `GET /api/admin/users`, `DELETE /api/admin/users/:id`, `PATCH /api/admin/users/:id`
+- **Fichier :** `users.js` + `users.css`
+
+### 3.8 Admin > Logs système (`id="section-logs"`)
+- **Table DB :** `logs` (id, user_id, action, target, details, created_at)
+- Vue tableau avec filtres (action, date, utilisateur)
+- Enregistrement automatique : approbation, rejet, création user
+- **API :** `GET /api/admin/logs`
+- **Middleware :** `logAction()` pour chaque opération d'état
+- **Fichier :** `logs.js` + `logs.css`
+
+### 3.9 Admin > Paramètres (`id="section-settings"`)
+- Objectif CA mensuel (modifiable)
+- Theme toggle (dark/light — variables CSS déjà prêtes)
+- Préférences notifications
+- **Table DB :** `settings` (key, value) ou JSON
+- **API :** GET/PATCH `/api/admin/settings`
+- **Fichier :** `settings.js` + `settings.css`
+
+---
+
+## Priorité 4 — Infrastructure DB
+
+### 4.1 Tables à créer
+```sql
+-- Historique des validations
+CREATE TABLE validation_history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  collecte_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  action TEXT NOT NULL, -- 'approve' ou 'reject'
+  details TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Logs d'audit
+CREATE TABLE logs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  action TEXT NOT NULL,
+  target TEXT,
+  details TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Rappels
+CREATE TABLE reminders (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  due_date DATETIME,
+  priority TEXT DEFAULT 'medium',
+  completed BOOLEAN DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Paramètres système
+CREATE TABLE settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 4.2 API endpoints à créer
+| Méthode | Route | Description |
+|---------|-------|-------------|
+| GET | /api/admin/rdvs | Liste des RDVs (filtrable) |
+| GET | /api/admin/users | Liste des utilisateurs |
+| DELETE | /api/admin/users/:id | Supprimer un utilisateur |
+| PATCH | /api/admin/users/:id | Modifier un utilisateur |
+| GET | /api/admin/reminders | Liste des rappels |
+| POST | /api/admin/reminders | Créer un rappel |
+| PATCH | /api/admin/reminders/:id | Modifier un rappel |
+| DELETE | /api/admin/reminders/:id | Supprimer un rappel |
+| GET | /api/admin/logs | Historique des actions |
+| GET | /api/admin/settings | Récupérer les paramètres |
+| PATCH | /api/admin/settings | Modifier les paramètres |
+| GET | /api/admin/history | Historique des validations |
+
+---
+
+## Fichiers à créer/modifier
+
+### Nouveaux fichiers CSS
+- `public/admin/css/executive.css`
+- `public/admin/css/reports.css`
+- `public/admin/css/calendar.css`
+- `public/admin/css/prospects.css`
+- `public/admin/css/reminders.css`
+- `public/admin/css/docs.css`
+- `public/admin/css/users.css`
+- `public/admin/css/logs.css`
+- `public/admin/css/settings.css`
+
+### Nouveaux fichiers JS
+- `public/admin/js/executive.js`
+- `public/admin/js/reports.js`
+- `public/admin/js/calendar.js`
+- `public/admin/js/prospects.js`
+- `public/admin/js/reminders.js`
+- `public/admin/js/docs.js`
+- `public/admin/js/users.js`
+- `public/admin/js/logs.js`
+- `public/admin/js/settings.js`
+
+### Fichiers modifiés
+- `public/admin/index.html` — ajouter containers sections
+- `public/admin/js/sidebar.js` — routing sections
+- `public/admin/css/index.css` — imports CSS
+- `server.js` — nouvelles routes API
+- `db.js` — nouvelles tables
+
+---
+
+## Livrables
+
+1. Système de sections routables fonctionnel
+2. 9 sections remplies avec contenu réel
+3. 4 nouvelles tables DB
+4. 12 nouveaux endpoints API
+5. Dark mode fonctionnel
+6. Responsive mobile maintenu
+
+---
+
+**Estimation :** ~6-8h de travail
+**Dépendances :** Plan 2 (sidebar) déjà implémenté
