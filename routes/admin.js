@@ -231,6 +231,77 @@ function createAdminRouter(db) {
     res.end();
   });
 
+  router.get('/export/csv', authenticate, requireRole('admin'), (req, res) => {
+    const users = db.prepare('SELECT id, nom FROM users WHERE role = ?').all('commercial');
+    const allCollectes = db.prepare(`
+      SELECT c.*, u.nom as commercial FROM collectes c
+      JOIN users u ON u.id = c.user_id
+      WHERE c.statut IN ('validee', 'approuvee')
+    `).all();
+
+    const totals = allCollectes.reduce((acc, c) => ({
+      ca: acc.ca + c.ca, offres: acc.offres + c.offres, bc: acc.bc + c.bc,
+    }), { ca: 0, offres: 0, bc: 0 });
+
+    const rdvTotal = db.prepare(`
+      SELECT COUNT(*) as count FROM rdvs r
+      JOIN collectes c ON c.id = r.collecte_id
+      WHERE c.statut IN ('validee', 'approuvee')
+    `).get().count;
+
+    let csv = 'RAPPORT PILOTAGE COMMERCIAL IPCE\n';
+    csv += new Date().toLocaleDateString('fr-FR') + '\n\n';
+    csv += 'RESUME EXECUTIF\n';
+    csv += 'CA TOTAL,' + totals.ca + ',Objectif 100M\n';
+    csv += 'OFFRES EMISES,' + totals.offres + ',Objectif 6\n';
+    csv += 'BC SIGNES,' + totals.bc + ',Objectif 6\n';
+    csv += 'RDV,' + rdvTotal + ',Objectif 6\n\n';
+    csv += 'DETAIL PAR COMMERCIALE\n';
+    csv += 'Commerciale,CA,Offres,BC,RDV,Conv%\n';
+    users.forEach(u => {
+      const uc = allCollectes.filter(c => c.user_id === u.id);
+      const ca = uc.reduce((s, c) => s + c.ca, 0);
+      const offres = uc.reduce((s, c) => s + c.offres, 0);
+      const bc = uc.reduce((s, c) => s + c.bc, 0);
+      const rdv = db.prepare('SELECT COUNT(*) as count FROM rdvs r JOIN collectes c ON c.id = r.collecte_id WHERE c.user_id = ? AND c.statut IN (?, ?)').get(u.id, 'validee', 'approuvee').count;
+      const conv = rdv > 0 ? ((offres / rdv) * 100).toFixed(0) : 0;
+      csv += u.nom + ',' + ca + ',' + offres + ',' + bc + ',' + rdv + ',' + conv + '%\n';
+    });
+    csv += '\nDETAIL RDV\n';
+    csv += 'Commerciale,Prospect,Date,Montant,Statut\n';
+    const allRdvs = db.prepare(`
+      SELECT r.*, u.nom as commercial FROM rdvs r
+      JOIN collectes c ON c.id = r.collecte_id
+      JOIN users u ON u.id = c.user_id
+      WHERE c.statut IN ('validee', 'approuvee')
+      ORDER BY r.date DESC
+    `).all();
+    allRdvs.forEach(r => {
+      csv += r.commercial + ',' + r.prospect + ',' + r.date + ',' + r.montant + ',' + r.statut + '\n';
+    });
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename=rapport_ipce_${new Date().toISOString().split('T')[0]}.csv`);
+    res.send(csv);
+  });
+
+  router.post('/reset', authenticate, requireRole('admin'), (req, res) => {
+    const { confirmed } = req.body;
+    if (confirmed !== true) return res.status(400).json({ error: 'Confirme avec { confirmed: true }' });
+
+    db.exec('DELETE FROM rdvs');
+    db.exec('DELETE FROM collectes');
+    db.prepare('UPDATE users SET must_change_password = 1').run();
+    db.prepare('UPDATE users SET password = ? WHERE role = ?').run(
+      require('bcryptjs').hashSync(process.env.DEFAULT_PASSWORD || 'change_me', 12), 'commercial'
+    );
+    db.prepare('UPDATE users SET password = ? WHERE role = ?').run(
+      require('bcryptjs').hashSync(process.env.ADMIN_PASSWORD || 'change_me', 12), 'admin'
+    );
+
+    res.json({ message: 'Toutes les donnees ont ete reinitialisees' });
+  });
+
   return router;
 }
 

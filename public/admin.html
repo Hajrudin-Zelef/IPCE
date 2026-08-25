@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin — IPCE Dashboard</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; color: #333; }
@@ -72,7 +74,11 @@
       </header>
 
       <div class="btn-group">
-        <button class="btn-export" onclick="exportExcel()">Exporter en Excel</button>
+        <button class="btn-export" onclick="exportExcel()">📥 Excel</button>
+        <button class="btn-export" onclick="exportCSV()" style="background:linear-gradient(135deg,#2e7d32,#43a047);">📥 CSV</button>
+        <button class="btn-export" onclick="exportJPEG()" style="background:linear-gradient(135deg,#764ba2,#c471ed);">🖼️ JPEG</button>
+        <button class="btn-export" onclick="exportPDF()" style="background:linear-gradient(135deg,#c62828,#e53935);">📄 PDF</button>
+        <button class="btn-export" onclick="resetAll()" style="background:linear-gradient(135deg,#555,#777);">🗑️ Reset</button>
       </div>
 
       <div class="kpis">
@@ -185,6 +191,61 @@
       a.download = 'rapport_ipce_' + new Date().toISOString().split('T')[0] + '.xlsx';
       a.click();
       URL.revokeObjectURL(url);
+    }
+
+    async function exportCSV() {
+      const res = await fetch('/api/admin/export/csv', { credentials: 'include' });
+      if (res.status === 401) { window.location.href = '/'; return; }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'rapport_ipce_' + new Date().toISOString().split('T')[0] + '.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function exportJPEG() {
+      const container = document.querySelector('.container');
+      const canvas = await html2canvas(container, { scale: 2, useCORS: true });
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/jpeg', 0.95);
+      a.download = 'pilotage_' + new Date().toISOString().split('T')[0] + '.jpeg';
+      a.click();
+    }
+
+    async function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const container = document.querySelector('.container');
+      const canvas = await html2canvas(container, { scale: 2, useCORS: true });
+      const imgData = canvas.toDataURL('image/png');
+      const pageWidth = 190;
+      const pageHeight = 277;
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 10;
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight + 10;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+      pdf.save('rapport_ipce_' + new Date().toISOString().split('T')[0] + '.pdf');
+    }
+
+    async function resetAll() {
+      if (!confirm('ATTENTION : Toutes les collectes et RDV seront supprimes. Les mots de passe seront reinitialises. Continuer ?')) return;
+      if (!confirm('Etes-vous SUR ? Cette action est irreversible.')) return;
+      const res = await api('POST', '/api/admin/reset', { confirmed: true });
+      if (res.ok) {
+        alert('Toutes les donnees ont ete reinitialisees');
+        loadPending();
+        loadStats();
+      }
     }
 
     async function loadPending() {
