@@ -141,7 +141,35 @@ function broadcastToUser(userId, data) {
 app.set('broadcast', broadcastNotification);
 app.set('broadcastToUser', broadcastToUser);
 
+// --- AI Routes ---
+const createAIRouter = require('./routes/ai');
+app.use('/api/ai', createAIRouter(db, broadcastNotification));
+
+// --- AI Auto-Analysis Scheduler ---
+const { generateInsights } = require('./lib/ai');
+
+async function runAutoAnalysis() {
+  try {
+    const mode = process.env.AI_MODE || 'free';
+    const insights = await generateInsights(db, mode);
+    if (insights.length > 0) {
+      const insert = db.prepare("INSERT INTO ai_insights (type, title, message, priority) VALUES (?, ?, ?, ?)");
+      for (const insight of insights) {
+        insert.run(insight.type, insight.title, insight.message, insight.priority || 0);
+      }
+      broadcastNotification({ type: 'new_insights', count: insights.length });
+    }
+  } catch (err) {
+    console.error('[AI Scheduler]', err.message);
+  }
+}
+
+// Run every 6 hours
+setInterval(runAutoAnalysis, 6 * 60 * 60 * 1000);
+// Run once on startup (after 30s)
+setTimeout(runAutoAnalysis, 30000);
+
 const PORT = process.env.PORT || 4600;
 server.listen(PORT, () => {
-  console.log(`🚀 IPCE Dashboard running on port ${PORT} (HTTP + WebSocket)`);
+  console.log(`🚀 IPCE Dashboard running on port ${PORT} (HTTP + WebSocket + AI)`);
 });

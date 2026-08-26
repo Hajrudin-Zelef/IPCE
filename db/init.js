@@ -99,6 +99,17 @@ function initDB() {
     CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
     CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(is_read);
     CREATE INDEX IF NOT EXISTS idx_notifications_created ON notifications(created_at DESC);
+
+    CREATE TABLE IF NOT EXISTS ai_insights (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      message TEXT NOT NULL,
+      data TEXT,
+      priority INTEGER DEFAULT 0,
+      is_read INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run('ca_objectif', '100000000');
