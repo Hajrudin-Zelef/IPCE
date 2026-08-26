@@ -177,10 +177,11 @@ function showDayModal(dateStr, dayRdvs, dayCollectes) {
       const locked = c.statut !== 'brouillon';
       const style = collecteStatusColors[c.statut] || '';
       const rdvCount = c.rdvs ? c.rdvs.length : 0;
-      html += '<div class="cal-day-rdv-item" style="' + (locked ? 'opacity:0.8;' : '') + '">';
+      const collecteJson = JSON.stringify(c).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+      html += '<div class="cal-day-rdv-item' + (locked ? '' : ' clickable') + '" style="' + (locked ? 'opacity:0.8;' : 'cursor:pointer;') + '" onclick="calCloseDayModal();showCollecteDetail(JSON.parse(\'' + collecteJson + '\'))">';
       html += '<div class="cal-day-rdv-left">';
       html += '<div class="cal-day-rdv-prospect">' + (c.ca / 1e6).toFixed(1) + 'M FCFA &mdash; ' + c.offres + ' offres &mdash; ' + c.bc + ' BC &mdash; ' + rdvCount + ' RDV</div>';
-      html += '<div class="cal-day-rdv-montant">' + (locked ? 'Valid&eacute;e &mdash; lecture seule' : 'Brouillon &mdash; modifiable') + '</div>';
+      html += '<div class="cal-day-rdv-montant">' + (locked ? 'Valid&eacute;e &mdash; lecture seule' : 'Brouillon &mdash; cliquer pour voir') + '</div>';
       html += '</div>';
       html += '<span class="cal-day-rdv-statut" style="' + style + '">' + c.statut + '</span>';
       html += '</div>';
@@ -212,6 +213,51 @@ function showDayModal(dateStr, dayRdvs, dayCollectes) {
 
 function calCloseDayModal() {
   document.getElementById('cal-day-modal').style.display = 'none';
+}
+
+function showCollecteDetail(c) {
+  const locked = c.statut !== 'brouillon';
+  const statusColors = {
+    'brouillon': 'var(--status-brouillon-bg);color:var(--status-brouillon-text)',
+    'validee': 'var(--status-validee-bg);color:var(--status-validee-text)',
+    'approuvee': 'var(--status-approuvee-bg);color:var(--status-approuvee-text)',
+    'rejetee': 'var(--status-rejetee-bg);color:var(--status-rejetee-text)',
+  };
+  const style = statusColors[c.statut] || '';
+
+  document.getElementById('cal-collecte-title').textContent = 'Collecte du ' + new Date(c.date + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  let html = '';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">';
+  html += '<div class="cal-modal-field"><label>CA</label><span>' + (c.ca / 1e6).toFixed(1) + ' M FCFA</span></div>';
+  html += '<div class="cal-modal-field"><label>Offres</label><span>' + c.offres + '</span></div>';
+  html += '<div class="cal-modal-field"><label>BC</label><span>' + c.bc + '</span></div>';
+  html += '<div class="cal-modal-field"><label>Statut</label><span class="cal-day-rdv-statut" style="' + style + '">' + c.statut + '</span></div>';
+  html += '</div>';
+
+  if (locked) {
+    html += '<div style="font-size:12px;color:var(--warning);margin-bottom:12px;">Collecte valid&eacute;e &mdash; lecture seule</div>';
+  } else {
+    html += '<div style="font-size:12px;color:var(--success);margin-bottom:12px;">Brouillon &mdash; modifiable depuis l\'historique</div>';
+  }
+
+  if (c.rdvs && c.rdvs.length > 0) {
+    html += '<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">RDVs associ\u00e9s (' + c.rdvs.length + ')</div>';
+    c.rdvs.forEach(r => {
+      html += '<div class="cal-day-rdv-item" style="cursor:pointer;" onclick="document.getElementById(\'cal-collecte-modal\').style.display=\'none\';calOpenModal(' + JSON.stringify(r).replace(/"/g, '&quot;') + ')">';
+      html += '<div class="cal-day-rdv-left">';
+      html += '<div class="cal-day-rdv-prospect">' + r.prospect + '</div>';
+      html += '<div class="cal-day-rdv-montant">' + r.montant + ' M FCFA</div>';
+      html += '</div>';
+      html += '<span class="cal-day-rdv-statut">' + r.statut + '</span>';
+      html += '</div>';
+    });
+  } else {
+    html += '<div class="cal-empty">Aucun RDV associ\u00e9</div>';
+  }
+
+  document.getElementById('cal-collecte-body').innerHTML = html;
+  document.getElementById('cal-collecte-modal').style.display = 'flex';
 }
 
 function calPrevMonth() { calDate.setMonth(calDate.getMonth() - 1); calLoadRdvs(); }
