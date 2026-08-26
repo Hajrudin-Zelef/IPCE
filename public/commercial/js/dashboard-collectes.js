@@ -25,7 +25,7 @@ function removeRdv(i) {
 function renderRdvs() {
   const el = document.getElementById('rdv-list');
   if (currentRdvs.length === 0) {
-    el.innerHTML = '<div class="empty" style="padding:10px">Aucun RDV ajout\u00e9</div>';
+    el.innerHTML = '<div class="empty" style="padding:10px">Aucun RDV ajouté</div>';
     return;
   }
   el.innerHTML = currentRdvs.map((r, i) => `
@@ -45,7 +45,7 @@ async function saveCollecte() {
     if (res.status === 401) { window.location.href = '/'; return; }
     const data = await res.json();
     if (!res.ok) return alert(data.error);
-    alert('Collecte sauvegard\u00e9e !');
+    alert('Collecte sauvegardée !');
     currentRdvs = [];
     renderRdvs();
     document.getElementById('inp-ca').value = '';
@@ -60,7 +60,7 @@ async function validateCollecte() {
   const ca = parseFloat(document.getElementById('inp-ca').value) || 0;
   const offres = parseInt(document.getElementById('inp-offres').value) || 0;
   const bc = parseInt(document.getElementById('inp-bc').value) || 0;
-  if (currentRdvs.length === 0 && ca === 0) return alert('Saisissez au moins des donn\u00e9es');
+  if (currentRdvs.length === 0 && ca === 0) return alert('Saisissez au moins des données');
   try {
     const saveRes = await api('POST', '/api/collectes', { ca, offres, bc, rdvs: currentRdvs });
     if (saveRes.status === 401) { window.location.href = '/'; return; }
@@ -69,7 +69,7 @@ async function validateCollecte() {
     const valRes = await api('PATCH', `/api/collectes/${saveData.id}/validate`);
     const valData = await valRes.json();
     if (!valRes.ok) return alert(valData.error);
-    alert('Collecte valid\u00e9e ! L\'admin a \u00e9t\u00e9 notifi\u00e9.');
+    alert('Collecte validée ! L\'admin a été notifié.');
     currentRdvs = [];
     renderRdvs();
     document.getElementById('inp-ca').value = '';

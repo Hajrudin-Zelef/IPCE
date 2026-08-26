@@ -17,16 +17,16 @@
     <div class="topbar">
       <h2>IPCE Dashboard</h2>
       <div class="user-info">
-        <button class="dark-toggle" id="dark-toggle" onclick="toggleDarkMode()" title="Basculer le th\u00e8me"></button>
-        <span>Connect\u00e9 en tant que <strong id="user-name"></strong></span>
-        <button class="btn-logout" onclick="logout()">D\u00e9connexion</button>
+        <button class="dark-toggle" id="dark-toggle" onclick="toggleDarkMode()" title="Basculer le thème"></button>
+        <span>Connecté en tant que <strong id="user-name"></strong></span>
+        <button class="btn-logout" onclick="logout()">Déconnexion</button>
       </div>
     </div>
 
     <div class="container">
       <header>
         <h1>Mon Tableau de Bord</h1>
-        <p>Suivi de mes collectes \u2014 <span id="date"></span></p>
+        <p>Suivi de mes collectes — <span id="date"></span></p>
       </header>
 
       <div class="section">Nouvelle Collecte</div>
@@ -38,13 +38,13 @@
             <input type="number" id="inp-ca" min="0" placeholder="0">
           </div>
           <div class="form-group">
-            <label>Offres \u00c9mises</label>
+            <label>Offres Émises</label>
             <input type="number" id="inp-offres" min="0" placeholder="0">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>BC Sign\u00e9s</label>
+            <label>BC Signés</label>
             <input type="number" id="inp-bc" min="0" placeholder="0">
           </div>
         </div>
@@ -70,10 +70,10 @@
             <div class="form-group">
               <label>Statut</label>
               <select id="rdv-statut">
-                <option>Pr\u00e9vu</option>
-                <option>R\u00e9alis\u00e9</option>
+                <option>Prévu</option>
+                <option>Réalisé</option>
                 <option>Offre</option>
-                <option>BC Sign\u00e9</option>
+                <option>BC Signé</option>
               </select>
             </div>
           </div>
@@ -130,7 +130,7 @@
   <div class="cal-modal-overlay" id="cal-modal" style="display:none;">
     <div class="cal-modal">
       <div class="cal-modal-header">
-        <h3>D\u00e9tails du RDV</h3>
+        <h3>Détails du RDV</h3>
         <button class="cal-modal-close" onclick="calCloseModal()">&#10005;</button>
       </div>
       <div class="cal-modal-body">
@@ -149,14 +149,14 @@
         <div class="cal-modal-field">
           <label>Statut</label>
           <select id="cal-modal-statut" class="cal-statut-select">
-            <option value="Prevu">Pr\u00e9vu</option>
-            <option value="Realise">R\u00e9alis\u00e9</option>
+            <option value="Prevu">Prévu</option>
+            <option value="Realise">Réalisé</option>
             <option value="Offre">Offre</option>
-            <option value="BC Signe">BC Sign\u00e9</option>
+            <option value="BC Signe">BC Signé</option>
           </select>
         </div>
         <div id="cal-modal-readonly" style="display:none; font-size:12px; color:var(--warning); margin-top:8px;">
-          Collecte d\u00e9j\u00e0 valid\u00e9e \u2014 modification impossible.
+          Collecte déjà validée — modification impossible.
         </div>
       </div>
       <div class="cal-modal-actions">

@@ -83,7 +83,7 @@ function calRenderMonth() {
     }
     html += '<div class="cal-dots">';
     dayRdvs.slice(0, 4).forEach(r => {
-      html += `<span class="cal-dot ${r.statut.replace(/ /g, ' ')}" title="${r.prospect} \u2014 ${r.statut}"></span>`;
+      html += `<span class="cal-dot ${r.statut.replace(/ /g, ' ')}" title="${r.prospect} — ${r.statut}"></span>`;
     });
     html += '</div></div>';
   }
@@ -122,8 +122,8 @@ function calDayClick(dateStr) {
   if (dayRdvs.length === 1) calOpenModal(dayRdvs[0]);
   else if (dayRdvs.length > 1) {
     let msg = `RDV le ${dateStr} :\n`;
-    dayRdvs.forEach((r, i) => { msg += `${i + 1}. ${r.prospect} \u2014 ${r.statut}\n`; });
-    msg += '\nEntrez le num\u00e9ro du RDV \u00e0 ouvrir :';
+    dayRdvs.forEach((r, i) => { msg += `${i + 1}. ${r.prospect} — ${r.statut}\n`; });
+    msg += '\nEntrez le numéro du RDV à ouvrir :';
     const idx = prompt(msg);
     if (idx && dayRdvs[parseInt(idx) - 1]) calOpenModal(dayRdvs[parseInt(idx) - 1]);
   }
@@ -173,7 +173,7 @@ async function calSaveStatut() {
 
 async function calDeleteRdv() {
   if (!calSelectedRdv) return;
-  if (!confirm(`Supprimer le RDV \u00ab ${calSelectedRdv.prospect} \u00bb ?`)) return;
+  if (!confirm(`Supprimer le RDV « ${calSelectedRdv.prospect} » ?`)) return;
   try {
     const res = await api('DELETE', `/api/collectes/rdvs/${calSelectedRdv.id}`);
     if (res.status === 401) { window.location.href = '/'; return; }
