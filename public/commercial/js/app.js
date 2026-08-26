@@ -37,6 +37,19 @@ async function checkAuth() {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('app').style.display = '';
 
+    // Set date
+    var dateEl = document.getElementById('header-date');
+    if (dateEl) dateEl.textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Move notification bell into content header
+    setTimeout(function() {
+      var notifWrapper = document.querySelector('.notif-fixed-wrapper');
+      var headerRight = document.querySelector('.content-header-right');
+      if (notifWrapper && headerRight) {
+        headerRight.insertBefore(notifWrapper, headerRight.firstChild);
+      }
+    }, 200);
+
     // Init sidebar navigation (loads default section)
     if (typeof switchSection === 'function') {
       var hash = window.location.hash.replace('#', '') || 'dashboard';

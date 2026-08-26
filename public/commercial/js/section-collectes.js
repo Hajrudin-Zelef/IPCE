@@ -4,6 +4,11 @@
 
 let currentRdvs = [];
 
+window.__load_collecte = function() {
+  setDefaultDate();
+  renderRdvs();
+};
+
 // --- Toast ---
 function showToast(msg, type) {
   type = type || 'info';

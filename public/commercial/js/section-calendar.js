@@ -8,6 +8,10 @@ let calRdvs = [];
 let calCollectes = [];
 let calSelectedRdv = null;
 
+window.__load_calendar = function() {
+  calLoadRdvs();
+};
+
 function calGetMonthRange() {
   const y = calDate.getFullYear(), m = calDate.getMonth();
   const from = `${y}-${String(m + 1).padStart(2, '0')}-01`;

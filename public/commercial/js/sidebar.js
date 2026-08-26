@@ -3,7 +3,7 @@
    ======================================== */
 
 (function() {
-  let currentSection = localStorage.getItem('commercial_section') || 'dashboard';
+  var currentSection = localStorage.getItem('commercial_section') || 'dashboard';
 
   function switchSection(section) {
     // Hide all sections
@@ -30,9 +30,9 @@
     // Close mobile sidebar
     closeSidebar();
     // Lazy load section data
-    var loadFn = window['__load_'.replace(/_/g, '') + 'load_' + section];
-    if (typeof window['__load_' + section] === 'function') {
-      setTimeout(function() { window['__load_' + section](); }, 50);
+    var fn = window['__load_' + section];
+    if (typeof fn === 'function') {
+      setTimeout(fn, 50);
     }
   }
 
@@ -75,8 +75,8 @@
       toggleSidebar();
       return;
     }
-    var overlay = e.target.closest('.sidebar-overlay');
-    if (overlay) {
+    var ov = e.target.closest('.sidebar-overlay');
+    if (ov) {
       closeSidebar();
     }
   });

@@ -16,7 +16,6 @@ window.__load_dashboard = function() {
     var totalOffres = collectes.reduce(function(s, c) { return s + (c.offres || 0); }, 0);
     var totalBC = collectes.reduce(function(s, c) { return s + (c.bc || 0); }, 0);
     var totalRDV = collectes.reduce(function(s, c) { return s + (c.rdvs ? c.rdvs.length : 0); }, 0);
-    var brouillons = collectes.filter(function(c) { return c.statut === 'brouillon'; }).length;
     var last3 = collectes.slice(0, 3);
 
     var html = '';
@@ -34,6 +33,13 @@ window.__load_dashboard = function() {
     html += '<button class="btn btn-primary" onclick="switchSection(\'collecte\')">&#9998; Saisir une collecte</button>';
     html += '<button class="btn btn-sm" style="background:var(--border);" onclick="switchSection(\'history\')">Voir l\'historique</button>';
     html += '<button class="btn btn-sm" style="background:var(--border);" onclick="switchSection(\'calendar\')">Calendrier</button>';
+    html += '</div>';
+
+    // Mini charts
+    html += '<div class="dash-charts-row">';
+    html += '<div class="dash-chart-box"><canvas id="dash-ch-ca"></canvas></div>';
+    html += '<div class="dash-chart-box"><canvas id="dash-ch-offres"></canvas></div>';
+    html += '<div class="dash-chart-box"><canvas id="dash-ch-bc"></canvas></div>';
     html += '</div>';
 
     // Dernières collectes
@@ -59,7 +65,49 @@ window.__load_dashboard = function() {
     }
 
     el.innerHTML = html;
+
+    // Render mini charts after DOM update
+    setTimeout(function() { renderDashMiniCharts(collectes); }, 100);
   }).catch(function() {
     el.innerHTML = '<div class="dash-empty">Erreur de chargement</div>';
   });
 };
+
+function renderDashMiniCharts(collectes) {
+  if (!collectes || collectes.length === 0) return;
+
+  var labels = collectes.map(function(c) { return new Date(c.created_at).toLocaleDateString('fr-FR'); });
+  var caData = collectes.map(function(c) { return c.ca / 1e6; });
+  var totalOffres = collectes.reduce(function(s, c) { return s + (c.offres || 0); }, 0);
+  var totalBC = collectes.reduce(function(s, c) { return s + (c.bc || 0); }, 0);
+
+  // CA mini line
+  var elCA = document.getElementById('dash-ch-ca');
+  if (elCA) {
+    new Chart(elCA, {
+      type: 'line',
+      data: { labels: labels, datasets: [{ label: 'CA (M)', data: caData, borderColor: '#667eea', backgroundColor: 'rgba(102,126,234,0.1)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 2 }] },
+      options: { responsive: true, maintainAspectRatio: false, animation: { duration: 800 }, plugins: { title: { display: true, text: 'CA (M FCFA)', font: { size: 12 } }, legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { font: { size: 10 } } }, x: { ticks: { font: { size: 9 } } } } }
+    });
+  }
+
+  // Offres mini donut
+  var elOffres = document.getElementById('dash-ch-offres');
+  if (elOffres) {
+    new Chart(elOffres, {
+      type: 'doughnut',
+      data: { labels: ['Offres', 'Reste'], datasets: [{ data: [totalOffres, Math.max(0, totalOffres * 0.3)], backgroundColor: ['rgba(118,75,162,0.85)', 'rgba(200,200,200,0.2)'], borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '65%', animation: { animateRotate: true, duration: 1000 }, plugins: { title: { display: true, text: 'Offres: ' + totalOffres, font: { size: 12 } }, legend: { display: false } } }
+    });
+  }
+
+  // BC mini donut
+  var elBC = document.getElementById('dash-ch-bc');
+  if (elBC) {
+    new Chart(elBC, {
+      type: 'doughnut',
+      data: { labels: ['BC', 'Reste'], datasets: [{ data: [totalBC, Math.max(0, totalBC * 0.3)], backgroundColor: ['rgba(16,185,129,0.85)', 'rgba(200,200,200,0.2)'], borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: false, cutout: '65%', animation: { animateRotate: true, duration: 1000 }, plugins: { title: { display: true, text: 'BC: ' + totalBC, font: { size: 12 } }, legend: { display: false } } }
+    });
+  }
+}

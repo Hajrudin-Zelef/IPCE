@@ -5,6 +5,10 @@
 let historyCollectes = [];
 let editRdvs = [];
 
+window.__load_history = function() {
+  loadHistory();
+};
+
 async function loadHistory() {
   try {
     const res = await api('GET', '/api/collectes');
@@ -33,7 +37,6 @@ async function loadHistory() {
         + '<td>' + actions + '</td>'
         + '</tr>';
     }).join('');
-    renderCharts(historyCollectes);
   } catch {}
 }
 

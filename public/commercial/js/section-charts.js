@@ -4,6 +4,15 @@
 
 let chartCA = null, chartOffres = null, chartBC = null;
 
+window.__load_charts = function() {
+  // Load collectes and render charts
+  api('GET', '/api/collectes').then(function(res) {
+    if (res.ok) return res.json();
+  }).then(function(collectes) {
+    if (collectes) renderCharts(collectes);
+  });
+};
+
 function renderCharts(collectes) {
   if (!collectes || collectes.length === 0) return;
 

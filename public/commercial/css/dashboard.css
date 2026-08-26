@@ -558,6 +558,13 @@ header p { font-size: 13px; opacity: 0.8; }
   background: var(--card); border-radius: 12px; box-shadow: var(--shadow-sm);
 }
 
+/* --- Dashboard mini charts --- */
+.dash-charts-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.dash-chart-box {
+  background: var(--card); border-radius: 12px; padding: 16px;
+  box-shadow: var(--shadow-md); height: 200px; position: relative;
+}
+
 /* --- Section header --- */
 .section-header { margin-bottom: 20px; }
 .section-title { font-size: 20px; font-weight: 700; color: var(--primary); }
@@ -598,10 +605,12 @@ header p { font-size: 13px; opacity: 0.8; }
 @media (max-width: 768px) {
   .dash-kpis { grid-template-columns: repeat(2, 1fr); }
   .dash-kpi-value { font-size: 22px; }
+  .dash-charts-row { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
   .dash-kpis { grid-template-columns: 1fr 1fr; gap: 8px; }
   .dash-kpi { padding: 14px; }
   .dash-kpi-value { font-size: 18px; }
   .dash-actions { flex-direction: column; }
+  .dash-charts-row { grid-template-columns: 1fr; }
 }
