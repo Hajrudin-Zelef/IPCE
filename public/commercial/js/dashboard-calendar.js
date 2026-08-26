@@ -18,14 +18,15 @@ function calGetMonthRange() {
 async function calLoadRdvs() {
   const { from, to } = calGetMonthRange();
   try {
-    const [rdvsRes, collectesRes] = await Promise.all([
-      api('GET', `/api/collectes/rdvs?from=${from}&to=${to}`),
-      api('GET', `/api/collectes/by-date?from=${from}&to=${to}`),
-    ]);
-    if (rdvsRes.status === 401 || collectesRes.status === 401) { window.location.href = '/'; return; }
+    const rdvsRes = await api('GET', `/api/collectes/rdvs?from=${from}&to=${to}`);
+    if (rdvsRes.status === 401) { window.location.href = '/'; return; }
     calRdvs = await rdvsRes.json();
-    calCollectes = await collectesRes.json();
-  } catch { calRdvs = []; calCollectes = []; }
+  } catch { calRdvs = []; }
+  try {
+    const collectesRes = await api('GET', `/api/collectes/by-date?from=${from}&to=${to}`);
+    if (collectesRes.ok) calCollectes = await collectesRes.json();
+    else calCollectes = [];
+  } catch { calCollectes = []; }
   calRender();
 }
 
@@ -140,9 +141,15 @@ function calDayClick(dateStr) {
   const totalItems = dayRdvs.length + dayCollectes.length;
 
   if (totalItems === 0) return;
-  if (totalItems === 1 && dayRdvs.length === 1) { calOpenModal(dayRdvs[0]); return; }
 
-  // Show day detail modal
+  // Single RDV only → open edit modal directly
+  if (dayRdvs.length === 1 && dayCollectes.length === 0) { calOpenModal(dayRdvs[0]); return; }
+
+  // Everything else → show day detail modal
+  showDayModal(dateStr, dayRdvs, dayCollectes);
+}
+
+function showDayModal(dateStr, dayRdvs, dayCollectes) {
   const d = new Date(dateStr + 'T00:00:00');
   const dateLabel = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   document.getElementById('cal-day-title').textContent = dateLabel;
@@ -165,38 +172,39 @@ function calDayClick(dateStr) {
 
   // Collectes
   if (dayCollectes.length > 0) {
-    html += `<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">Collectes (${dayCollectes.length})</div>`;
+    html += '<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">Collectes (' + dayCollectes.length + ')</div>';
     dayCollectes.forEach(c => {
       const locked = c.statut !== 'brouillon';
       const style = collecteStatusColors[c.statut] || '';
       const rdvCount = c.rdvs ? c.rdvs.length : 0;
-      html += `
-        <div class="cal-day-rdv-item" style="${locked ? 'opacity:0.8;' : ''}">
-          <div class="cal-day-rdv-left">
-            <div class="cal-day-rdv-prospect">${(c.ca/1e6).toFixed(1)}M FCFA — ${c.offres} offres — ${c.bc} BC — ${rdvCount} RDV</div>
-            <div class="cal-day-rdv-montant">${locked ? 'Validée — lecture seule' : 'Brouillon — modifiable'}</div>
-          </div>
-          <span class="cal-day-rdv-statut" style="${style}">${c.statut}</span>
-        </div>`;
+      html += '<div class="cal-day-rdv-item" style="' + (locked ? 'opacity:0.8;' : '') + '">';
+      html += '<div class="cal-day-rdv-left">';
+      html += '<div class="cal-day-rdv-prospect">' + (c.ca / 1e6).toFixed(1) + 'M FCFA &mdash; ' + c.offres + ' offres &mdash; ' + c.bc + ' BC &mdash; ' + rdvCount + ' RDV</div>';
+      html += '<div class="cal-day-rdv-montant">' + (locked ? 'Valid&eacute;e &mdash; lecture seule' : 'Brouillon &mdash; modifiable') + '</div>';
+      html += '</div>';
+      html += '<span class="cal-day-rdv-statut" style="' + style + '">' + c.statut + '</span>';
+      html += '</div>';
     });
   }
 
   // RDVs
   if (dayRdvs.length > 0) {
     if (dayCollectes.length > 0) html += '<div style="height:12px;"></div>';
-    html += `<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">RDVs (${dayRdvs.length})</div>`;
+    html += '<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">RDVs (' + dayRdvs.length + ')</div>';
     dayRdvs.forEach(r => {
       const style = statusColors[r.statut] || '';
-      html += `
-        <div class="cal-day-rdv-item" onclick="calCloseDayModal();calOpenModal(${JSON.stringify(r).replace(/"/g, '&quot;')})">
-          <div class="cal-day-rdv-left">
-            <div class="cal-day-rdv-prospect">${r.prospect}</div>
-            <div class="cal-day-rdv-montant">${r.montant} M FCFA</div>
-          </div>
-          <span class="cal-day-rdv-statut" style="${style}">${r.statut}</span>
-        </div>`;
+      const rdvJson = JSON.stringify(r).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+      html += '<div class="cal-day-rdv-item" onclick="calCloseDayModal();calOpenModal(JSON.parse(\'' + rdvJson + '\'))">';
+      html += '<div class="cal-day-rdv-left">';
+      html += '<div class="cal-day-rdv-prospect">' + r.prospect + '</div>';
+      html += '<div class="cal-day-rdv-montant">' + r.montant + ' M FCFA</div>';
+      html += '</div>';
+      html += '<span class="cal-day-rdv-statut" style="' + style + '">' + r.statut + '</span>';
+      html += '</div>';
     });
   }
+
+  if (!html) html = '<div class="cal-empty">Aucune donn&eacute;e pour ce jour</div>';
 
   document.getElementById('cal-day-body').innerHTML = html;
   document.getElementById('cal-day-modal').style.display = 'flex';
