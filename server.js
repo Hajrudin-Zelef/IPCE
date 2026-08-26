@@ -146,6 +146,6 @@ const createAIRouter = require('./routes/ai');
 app.use('/api/ai', createAIRouter(db, broadcastNotification));
 
 const PORT = process.env.PORT || 4600;
-server.listen(PORT, () => {
-  console.log(`🚀 IPCE Dashboard running on port ${PORT} (HTTP + WebSocket + AI via websearch_agent)`);
+server.listen(PORT, '127.0.0.1', () => {
+  console.log(`🚀 IPCE Dashboard running on 127.0.0.1:${PORT} (localhost only)`);
 });
