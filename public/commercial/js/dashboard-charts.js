@@ -41,7 +41,7 @@ function renderCharts(collectes) {
       maintainAspectRatio: false,
       animation: { duration: 1200, easing: 'easeOutQuart' },
       plugins: {
-        title: { display: true, text: '\u00c9volution du CA', font: { size: 14, weight: '600' }, color: '#333' },
+        title: { display: true, text: 'Évolution du CA', font: { size: 14, weight: '600' }, color: '#333' },
         legend: { display: false },
         tooltip: {
           backgroundColor: 'rgba(30,60,114,0.9)',
@@ -108,9 +108,9 @@ function renderCharts(collectes) {
 
   // --- Offres Donut ---
   if (chartOffres) chartOffres.destroy();
-  chartOffres = makeDonut('ch-offres', 'Offres \u00e9mises', totalOffres, 'rgba(118,75,162,0.85)', '#764ba2', totalOffres + ' offres');
+  chartOffres = makeDonut('ch-offres', 'Offres émises', totalOffres, 'rgba(118,75,162,0.85)', '#764ba2', totalOffres + ' offres');
 
   // --- BC Donut ---
   if (chartBC) chartBC.destroy();
-  chartBC = makeDonut('ch-bc', 'BC sign\u00e9s', totalBC, 'rgba(16,185,129,0.85)', '#10b981', totalBC + ' BC');
+  chartBC = makeDonut('ch-bc', 'BC signés', totalBC, 'rgba(16,185,129,0.85)', '#10b981', totalBC + ' BC');
 }

@@ -242,7 +242,7 @@ function showCollecteDetail(c) {
   }
 
   if (c.rdvs && c.rdvs.length > 0) {
-    html += '<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">RDVs associ\u00e9s (' + c.rdvs.length + ')</div>';
+    html += '<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">RDVs associés (' + c.rdvs.length + ')</div>';
     c.rdvs.forEach(r => {
       html += '<div class="cal-day-rdv-item" style="cursor:pointer;" onclick="document.getElementById(\'cal-collecte-modal\').style.display=\'none\';calOpenModal(' + JSON.stringify(r).replace(/"/g, '&quot;') + ')">';
       html += '<div class="cal-day-rdv-left">';
@@ -253,7 +253,7 @@ function showCollecteDetail(c) {
       html += '</div>';
     });
   } else {
-    html += '<div class="cal-empty">Aucun RDV associ\u00e9</div>';
+    html += '<div class="cal-empty">Aucun RDV associé</div>';
   }
 
   document.getElementById('cal-collecte-body').innerHTML = html;
@@ -297,7 +297,7 @@ async function calSaveStatut() {
     if (res.status === 401) { window.location.href = '/'; return; }
     const data = await res.json();
     if (!res.ok) { showToast(data.error, 'error'); return; }
-    showToast('Statut mis \u00e0 jour', 'success');
+    showToast('Statut mis à jour', 'success');
     calCloseModal();
     calLoadRdvs();
   } catch { showToast('Erreur serveur', 'error'); }
@@ -305,13 +305,13 @@ async function calSaveStatut() {
 
 async function calDeleteRdv() {
   if (!calSelectedRdv) return;
-  if (!confirm(`Supprimer le RDV \u00ab ${calSelectedRdv.prospect} \u00bb ?`)) return;
+  if (!confirm(`Supprimer le RDV « ${calSelectedRdv.prospect} » ?`)) return;
   try {
     const res = await api('DELETE', `/api/collectes/rdvs/${calSelectedRdv.id}`);
     if (res.status === 401) { window.location.href = '/'; return; }
     const data = await res.json();
     if (!res.ok) { showToast(data.error, 'error'); return; }
-    showToast('RDV supprim\u00e9', 'success');
+    showToast('RDV supprimé', 'success');
     calCloseModal();
     calLoadRdvs();
   } catch { showToast('Erreur serveur', 'error'); }

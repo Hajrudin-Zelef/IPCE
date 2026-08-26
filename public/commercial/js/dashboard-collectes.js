@@ -33,28 +33,28 @@ function addRdv() {
   document.getElementById('rdv-prospect').value = '';
   document.getElementById('rdv-montant').value = '';
   document.getElementById('rdv-prospect').focus();
-  showToast('RDV ajout\u00e9 : ' + prospect, 'success');
+  showToast('RDV ajouté : ' + prospect, 'success');
 }
 
 function removeRdv(i) {
   var name = currentRdvs[i] ? currentRdvs[i].prospect : '';
   currentRdvs.splice(i, 1);
   renderRdvs();
-  showToast('RDV supprim\u00e9 : ' + name, 'info');
+  showToast('RDV supprimé : ' + name, 'info');
 }
 
 function renderRdvs() {
   var el = document.getElementById('rdv-list');
   updateRdvCounter();
   if (currentRdvs.length === 0) {
-    el.innerHTML = '<div class="rdv-empty">Aucun RDV ajout\u00e9</div>';
+    el.innerHTML = '<div class="rdv-empty">Aucun RDV ajouté</div>';
     return;
   }
   var statusColors = {
-    '\u00c9t\u00e9': '#3b82f6',
-    'R\u00e9alis\u00e9': '#10b981',
+    'Été': '#3b82f6',
+    'Réalisé': '#10b981',
     'Offre': '#f59e0b',
-    'BC Sign\u00e9': '#8b5cf6',
+    'BC Signé': '#8b5cf6',
   };
   el.innerHTML = currentRdvs.map(function(r, i) {
     var dotColor = statusColors[r.statut] || '#94a3b8';
@@ -65,7 +65,7 @@ function renderRdvs() {
       + ' <span style="color:var(--muted)">&middot;</span> ' + r.montant + 'M'
       + ' <span style="color:' + dotColor + ';font-weight:600;margin-left:4px;">' + r.statut + '</span>'
       + '</div>'
-      + '<button class="btn btn-danger btn-sm" onclick="removeRdv(' + i + ')">\u2715</button>'
+      + '<button class="btn btn-danger btn-sm" onclick="removeRdv(' + i + ')">✕</button>'
       + '</div>';
   }).join('');
 }
@@ -76,14 +76,14 @@ async function saveCollecte() {
   var offres = parseInt(document.getElementById('inp-offres').value) || 0;
   var bc = parseInt(document.getElementById('inp-bc').value) || 0;
   if (ca === 0 && offres === 0 && bc === 0 && currentRdvs.length === 0) {
-    return showToast('Saisissez au moins une donn\u00e9e', 'warning');
+    return showToast('Saisissez au moins une donnée', 'warning');
   }
   try {
     var res = await api('POST', '/api/collectes', { ca: ca, offres: offres, bc: bc, rdvs: currentRdvs });
     if (res.status === 401) { window.location.href = '/'; return; }
     var data = await res.json();
     if (!res.ok) return showToast(data.error, 'error');
-    showToast('Collecte sauvegard\u00e9e !', 'success');
+    showToast('Collecte sauvegardée !', 'success');
     resetForm();
     loadHistory();
     calLoadRdvs();
@@ -95,7 +95,7 @@ async function validateCollecte() {
   var offres = parseInt(document.getElementById('inp-offres').value) || 0;
   var bc = parseInt(document.getElementById('inp-bc').value) || 0;
   if (currentRdvs.length === 0 && ca === 0 && offres === 0 && bc === 0) {
-    return showToast('Saisissez au moins des donn\u00e9es', 'warning');
+    return showToast('Saisissez au moins des données', 'warning');
   }
   try {
     var saveRes = await api('POST', '/api/collectes', { ca: ca, offres: offres, bc: bc, rdvs: currentRdvs });
@@ -105,7 +105,7 @@ async function validateCollecte() {
     var valRes = await api('PATCH', '/api/collectes/' + saveData.id + '/validate');
     var valData = await valRes.json();
     if (!valRes.ok) return showToast(valData.error, 'error');
-    showToast('Collecte valid\u00e9e ! L\'admin a \u00e9t\u00e9 notifi\u00e9.', 'success');
+    showToast('Collecte validée ! L\'admin a été notifié.', 'success');
     resetForm();
     loadHistory();
     calLoadRdvs();

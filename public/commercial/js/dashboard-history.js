@@ -68,7 +68,7 @@ function viewCollecte(id) {
       html += '</div></div>';
     });
   } else {
-    html += '<div class="cal-empty">Aucun RDV associ\u00e9</div>';
+    html += '<div class="cal-empty">Aucun RDV associé</div>';
   }
 
   document.getElementById('cal-collecte-body').innerHTML = html;
@@ -99,7 +99,7 @@ function editCollecte(id) {
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">';
   html += '<div class="form-group"><label>Montant (M)</label><input type="number" id="edit-rdv-montant" min="0" placeholder="0"></div>';
   html += '<div class="form-group"><label>Statut</label>';
-  html += '<select id="edit-rdv-statut"><option>Pr\u00e9vu</option><option>R\u00e9alis\u00e9</option><option>Offre</option><option>BC Sign\u00e9</option></select>';
+  html += '<select id="edit-rdv-statut"><option>Prévu</option><option>Réalisé</option><option>Offre</option><option>BC Signé</option></select>';
   html += '</div></div>';
   html += '<button type="button" class="btn btn-primary btn-sm" onclick="addRdvToEdit()" style="margin-bottom:12px;">+ Ajouter RDV</button>';
 
@@ -156,7 +156,7 @@ async function saveCollecteEdit(id, e) {
     const data = await res.json();
     if (!res.ok) { showToast(data.error, 'error'); return; }
     document.getElementById('cal-collecte-modal').style.display = 'none';
-    showToast('Collecte mise \u00e0 jour !', 'success');
+    showToast('Collecte mise à jour !', 'success');
     loadHistory();
     calLoadRdvs();
   } catch { showToast('Erreur serveur', 'error'); }
@@ -169,7 +169,7 @@ async function deleteCollecte(id) {
     if (res.status === 401) { window.location.href = '/'; return; }
     const data = await res.json();
     if (!res.ok) { showToast(data.error, 'error'); return; }
-    showToast('Collecte supprim\u00e9e !', 'success');
+    showToast('Collecte supprimée !', 'success');
     loadHistory();
     calLoadRdvs();
   } catch { showToast('Erreur serveur', 'error'); }
