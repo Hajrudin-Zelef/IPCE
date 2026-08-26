@@ -41,14 +41,18 @@ async function checkAuth() {
     var dateEl = document.getElementById('header-date');
     if (dateEl) dateEl.textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    // Move notification bell into content header
+    // Move notification bell into content header (AFTER avatar)
     setTimeout(function() {
       var notifWrapper = document.querySelector('.notif-fixed-wrapper');
       var headerRight = document.querySelector('.content-header-right');
       if (notifWrapper && headerRight) {
-        headerRight.insertBefore(notifWrapper, headerRight.firstChild);
+        headerRight.appendChild(notifWrapper);
+        notifWrapper.style.position = 'static';
+        notifWrapper.style.zIndex = 'auto';
+        notifWrapper.style.top = 'auto';
+        notifWrapper.style.right = 'auto';
       }
-    }, 200);
+    }, 300);
 
     // Init sidebar navigation (loads default section)
     if (typeof switchSection === 'function') {

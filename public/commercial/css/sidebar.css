@@ -114,6 +114,17 @@
 }
 .sidebar-toggle:hover { background: var(--bg); border-color: var(--primary); }
 .content-header-right { display: flex; align-items: center; gap: 10px; }
+.content-header-right .notif-fixed-wrapper {
+  position: static !important;
+  z-index: auto !important;
+  top: auto !important;
+  right: auto !important;
+}
+.content-header-right .notif-panel {
+  position: fixed;
+  top: 56px;
+  right: 16px;
+}
 
 /* --- Section --- */
 .dashboard-section { padding: 24px; animation: sectionFadeIn 0.3s ease; }
@@ -163,10 +174,11 @@
   /* Dark toggle */
   .dark-toggle { width: 34px; height: 34px; font-size: 16px; }
 
-  /* Notification bell */
+  /* Notification bell — fit in header */
+  .notif-fixed-wrapper { position: static !important; z-index: auto !important; top: auto !important; right: auto !important; }
   .notif-bell { width: 34px; height: 34px; }
   .notif-bell svg { width: 18px; height: 18px; }
-  .notif-panel { width: calc(100vw - 20px); right: 10px; max-height: 70vh; }
+  .notif-panel { width: calc(100vw - 20px); right: 10px; max-height: 70vh; top: 52px; }
 }
 
 /* --- Mobile (≤480px) --- */
@@ -192,7 +204,8 @@
   .dashboard-section { padding: 12px; }
 
   /* Notification panel → full width */
-  .notif-panel { width: calc(100vw - 16px); right: 8px; left: 8px; max-height: 65vh; }
+  .notif-fixed-wrapper { position: static !important; z-index: auto !important; top: auto !important; right: auto !important; }
+  .notif-panel { width: calc(100vw - 16px); right: 8px; left: 8px; max-height: 65vh; top: 48px; }
   .notif-header { padding: 12px 14px; }
   .notif-filters { padding: 8px 14px; gap: 3px; overflow-x: auto; flex-wrap: nowrap; }
   .notif-filter { padding: 4px 8px; font-size: 10px; white-space: nowrap; }
