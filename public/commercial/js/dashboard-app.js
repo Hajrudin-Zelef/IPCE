@@ -1,6 +1,6 @@
 /* ========================================
    DASHBOARD — App Core
-   Auth, Logout, API Helper, Dark Mode
+   Auth, Avatar, API Helper, Dark Mode
    ======================================== */
 
 let user = null;
@@ -11,6 +11,10 @@ function api(method, url, body) {
   return fetch(url, opts);
 }
 
+function getInitial(name) {
+  return name ? name.charAt(0).toUpperCase() : '?';
+}
+
 async function checkAuth() {
   try {
     const res = await fetch('/api/auth/me', { credentials: 'include' });
@@ -18,7 +22,18 @@ async function checkAuth() {
     const data = await res.json();
     if (data.user.must_change_password) { window.location.href = '/'; return; }
     user = data.user;
-    document.getElementById('user-name').textContent = user.nom;
+
+    // Avatar
+    const initial = getInitial(user.nom);
+    const avatarEl = document.getElementById('user-avatar');
+    const dropdownAvatarEl = document.getElementById('dropdown-avatar');
+    const dropdownNameEl = document.getElementById('dropdown-name');
+    const dropdownRoleEl = document.getElementById('dropdown-role');
+    if (avatarEl) avatarEl.textContent = initial;
+    if (dropdownAvatarEl) dropdownAvatarEl.textContent = initial;
+    if (dropdownNameEl) dropdownNameEl.textContent = user.nom;
+    if (dropdownRoleEl) dropdownRoleEl.textContent = user.role === 'admin' ? 'Administrateur' : 'Commercial';
+
     document.getElementById('date').textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     document.getElementById('loading').style.display = 'none';
     document.getElementById('app').style.display = 'block';
@@ -34,6 +49,25 @@ async function logout() {
   await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
   window.location.href = '/';
 }
+
+// --- User Menu ---
+function toggleUserMenu() {
+  var dd = document.getElementById('user-dropdown');
+  dd.classList.toggle('open');
+}
+
+function closeUserMenu() {
+  var dd = document.getElementById('user-dropdown');
+  dd.classList.remove('open');
+}
+
+document.addEventListener('click', function(e) {
+  var menu = document.querySelector('.user-avatar-menu');
+  var dd = document.getElementById('user-dropdown');
+  if (menu && dd && !menu.contains(e.target)) {
+    dd.classList.remove('open');
+  }
+});
 
 // --- Dark Mode ---
 function initDarkMode() {
