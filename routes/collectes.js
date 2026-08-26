@@ -162,6 +162,41 @@ function createCollectesRouter(db) {
 
   // --- RDV Calendar Endpoints ---
 
+  router.get('/by-date', authenticate, (req, res) => {
+    const { from, to } = req.query;
+    let sql = `
+      SELECT c.id, c.ca, c.offres, c.bc, c.statut, c.created_at,
+        GROUP_CONCAT(
+          json_object('id', r.id, 'prospect', r.prospect, 'date', r.date, 'montant', r.montant, 'statut', r.statut)
+        ) as rdvs_raw
+      FROM collectes c
+      LEFT JOIN rdvs r ON r.collecte_id = c.id
+      WHERE c.user_id = ?
+    `;
+    const params = [req.user.id];
+
+    if (from) {
+      sql += ` AND date(c.created_at) >= ?`;
+      params.push(from);
+    }
+    if (to) {
+      sql += ` AND date(c.created_at) <= ?`;
+      params.push(to);
+    }
+
+    sql += ` GROUP BY c.id ORDER BY c.created_at DESC`;
+    const collectes = db.prepare(sql).all(...params);
+
+    const result = collectes.map(c => ({
+      ...c,
+      date: c.created_at.split(' ')[0],
+      rdvs: c.rdvs_raw ? JSON.parse(`[${c.rdvs_raw}]`) : [],
+      rdvs_raw: undefined,
+    }));
+
+    res.json(result);
+  });
+
   router.get('/rdvs', authenticate, (req, res) => {
     const { from, to } = req.query;
     let sql = `

@@ -192,6 +192,10 @@ header p { font-size: 13px; opacity: 0.8; }
 .cal-dot.Realise { background: var(--cal-dot-realise); }
 .cal-dot.Offre { background: var(--cal-dot-offre); }
 .cal-dot.BC\ Signe { background: var(--cal-dot-bc); }
+.cal-dot-brouillon { background: #60a5fa; }
+.cal-dot-validee { background: #f59e0b; }
+.cal-dot-approuvee { background: #34d399; }
+.cal-dot-rejetee { background: #f87171; }
 
 .cal-day-count {
   position: absolute;

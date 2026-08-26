@@ -5,6 +5,7 @@
 let calDate = new Date();
 let calView = 'month';
 let calRdvs = [];
+let calCollectes = [];
 let calSelectedRdv = null;
 
 function calGetMonthRange() {
@@ -17,10 +18,14 @@ function calGetMonthRange() {
 async function calLoadRdvs() {
   const { from, to } = calGetMonthRange();
   try {
-    const res = await api('GET', `/api/collectes/rdvs?from=${from}&to=${to}`);
-    if (res.status === 401) { window.location.href = '/'; return; }
-    calRdvs = await res.json();
-  } catch { calRdvs = []; }
+    const [rdvsRes, collectesRes] = await Promise.all([
+      api('GET', `/api/collectes/rdvs?from=${from}&to=${to}`),
+      api('GET', `/api/collectes/by-date?from=${from}&to=${to}`),
+    ]);
+    if (rdvsRes.status === 401 || collectesRes.status === 401) { window.location.href = '/'; return; }
+    calRdvs = await rdvsRes.json();
+    calCollectes = await collectesRes.json();
+  } catch { calRdvs = []; calCollectes = []; }
   calRender();
 }
 
@@ -43,6 +48,12 @@ function calRenderMonth() {
 
   const rdvByDate = {};
   calRdvs.forEach(r => { rdvByDate[r.date] = (rdvByDate[r.date] || []).concat(r); });
+
+  const collecteByDate = {};
+  calCollectes.forEach(c => {
+    if (!collecteByDate[c.date]) collecteByDate[c.date] = [];
+    collecteByDate[c.date].push(c);
+  });
 
   const headers = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
   let html = '<div class="cal-grid">';
@@ -72,16 +83,22 @@ function calRenderMonth() {
     }
     const isToday = dateStr === todayStr;
     const dayRdvs = rdvByDate[dateStr] || [];
+    const dayCollectes = collecteByDate[dateStr] || [];
+    const totalItems = dayRdvs.length + dayCollectes.length;
     let cls = 'cal-day';
     if (isOther) cls += ' other-month';
     if (isToday) cls += ' today';
 
     html += `<div class="${cls}" onclick="calDayClick('${dateStr}')">`;
     html += `<span class="cal-day-num">${dayNum}</span>`;
-    if (dayRdvs.length > 3) {
-      html += `<span class="cal-day-count">${dayRdvs.length}</span>`;
+    if (totalItems > 3) {
+      html += `<span class="cal-day-count">${totalItems}</span>`;
     }
     html += '<div class="cal-dots">';
+    dayCollectes.slice(0, 2).forEach(c => {
+      const sClass = c.statut === 'approuvee' ? 'cal-dot-approuvee' : c.statut === 'validee' ? 'cal-dot-validee' : c.statut === 'rejetee' ? 'cal-dot-rejetee' : 'cal-dot-brouillon';
+      html += `<span class="cal-dot ${sClass}" title="Collecte ${c.statut} — ${(c.ca/1e6).toFixed(1)}M"></span>`;
+    });
     dayRdvs.slice(0, 4).forEach(r => {
       html += `<span class="cal-dot ${r.statut.replace(/ /g, ' ')}" title="${r.prospect} — ${r.statut}"></span>`;
     });
@@ -119,10 +136,13 @@ function calRenderTimeline() {
 
 function calDayClick(dateStr) {
   const dayRdvs = calRdvs.filter(r => r.date === dateStr);
-  if (dayRdvs.length === 0) return;
-  if (dayRdvs.length === 1) { calOpenModal(dayRdvs[0]); return; }
+  const dayCollectes = calCollectes.filter(c => c.date === dateStr);
+  const totalItems = dayRdvs.length + dayCollectes.length;
 
-  // Multiple RDVs — show day detail modal
+  if (totalItems === 0) return;
+  if (totalItems === 1 && dayRdvs.length === 1) { calOpenModal(dayRdvs[0]); return; }
+
+  // Show day detail modal
   const d = new Date(dateStr + 'T00:00:00');
   const dateLabel = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   document.getElementById('cal-day-title').textContent = dateLabel;
@@ -134,18 +154,49 @@ function calDayClick(dateStr) {
     'BC Signe': 'background:rgba(156,39,176,0.15);color:#9c27b0',
   };
 
-  let html = `<div style="font-size:12px;color:var(--muted);margin-bottom:12px;">${dayRdvs.length} RDV ce jour</div>`;
-  dayRdvs.forEach(r => {
-    const style = statusColors[r.statut] || '';
-    html += `
-      <div class="cal-day-rdv-item" onclick="calCloseDayModal();calOpenModal(${JSON.stringify(r).replace(/"/g, '&quot;')})">
-        <div class="cal-day-rdv-left">
-          <div class="cal-day-rdv-prospect">${r.prospect}</div>
-          <div class="cal-day-rdv-montant">${r.montant} M FCFA</div>
-        </div>
-        <span class="cal-day-rdv-statut" style="${style}">${r.statut}</span>
-      </div>`;
-  });
+  const collecteStatusColors = {
+    'brouillon': 'var(--status-brouillon-bg);color:var(--status-brouillon-text)',
+    'validee': 'var(--status-validee-bg);color:var(--status-validee-text)',
+    'approuvee': 'var(--status-approuvee-bg);color:var(--status-approuvee-text)',
+    'rejetee': 'var(--status-rejetee-bg);color:var(--status-rejetee-text)',
+  };
+
+  let html = '';
+
+  // Collectes
+  if (dayCollectes.length > 0) {
+    html += `<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">Collectes (${dayCollectes.length})</div>`;
+    dayCollectes.forEach(c => {
+      const locked = c.statut !== 'brouillon';
+      const style = collecteStatusColors[c.statut] || '';
+      const rdvCount = c.rdvs ? c.rdvs.length : 0;
+      html += `
+        <div class="cal-day-rdv-item" style="${locked ? 'opacity:0.8;' : ''}">
+          <div class="cal-day-rdv-left">
+            <div class="cal-day-rdv-prospect">${(c.ca/1e6).toFixed(1)}M FCFA — ${c.offres} offres — ${c.bc} BC — ${rdvCount} RDV</div>
+            <div class="cal-day-rdv-montant">${locked ? 'Validée — lecture seule' : 'Brouillon — modifiable'}</div>
+          </div>
+          <span class="cal-day-rdv-statut" style="${style}">${c.statut}</span>
+        </div>`;
+    });
+  }
+
+  // RDVs
+  if (dayRdvs.length > 0) {
+    if (dayCollectes.length > 0) html += '<div style="height:12px;"></div>';
+    html += `<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">RDVs (${dayRdvs.length})</div>`;
+    dayRdvs.forEach(r => {
+      const style = statusColors[r.statut] || '';
+      html += `
+        <div class="cal-day-rdv-item" onclick="calCloseDayModal();calOpenModal(${JSON.stringify(r).replace(/"/g, '&quot;')})">
+          <div class="cal-day-rdv-left">
+            <div class="cal-day-rdv-prospect">${r.prospect}</div>
+            <div class="cal-day-rdv-montant">${r.montant} M FCFA</div>
+          </div>
+          <span class="cal-day-rdv-statut" style="${style}">${r.statut}</span>
+        </div>`;
+    });
+  }
 
   document.getElementById('cal-day-body').innerHTML = html;
   document.getElementById('cal-day-modal').style.display = 'flex';
