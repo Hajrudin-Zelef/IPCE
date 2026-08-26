@@ -1,0 +1,24 @@
+{
+  "name": "IPCE Dashboard — Pilotage Commercial",
+  "short_name": "IPCE",
+  "description": "Dashboard de pilotage commercial IPCE",
+  "start_url": "/dashboard.html",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#1e3c72",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/admin/img/logo-ipce-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/admin/img/logo-ipce-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

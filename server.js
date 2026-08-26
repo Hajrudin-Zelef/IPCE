@@ -1,8 +1,11 @@
 require('dotenv').config();
 
+const http = require('http');
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const jwt = require('jsonwebtoken');
+const { WebSocketServer } = require('ws');
 const { initDB } = require('./db/init');
 
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 16) {
@@ -13,6 +16,7 @@ if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 16) {
 const db = initDB();
 
 const app = express();
+const server = http.createServer(app);
 
 app.use(cors({
   origin: true,
@@ -72,7 +76,72 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// --- WebSocket Server ---
+function parseCookieToken(req) {
+  const cookies = {};
+  const header = req.headers.cookie;
+  if (!header) return null;
+  header.split(';').forEach(c => {
+    const [key, ...val] = c.split('=');
+    cookies[key.trim()] = val.join('=').trim();
+  });
+  return cookies.token || null;
+}
+
+const wss = new WebSocketServer({ server, path: '/ws' });
+
+wss.on('connection', (ws, req) => {
+  const token = parseCookieToken(req);
+  if (!token) {
+    ws.close(1008, 'Non authentifié');
+    return;
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    ws.userId = decoded.id;
+    ws.userRole = decoded.role;
+    ws.isAlive = true;
+  } catch {
+    ws.close(1008, 'Session expirée');
+    return;
+  }
+
+  ws.on('pong', () => { ws.isAlive = true; });
+  ws.on('close', () => { ws.isAlive = false; });
+});
+
+// Heartbeat — clean dead connections
+setInterval(() => {
+  wss.clients.forEach(ws => {
+    if (!ws.isAlive) return ws.terminate();
+    ws.isAlive = false;
+    ws.ping();
+  });
+}, 30000);
+
+// Broadcast function — exposed to routes
+function broadcastNotification(data) {
+  const payload = JSON.stringify(data);
+  wss.clients.forEach(client => {
+    if (client.readyState === 1 && client.userRole === 'admin') {
+      client.send(payload);
+    }
+  });
+}
+
+function broadcastToUser(userId, data) {
+  const payload = JSON.stringify(data);
+  wss.clients.forEach(client => {
+    if (client.readyState === 1 && client.userId === userId) {
+      client.send(payload);
+    }
+  });
+}
+
+app.set('broadcast', broadcastNotification);
+app.set('broadcastToUser', broadcastToUser);
+
 const PORT = process.env.PORT || 4600;
-app.listen(PORT, () => {
-  console.log(`🚀 IPCE Dashboard running on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`🚀 IPCE Dashboard running on port ${PORT} (HTTP + WebSocket)`);
 });

@@ -1,17 +1,19 @@
-(function() {
+(function () {
   let notifications = [];
   let unreadCount = 0;
   let isOpen = false;
-  let pollInterval = null;
   let audioEnabled = true;
+  let ws = null;
+  let reconnectTimer = null;
+  let reconnectDelay = 1000;
 
   const TYPE_CONFIG = {
-    collecte_pending:    { icon: '⏳', color: '#F59E0B', bg: '#FFFBEB' },
-    collecte_approved:   { icon: '✅', color: '#059669', bg: '#ECFDF5' },
-    collecte_rejected:   { icon: '❌', color: '#EF4444', bg: '#FEF2F2' },
-    reminder:            { icon: '🔔', color: '#7C3AED', bg: '#F5F3FF' },
-    system:              { icon: '⚙️', color: '#64748B', bg: '#F8FAFC' },
-    info:                { icon: 'ℹ️', color: '#2563EB', bg: '#EFF6FF' },
+    collecte_pending: { icon: '⏳', color: '#F59E0B', bg: '#FFFBEB' },
+    collecte_approved: { icon: '✅', color: '#059669', bg: '#ECFDF5' },
+    collecte_rejected: { icon: '❌', color: '#EF4444', bg: '#FEF2F2' },
+    reminder: { icon: '🔔', color: '#7C3AED', bg: '#F5F3FF' },
+    system: { icon: '⚙️', color: '#64748B', bg: '#F8FAFC' },
+    info: { icon: 'ℹ️', color: '#2563EB', bg: '#EFF6FF' },
   };
 
   function timeAgo(dateStr) {
@@ -68,19 +70,19 @@
   function renderList(filter) {
     const list = document.getElementById('notif-list');
     if (!list) return;
-
     let filtered = [...notifications];
-    if (filter === 'unread') filtered = filtered.filter(n => !n.is_read);
-    else if (filter !== 'all') filtered = filtered.filter(n => n.type === filter);
+    if (filter === 'unread') filtered = filtered.filter((n) => !n.is_read);
+    else if (filter !== 'all') filtered = filtered.filter((n) => n.type === filter);
 
     if (filtered.length === 0) {
       list.innerHTML = '<div class="notif-empty">Aucune notification</div>';
       return;
     }
 
-    list.innerHTML = filtered.map(n => {
-      const cfg = TYPE_CONFIG[n.type] || TYPE_CONFIG.info;
-      return `
+    list.innerHTML = filtered
+      .map((n) => {
+        const cfg = TYPE_CONFIG[n.type] || TYPE_CONFIG.info;
+        return `
         <div class="notif-item ${n.is_read ? 'read' : 'unread'}" data-id="${n.id}">
           <div class="notif-item-icon" style="background:${cfg.bg}; color:${cfg.color};">${cfg.icon}</div>
           <div class="notif-item-content">
@@ -92,16 +94,21 @@
             ${n.link ? `<a class="notif-item-link" href="${n.link}">Voir</a>` : ''}
           </div>
           <div class="notif-item-actions">
-            ${!n.is_read ? `<button class="notif-item-btn" data-action="read" data-id="${n.id}" title="Marquer comme lu">
+            ${
+              !n.is_read
+                ? `<button class="notif-item-btn" data-action="read" data-id="${n.id}" title="Marquer comme lu">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-            </button>` : ''}
+            </button>`
+                : ''
+            }
             <button class="notif-item-btn danger" data-action="delete" data-id="${n.id}" title="Supprimer">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
         </div>
       `;
-    }).join('');
+      })
+      .join('');
   }
 
   function updateBadge() {
@@ -121,22 +128,10 @@
       const res = await fetch('/api/admin/notifications', { credentials: 'include' });
       if (!res.ok) return;
       notifications = await res.json();
-      unreadCount = notifications.filter(n => !n.is_read).length;
+      unreadCount = notifications.filter((n) => !n.is_read).length;
       updateBadge();
       const activeFilter = document.querySelector('.notif-filter.active');
       renderList(activeFilter ? activeFilter.dataset.filter : 'all');
-    } catch {}
-  }
-
-  async function fetchUnreadCount() {
-    try {
-      const res = await fetch('/api/admin/notifications/unread-count', { credentials: 'include' });
-      if (!res.ok) return;
-      const data = await res.json();
-      const prev = unreadCount;
-      unreadCount = data.count;
-      updateBadge();
-      if (data.count > prev && audioEnabled) playNotifSound();
     } catch {}
   }
 
@@ -158,8 +153,11 @@
 
   async function markAsRead(id) {
     await fetch(`/api/admin/notifications/${id}/read`, { method: 'PATCH', credentials: 'include' });
-    const n = notifications.find(n => n.id === id);
-    if (n && !n.is_read) { n.is_read = 1; unreadCount = Math.max(0, unreadCount - 1); }
+    const n = notifications.find((n) => n.id === id);
+    if (n && !n.is_read) {
+      n.is_read = 1;
+      unreadCount = Math.max(0, unreadCount - 1);
+    }
     updateBadge();
     const activeFilter = document.querySelector('.notif-filter.active');
     renderList(activeFilter ? activeFilter.dataset.filter : 'all');
@@ -167,7 +165,7 @@
 
   async function markAllRead() {
     await fetch('/api/admin/notifications/read-all', { method: 'PATCH', credentials: 'include' });
-    notifications.forEach(n => n.is_read = 1);
+    notifications.forEach((n) => (n.is_read = 1));
     unreadCount = 0;
     updateBadge();
     const activeFilter = document.querySelector('.notif-filter.active');
@@ -176,7 +174,7 @@
 
   async function deleteNotif(id) {
     await fetch(`/api/admin/notifications/${id}`, { method: 'DELETE', credentials: 'include' });
-    const idx = notifications.findIndex(n => n.id === id);
+    const idx = notifications.findIndex((n) => n.id === id);
     if (idx !== -1) {
       if (!notifications[idx].is_read) unreadCount = Math.max(0, unreadCount - 1);
       notifications.splice(idx, 1);
@@ -193,6 +191,51 @@
     unreadCount = 0;
     updateBadge();
     renderList('all');
+  }
+
+  // --- WebSocket ---
+  function connectWS() {
+    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    ws = new WebSocket(`${protocol}//${location.host}/ws`);
+
+    ws.onopen = () => {
+      reconnectDelay = 1000;
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'new_notification') {
+          fetchNotifications();
+          if (audioEnabled) playNotifSound();
+        } else if (data.type === 'notification_read') {
+          const n = notifications.find((n) => n.id === data.id);
+          if (n && !n.is_read) {
+            n.is_read = 1;
+            unreadCount = Math.max(0, unreadCount - 1);
+            updateBadge();
+            const activeFilter = document.querySelector('.notif-filter.active');
+            renderList(activeFilter ? activeFilter.dataset.filter : 'all');
+          }
+        } else if (data.type === 'notifications_cleared') {
+          notifications = [];
+          unreadCount = 0;
+          updateBadge();
+          renderList('all');
+        }
+      } catch {}
+    };
+
+    ws.onclose = () => {
+      reconnectTimer = setTimeout(() => {
+        reconnectDelay = Math.min(reconnectDelay * 2, 30000);
+        connectWS();
+      }, reconnectDelay);
+    };
+
+    ws.onerror = () => {
+      ws.close();
+    };
   }
 
   function togglePanel() {
@@ -219,18 +262,20 @@
   }
 
   function bindEvents() {
-    document.addEventListener('click', e => {
+    document.addEventListener('click', (e) => {
       const bell = e.target.closest('#notif-bell');
-      if (bell) { e.stopPropagation(); togglePanel(); return; }
-
+      if (bell) {
+        e.stopPropagation();
+        togglePanel();
+        return;
+      }
       const filterBtn = e.target.closest('.notif-filter');
       if (filterBtn) {
-        document.querySelectorAll('.notif-filter').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.notif-filter').forEach((b) => b.classList.remove('active'));
         filterBtn.classList.add('active');
         renderList(filterBtn.dataset.filter);
         return;
       }
-
       const actionBtn = e.target.closest('[data-action]');
       if (actionBtn) {
         const action = actionBtn.dataset.action;
@@ -239,26 +284,31 @@
         else if (action === 'delete') deleteNotif(id);
         return;
       }
-
       const markAllBtn = e.target.closest('#notif-mark-all');
-      if (markAllBtn) { markAllRead(); return; }
-
+      if (markAllBtn) {
+        markAllRead();
+        return;
+      }
       const clearAllBtn = e.target.closest('#notif-clear-all');
-      if (clearAllBtn) { clearAll(); return; }
-
+      if (clearAllBtn) {
+        clearAll();
+        return;
+      }
       const soundBtn = e.target.closest('#notif-sound-toggle');
       if (soundBtn) {
         audioEnabled = !audioEnabled;
         soundBtn.style.opacity = audioEnabled ? '1' : '0.4';
         return;
       }
-
       const item = e.target.closest('.notif-item');
       if (item) {
         const id = parseInt(item.dataset.id);
-        const n = notifications.find(n => n.id === id);
+        const n = notifications.find((n) => n.id === id);
         if (n && !n.is_read) markAsRead(id);
-        if (n && n.link) { isOpen = false; document.getElementById('notif-panel').style.display = 'none'; }
+        if (n && n.link) {
+          isOpen = false;
+          document.getElementById('notif-panel').style.display = 'none';
+        }
       }
     });
   }
@@ -375,16 +425,12 @@
 
     bindEvents();
     fetchNotifications();
-
-    // Poll every 15 seconds
-    pollInterval = setInterval(fetchUnreadCount, 15000);
+    connectWS();
   }
 
-  // Expose for other modules
   window.__notifRefresh = fetchNotifications;
   window.__notifCount = () => unreadCount;
 
-  // Init when DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

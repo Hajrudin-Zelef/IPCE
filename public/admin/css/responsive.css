@@ -1,6 +1,49 @@
+/* ========================================
+   ULTRA RESPONSIVE — IPCE Admin Dashboard
+   Breakpoints: 1200px / 1024px / 768px / 640px / 480px / 360px
+   ======================================== */
+
+/* --- 1200px: Large screens →优化 --- */
+@media (max-width: 1200px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .charts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .section-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* --- 1024px: Tablet landscape → sidebar collapses --- */
 @media (max-width: 1024px) {
+  .dashboard-header {
+    padding: 20px 24px;
+    min-height: auto;
+  }
+
+  .header-title {
+    font-size: 20px;
+  }
+
+  .header-date {
+    display: none;
+  }
+
+  .header-status {
+    display: none;
+  }
+
   .kpi-section {
     grid-template-columns: 1fr;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 
   .detail-panel {
@@ -35,23 +78,97 @@
     display: flex;
   }
 
-  .dashboard-header {
-    padding: 20px 24px;
-  }
-
-  .header-title {
-    font-size: 20px;
-  }
-
-  .header-date {
-    display: none;
-  }
-
   .insights-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Settings sidebar → horizontal tabs */
+  .settings-layout {
+    flex-direction: column;
+    margin: -16px;
+  }
+
+  .settings-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    overflow-x: auto;
+    padding: 0;
+  }
+
+  .settings-sidebar-header {
+    display: none;
+  }
+
+  .settings-nav-item {
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    padding: 12px 16px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .settings-nav-item.active {
+    border-bottom-color: var(--primary);
+    border-left-color: transparent;
+  }
+
+  .settings-nav-badge {
+    display: none;
+  }
+
+  /* Docs sidebar → horizontal tabs */
+  .docs-layout {
+    flex-direction: column;
+    margin: -16px;
+  }
+
+  .docs-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    overflow-x: auto;
+    padding: 0;
+  }
+
+  .docs-sidebar-header {
+    display: none;
+  }
+
+  .docs-sidebar-group {
+    display: flex;
+    padding: 0;
+    gap: 0;
+  }
+
+  .docs-sidebar-group-title {
+    display: none;
+  }
+
+  .docs-sidebar-item {
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    padding: 12px 16px;
+    white-space: nowrap;
+  }
+
+  .docs-sidebar-item.active {
+    border-bottom-color: var(--primary);
+    border-left-color: transparent;
+  }
+
+  .docs-main {
+    padding: 24px 28px;
+  }
 }
 
+/* --- 768px: Tablet portrait → stack everything --- */
 @media (max-width: 768px) {
   .dashboard-header {
     flex-direction: column;
@@ -59,6 +176,7 @@
     gap: 16px;
     border-radius: var(--radius-lg);
     padding: 20px;
+    min-height: auto;
   }
 
   .header-right {
@@ -66,8 +184,17 @@
     justify-content: space-between;
   }
 
+  .btn-export-main span:not(.export-dropdown-icon) {
+    display: none;
+  }
+
   .kpi-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .kpi-card {
+    padding: 18px;
   }
 
   .kpi-value {
@@ -101,24 +228,224 @@
     align-items: flex-start;
     gap: 8px;
   }
+
+  .section-grid-2,
+  .section-grid-3,
+  .section-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Tables → horizontal scroll */
+  .section-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+
+  .section-table {
+    min-width: 600px;
+  }
+
+  /* Modals → full width */
+  .modal-content,
+  .settings-modal {
+    width: calc(100% - 32px);
+    max-width: none;
+    margin: 16px;
+    max-height: calc(100vh - 32px);
+  }
+
+  .docs-main {
+    padding: 20px 16px;
+  }
+
+  .settings-main {
+    padding: 20px 16px;
+  }
+
+  /* Notification panel → full width on mobile */
+  .notif-panel {
+    width: calc(100vw - 20px);
+    right: 10px;
+    max-height: 70vh;
+  }
+
+  /* Export dropdown → full width */
+  .export-dropdown {
+    right: 0;
+    left: auto;
+    width: 220px;
+  }
 }
 
-@media (max-width: 480px) {
+/* --- 640px: Mobile landscape → compact --- */
+@media (max-width: 640px) {
+  .container {
+    padding: 12px !important;
+  }
+
+  .dashboard-header {
+    padding: 16px;
+    border-radius: var(--radius-md);
+  }
+
+  .header-title {
+    font-size: 18px;
+  }
+
+  .header-subtitle {
+    font-size: 12px;
+  }
+
   .header-right {
-    flex-wrap: wrap;
     gap: 12px;
   }
 
   .kpi-card {
-    padding: 18px;
+    padding: 16px;
   }
 
   .kpi-value {
     font-size: 24px;
   }
 
+  .kpi-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .kpi-label {
+    font-size: 10px;
+  }
+
+  .kpi-donut {
+    width: 60px;
+    height: 60px;
+  }
+
+  .kpi-donut svg {
+    width: 60px;
+    height: 60px;
+  }
+
+  .section-title {
+    font-size: 18px !important;
+  }
+
+  .section-header {
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+
+  .section-card {
+    padding: 16px;
+    border-radius: var(--radius-md);
+  }
+
+  /* Leaderboard */
+  .leader-card {
+    padding: 14px;
+  }
+
+  .leader-name {
+    font-size: 13px;
+  }
+
+  .leader-metrics {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* Validation */
+  .validation-card {
+    padding: 14px;
+  }
+
+  /* Charts */
+  .chart-card {
+    padding: 16px;
+  }
+
+  .chart-title {
+    font-size: 13px;
+  }
+
+  /* Settings */
+  .settings-card {
+    padding: 16px;
+  }
+
+  .settings-field input,
+  .settings-field select {
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+
+  /* Sidebar full width on small screens */
+  .sidebar {
+    width: 100%;
+  }
+
+  .sidebar-overlay.visible {
+    background: rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* --- 480px: Mobile portrait → minimal --- */
+@media (max-width: 480px) {
+  .container {
+    padding: 8px !important;
+  }
+
+  .dashboard-header {
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  .header-title {
+    font-size: 16px;
+  }
+
+  .header-right {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .btn-export-main {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .btn-export-main svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .kpi-card {
+    padding: 14px;
+    border-radius: var(--radius-lg);
+  }
+
+  .kpi-value {
+    font-size: 22px;
+  }
+
+  .kpi-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .kpi-progress {
+    width: 100%;
+    margin-right: 0;
+  }
+
   .inbox-metrics {
     grid-template-columns: 1fr 1fr;
+    gap: 8px;
   }
 
   .leader-metrics {
@@ -126,10 +453,338 @@
   }
 
   .leader-card {
-    padding: 18px;
+    padding: 12px;
   }
 
-  .detail-panel {
+  .section-card {
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+
+  .section-filters {
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .section-filter {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  /* Settings */
+  .settings-card {
+    padding: 14px;
+    border-radius: var(--radius-md);
+  }
+
+  .settings-card-title {
+    font-size: 13px;
+  }
+
+  .settings-field-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .settings-actions {
+    flex-direction: column;
+  }
+
+  .settings-btn {
     width: 100%;
+    justify-content: center;
+  }
+
+  /* Docs */
+  .docs-content-inner {
+    font-size: 14px;
+  }
+
+  .docs-content-inner h1 {
+    font-size: 24px;
+  }
+
+  .docs-content-inner h2 {
+    font-size: 18px;
+  }
+
+  .docs-content-inner pre code {
+    font-size: 12px;
+    padding: 12px;
+  }
+
+  /* Calendar */
+  .cal-grid {
+    font-size: 10px;
+  }
+
+  .cal-day {
+    min-height: 60px;
+    padding: 2px;
+  }
+
+  .cal-day-num {
+    font-size: 10px;
+  }
+
+  .cal-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .cal-timeline-item {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .cal-timeline-date {
+    font-size: 11px;
+    min-width: 60px;
+  }
+
+  .cal-timeline-prospect {
+    font-size: 12px;
+  }
+
+  .cal-modal {
+    width: calc(100% - 24px);
+    margin: 12px;
+  }
+
+  /* Notification panel */
+  .notif-panel {
+    width: calc(100vw - 16px);
+    right: 8px;
+    top: 56px;
+    max-height: 65vh;
+  }
+
+  .notif-item {
+    padding: 12px 14px;
+  }
+
+  .notif-item-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .notif-item-title {
+    font-size: 12px;
+  }
+
+  .notif-item-message {
+    font-size: 11px;
+  }
+
+  /* Hamburger → better touch target */
+  .sidebar-hamburger {
+    width: 48px;
+    height: 48px;
+    top: 12px;
+    left: 12px;
+  }
+}
+
+/* --- 360px: Small phones → ultra compact --- */
+@media (max-width: 360px) {
+  .container {
+    padding: 6px !important;
+  }
+
+  .dashboard-header {
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  .header-title {
+    font-size: 15px;
+  }
+
+  .kpi-card {
+    padding: 12px;
+  }
+
+  .kpi-value {
+    font-size: 20px;
+  }
+
+  .kpi-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .kpi-label {
+    font-size: 9px;
+  }
+
+  .section-title {
+    font-size: 16px !important;
+  }
+
+  .cal-day {
+    min-height: 50px;
+  }
+
+  .cal-header-cell {
+    font-size: 9px;
+    padding: 4px 2px;
+  }
+}
+
+/* --- Touch optimizations --- */
+@media (hover: none) and (pointer: coarse) {
+  .kpi-card:hover {
+    transform: none;
+  }
+
+  .sidebar-nav-item:hover {
+    background: none;
+  }
+
+  .sidebar-nav-item:active {
+    background: var(--sidebar-active);
+  }
+
+  .btn-export-main:active {
+    transform: scale(0.97);
+  }
+
+  .section-filter:active {
+    transform: scale(0.97);
+  }
+
+  /* Larger touch targets */
+  .sidebar-nav-item {
+    min-height: 44px;
+    padding: 12px 14px;
+  }
+
+  .notif-filter {
+    padding: 8px 14px;
+    min-height: 36px;
+  }
+
+  .notif-item-btn {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* --- Landscape phones --- */
+@media (max-height: 500px) and (orientation: landscape) {
+  .dashboard-header {
+    padding: 12px 16px;
+    min-height: auto;
+  }
+
+  .header-title {
+    font-size: 16px;
+  }
+
+  .kpi-card {
+    padding: 12px;
+  }
+
+  .kpi-value {
+    font-size: 20px;
+  }
+
+  .kpi-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 6px;
+  }
+
+  .kpi-bottom {
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .section-card {
+    padding: 12px;
+  }
+}
+
+/* --- Print --- */
+@media print {
+  .sidebar,
+  .sidebar-hamburger,
+  .sidebar-overlay,
+  .notif-fixed-wrapper,
+  .detail-panel,
+  .detail-panel-overlay,
+  .header-export {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
+
+  .dashboard-header {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+
+  .kpi-card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+}
+
+/* --- Safe area (notch phones) --- */
+@supports (padding: env(safe-area-inset-top)) {
+  .sidebar-hamburger {
+    top: calc(12px + env(safe-area-inset-top));
+  }
+
+  .notif-fixed-wrapper {
+    top: calc(14px + env(safe-area-inset-top));
+    right: calc(18px + env(safe-area-inset-right));
+  }
+
+  .notif-panel {
+    top: calc(60px + env(safe-area-inset-top));
+    right: calc(20px + env(safe-area-inset-right));
+  }
+
+  .container {
+    padding-left: calc(16px + env(safe-area-inset-left)) !important;
+    padding-right: calc(16px + env(safe-area-inset-right)) !important;
+  }
+}
+
+/* --- Prefers reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --- Prefers dark (auto) --- */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    /* Auto dark mode if no explicit theme set */
+  }
+}
+
+/* --- High contrast --- */
+@media (forced-colors: active) {
+  .kpi-card,
+  .section-card,
+  .leader-card,
+  .validation-card {
+    border: 2px solid ButtonText;
+  }
+
+  .sidebar-nav-item.active {
+    border-left: 3px solid Highlight;
   }
 }

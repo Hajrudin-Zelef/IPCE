@@ -1,0 +1,7 @@
+node_modules/
+public/admin/js/notifications.js
+public/dashboard.html
+data/
+*.db
+*.db-wal
+*.db-shm
