@@ -15,61 +15,67 @@ window.__load_docs = function() {
   html += '<nav class="docs-sidebar-nav">';
 
   // Module 1: Bien démarrer
-  html += '<div class="docs-nav-group">';
-  html += '<div class="docs-nav-group-label">Bien démarrer</div>';
-  html += '<a class="docs-nav-item active" data-docs="intro" onclick="docsNavigate(\'intro\',this)">&#128075; Bienvenue</a>';
-  html += '<a class="docs-nav-item" data-docs="role" onclick="docsNavigate(\'role\',this)">&#128188; Mon rôle</a>';
-  html += '<a class="docs-nav-item" data-docs="interface" onclick="docsNavigate(\'interface\',this)">&#128187; L\'interface</a>';
-  html += '</div>';
+  html += '<div class="docs-nav-group" data-group="bien">';
+  html += '<div class="docs-nav-group-toggle" onclick="docsToggleGroup(this)">&#128075; Bien démarrer <span class="docs-arrow">&#9654;</span></div>';
+  html += '<div class="docs-nav-group-items">';
+  html += '<a class="docs-nav-item active" data-docs="intro" onclick="docsNavigate(\'intro\',this)">Bienvenue</a>';
+  html += '<a class="docs-nav-item" data-docs="role" onclick="docsNavigate(\'role\',this)">Mon rôle</a>';
+  html += '<a class="docs-nav-item" data-docs="interface" onclick="docsNavigate(\'interface\',this)">L\'interface</a>';
+  html += '</div></div>';
 
   // Module 2: Collectes
-  html += '<div class="docs-nav-group">';
-  html += '<div class="docs-nav-group-label">Collectes</div>';
-  html += '<a class="docs-nav-item" data-docs="saisie" onclick="docsNavigate(\'saisie\',this)">&#9998;&#65039; Saisir une collecte</a>';
+  html += '<div class="docs-nav-group" data-group="collectes">';
+  html += '<div class="docs-nav-group-toggle" onclick="docsToggleGroup(this)">&#9998;&#65039; Collectes <span class="docs-arrow">&#9654;</span></div>';
+  html += '<div class="docs-nav-group-items">';
+  html += '<a class="docs-nav-item" data-docs="saisie" onclick="docsNavigate(\'saisie\',this)">Saisir une collecte</a>';
   html += '<a class="docs-nav-item sub" data-docs="saisie-champs" onclick="docsNavigate(\'saisie-champs\',this)">Les champs</a>';
   html += '<a class="docs-nav-item sub" data-docs="saisie-rdv" onclick="docsNavigate(\'saisie-rdv\',this)">Ajouter des RDV</a>';
   html += '<a class="docs-nav-item sub" data-docs="saisie-actions" onclick="docsNavigate(\'saisie-actions\',this)">Sauvegarder / Valider</a>';
-  html += '<a class="docs-nav-item" data-docs="historique" onclick="docsNavigate(\'historique\',this)">&#128203; Historique</a>';
-  html += '<a class="docs-nav-item sub" data-docs="hist-actions" onclick="docsNavigate(\'hist-actions\',this)">Actions sur collectes</a>';
-  html += '<a class="docs-nav-item sub" data-docs="hist-modifier" onclick="docsNavigate(\'hist-modifier\',this)">Modifier une collecte</a>';
-  html += '<a class="docs-nav-item sub" data-docs="hist-supprimer" onclick="docsNavigate(\'hist-supprimer\',this)">Supprimer une collecte</a>';
-  html += '</div>';
+  html += '<a class="docs-nav-item" data-docs="historique" onclick="docsNavigate(\'historique\',this)">Historique</a>';
+  html += '<a class="docs-nav-item sub" data-docs="hist-actions" onclick="docsNavigate(\'hist-actions\',this)">Actions</a>';
+  html += '<a class="docs-nav-item sub" data-docs="hist-modifier" onclick="docsNavigate(\'hist-modifier\',this)">Modifier</a>';
+  html += '<a class="docs-nav-item sub" data-docs="hist-supprimer" onclick="docsNavigate(\'hist-supprimer\',this)">Supprimer</a>';
+  html += '</div></div>';
 
-  // Module 3: RDV
-  html += '<div class="docs-nav-group">';
-  html += '<div class="docs-nav-group-label">Rendez-vous</div>';
-  html += '<a class="docs-nav-item" data-docs="rdv-statuts" onclick="docsNavigate(\'rdv-statuts\',this)">&#128197; Statuts des RDV</a>';
-  html += '<a class="docs-nav-item" data-docs="rdv-modifier" onclick="docsNavigate(\'rdv-modifier\',this)">&#9998; Modifier un RDV</a>';
-  html += '<a class="docs-nav-item" data-docs="rdv-supprimer" onclick="docsNavigate(\'rdv-supprimer\',this)">&#10005; Supprimer un RDV</a>';
-  html += '</div>';
+  // Module 3: Rendez-vous
+  html += '<div class="docs-nav-group" data-group="rdv">';
+  html += '<div class="docs-nav-group-toggle" onclick="docsToggleGroup(this)">&#128197; Rendez-vous <span class="docs-arrow">&#9654;</span></div>';
+  html += '<div class="docs-nav-group-items">';
+  html += '<a class="docs-nav-item" data-docs="rdv-statuts" onclick="docsNavigate(\'rdv-statuts\',this)">Statuts des RDV</a>';
+  html += '<a class="docs-nav-item" data-docs="rdv-modifier" onclick="docsNavigate(\'rdv-modifier\',this)">Modifier un RDV</a>';
+  html += '<a class="docs-nav-item" data-docs="rdv-supprimer" onclick="docsNavigate(\'rdv-supprimer\',this)">Supprimer un RDV</a>';
+  html += '</div></div>';
 
   // Module 4: Visualisation
-  html += '<div class="docs-nav-group">';
-  html += '<div class="docs-nav-group-label">Visualisation</div>';
-  html += '<a class="docs-nav-item" data-docs="dashboard" onclick="docsNavigate(\'dashboard\',this)">&#128202; Tableau de bord</a>';
-  html += '<a class="docs-nav-item sub" data-docs="dash-kpis" onclick="docsNavigate(\'dash-kpis\',this)">Comprendre les KPIs</a>';
-  html += '<a class="docs-nav-item sub" data-docs="dash-graphs" onclick="docsNavigate(\'dash-graphs\',this)">Les graphiques</a>';
-  html += '<a class="docs-nav-item" data-docs="calendrier" onclick="docsNavigate(\'calendrier\',this)">&#128197; Calendrier</a>';
+  html += '<div class="docs-nav-group" data-group="viz">';
+  html += '<div class="docs-nav-group-toggle" onclick="docsToggleGroup(this)">&#128202; Visualisation <span class="docs-arrow">&#9654;</span></div>';
+  html += '<div class="docs-nav-group-items">';
+  html += '<a class="docs-nav-item" data-docs="dashboard" onclick="docsNavigate(\'dashboard\',this)">Tableau de bord</a>';
+  html += '<a class="docs-nav-item sub" data-docs="dash-kpis" onclick="docsNavigate(\'dash-kpis\',this)">KPIs</a>';
+  html += '<a class="docs-nav-item sub" data-docs="dash-graphs" onclick="docsNavigate(\'dash-graphs\',this)">Graphiques</a>';
+  html += '<a class="docs-nav-item" data-docs="calendrier" onclick="docsNavigate(\'calendrier\',this)">Calendrier</a>';
   html += '<a class="docs-nav-item sub" data-docs="cal-navigation" onclick="docsNavigate(\'cal-navigation\',this)">Navigation</a>';
   html += '<a class="docs-nav-item sub" data-docs="cal-couleurs" onclick="docsNavigate(\'cal-couleurs\',this)">Codes couleur</a>';
   html += '<a class="docs-nav-item sub" data-docs="cal-interactions" onclick="docsNavigate(\'cal-interactions\',this)">Interactions</a>';
-  html += '</div>';
+  html += '</div></div>';
 
   // Module 5: Outils
-  html += '<div class="docs-nav-group">';
-  html += '<div class="docs-nav-group-label">Outils</div>';
-  html += '<a class="docs-nav-item" data-docs="notifications" onclick="docsNavigate(\'notifications\',this)">&#128276; Notifications</a>';
-  html += '<a class="docs-nav-item" data-docs="darkmode" onclick="docsNavigate(\'darkmode\',this)">&#127769; Mode sombre</a>';
-  html += '<a class="docs-nav-item" data-docs="raccourcis" onclick="docsNavigate(\'raccourcis\',this)">&#9000;&#65039; Raccourcis</a>';
-  html += '<a class="docs-nav-item" data-docs="mobile" onclick="docsNavigate(\'mobile\',this)">&#128241; Version mobile</a>';
-  html += '</div>';
+  html += '<div class="docs-nav-group" data-group="outils">';
+  html += '<div class="docs-nav-group-toggle" onclick="docsToggleGroup(this)">&#128295; Outils <span class="docs-arrow">&#9654;</span></div>';
+  html += '<div class="docs-nav-group-items">';
+  html += '<a class="docs-nav-item" data-docs="notifications" onclick="docsNavigate(\'notifications\',this)">Notifications</a>';
+  html += '<a class="docs-nav-item" data-docs="darkmode" onclick="docsNavigate(\'darkmode\',this)">Mode sombre</a>';
+  html += '<a class="docs-nav-item" data-docs="raccourcis" onclick="docsNavigate(\'raccourcis\',this)">Raccourcis</a>';
+  html += '<a class="docs-nav-item" data-docs="mobile" onclick="docsNavigate(\'mobile\',this)">Version mobile</a>';
+  html += '</div></div>';
 
   // Module 6: Aide
-  html += '<div class="docs-nav-group">';
-  html += '<div class="docs-nav-group-label">Aide</div>';
-  html += '<a class="docs-nav-item" data-docs="statuts" onclick="docsNavigate(\'statuts\',this)">&#127919; Signification des statuts</a>';
-  html += '<a class="docs-nav-item" data-docs="faq" onclick="docsNavigate(\'faq\',this)">&#10067; FAQ</a>';
-  html += '</div>';
+  html += '<div class="docs-nav-group" data-group="aide">';
+  html += '<div class="docs-nav-group-toggle" onclick="docsToggleGroup(this)">&#10067; Aide <span class="docs-arrow">&#9654;</span></div>';
+  html += '<div class="docs-nav-group-items">';
+  html += '<a class="docs-nav-item" data-docs="statuts" onclick="docsNavigate(\'statuts\',this)">Signification des statuts</a>';
+  html += '<a class="docs-nav-item" data-docs="faq" onclick="docsNavigate(\'faq\',this)">FAQ</a>';
+  html += '</div></div>';
 
   html += '</nav></aside>';
 
@@ -554,7 +560,16 @@ function docsNavigate(section, btn) {
   // Update sidebar active
   document.querySelectorAll('.docs-nav-item').forEach(function(el) { el.classList.remove('active'); });
   if (btn) btn.classList.add('active');
-  // Scroll to top
-  var content = document.querySelector('.docs-content');
-  if (content) content.scrollTop = 0;
+  // Auto-open parent group
+  if (btn) {
+    var group = btn.closest('.docs-nav-group');
+    if (group && !group.classList.contains('open')) {
+      group.classList.add('open');
+    }
+  }
+}
+
+function docsToggleGroup(toggleEl) {
+  var group = toggleEl.closest('.docs-nav-group');
+  if (group) group.classList.toggle('open');
 }
