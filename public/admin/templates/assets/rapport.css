@@ -18,30 +18,35 @@
 body {
   background: #DDE3EC;
   font-family: 'Inter', -apple-system, sans-serif;
-  padding: 48px 16px;
+  padding: 0;
   -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
+/* ---------- Sheet (A4 Full) ---------- */
 .sheet {
-  max-width: 880px;
-  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   background: var(--paper);
-  border: 1px solid var(--line);
-  box-shadow: 0 1px 2px rgba(11,31,58,0.04), 0 20px 48px rgba(11,31,58,0.10);
+  max-width: none;
+  margin: 0;
+  min-height: 100vh;
 }
 
 /* ---------- Bandeau officiel ---------- */
 .band {
-  max-width: 880px;
-  margin: 0 auto;
   background: var(--ink);
   color: #FFFFFF;
-  padding: 10px 40px;
+  padding: 10px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 11px;
   letter-spacing: 0.06em;
+  flex-shrink: 0;
 }
 .band-ref {
   font-variant-numeric: tabular-nums;
@@ -60,83 +65,91 @@ body {
 
 /* ---------- En-tête / seal ---------- */
 .masthead {
-  padding: 40px 40px 32px;
+  padding: 60px 32px 44px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
 }
 .seal {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 .seal-mark {
-  width: 46px; height: 46px;
+  width: 40px; height: 40px;
   border: 1.5px solid var(--ink);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-family: 'Source Serif 4', serif;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--ink);
   flex-shrink: 0;
 }
 .seal-text-eyebrow {
-  font-size: 10px;
+  font-size: 9px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-soft);
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 .seal-text-title {
   font-family: 'Source Serif 4', serif;
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 600;
   color: var(--ink);
   letter-spacing: -0.01em;
 }
 .masthead-meta {
   text-align: right;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--ink-soft);
 }
 .masthead-meta strong {
   display: block;
   color: var(--ink);
-  font-size: 13px;
+  font-size: 12px;
   margin-top: 2px;
 }
 .dek {
-  padding: 20px 40px 0;
-  font-size: 14px;
+  padding: 24px 32px 0;
+  font-size: 13px;
   line-height: 1.6;
   color: var(--ink-soft);
-  max-width: 640px;
+  flex-shrink: 0;
 }
 
 /* ---------- Sections ---------- */
-.sheet section { padding: 32px 40px; }
+.sheet section {
+  padding: 40px 32px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
 .sheet section + section { border-top: 1px solid var(--line); }
 
 .section-head {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-shrink: 0;
 }
 .section-num {
-  width: 22px; height: 22px;
+  width: 20px; height: 20px;
   border-radius: 50%;
   background: var(--ink);
   color: #fff;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
 .section-title {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -150,11 +163,14 @@ body {
   gap: 1px;
   background: var(--line);
   border: 1px solid var(--line);
+  flex: 1;
 }
 .kpi {
   background: var(--paper);
-  padding: 20px 18px;
+  padding: 22px 18px;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 .kpi::before {
   content: "";
@@ -166,44 +182,45 @@ body {
 .kpi.alert::before { background: var(--danger); }
 .kpi.warn::before { background: var(--warn); }
 .kpi-label {
-  font-size: 10.5px;
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--ink-soft);
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 .kpi-figure {
   display: flex;
   align-items: baseline;
-  gap: 6px;
-  margin-bottom: 10px;
+  gap: 4px;
+  margin-bottom: 6px;
 }
 .kpi-value {
-  font-size: 25px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--ink);
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
 .kpi-of {
-  font-size: 12px;
+  font-size: 10px;
   color: #9AA6B8;
   font-variant-numeric: tabular-nums;
 }
 .kpi-pct {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 9.5px;
   color: var(--ink-soft);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 .kpi-pct b { color: var(--ink); font-variant-numeric: tabular-nums; }
 .track {
-  height: 4px;
+  height: 3px;
   border-radius: 2px;
   background: #EDF0F5;
   overflow: hidden;
+  margin-top: auto;
 }
 .fill { height: 100%; border-radius: 2px; background: var(--accent); }
 .kpi.alert .fill { background: var(--danger); }
@@ -213,113 +230,115 @@ body {
 .leader {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   background: var(--panel);
   border: 1px solid var(--line);
-  padding: 22px 26px;
+  padding: 14px 20px;
 }
 .leader-rank {
-  width: 40px; height: 40px;
+  width: 36px; height: 36px;
   border-radius: 50%;
   background: var(--ink);
   color: #fff;
   display: flex; align-items: center; justify-content: center;
   font-family: 'Source Serif 4', serif;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   flex-shrink: 0;
 }
 .leader-info { flex: 1; }
 .leader-eyebrow {
-  font-size: 10.5px;
+  font-size: 9px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--ink-soft);
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 .leader-name {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--ink);
 }
 .leader-value {
   text-align: right;
-  font-size: 21px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 .leader-value span {
   display: block;
-  font-size: 10.5px;
+  font-size: 9px;
   font-weight: 500;
   color: var(--ink-soft);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 /* ---------- Points critiques ---------- */
-.crit-list { display: flex; flex-direction: column; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.crit-list { display: flex; flex-direction: column; gap: 1px; background: var(--line); border: 1px solid var(--line); flex: 1; }
 .crit-item {
   background: var(--paper);
-  padding: 16px 20px;
+  padding: 10px 16px;
   display: grid;
-  grid-template-columns: 130px 1fr;
-  gap: 16px;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
   align-items: baseline;
 }
 .crit-subject {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: 6px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--ink);
 }
 .tag {
-  font-size: 9.5px;
+  font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  padding: 2px 7px;
+  padding: 2px 5px;
   border-radius: 3px;
 }
 .tag.danger { background: #F7E6E2; color: var(--danger); }
 .tag.warn { background: #F3ECDC; color: var(--warn); }
-.crit-detail { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+.crit-detail { font-size: 11px; color: var(--ink-soft); line-height: 1.4; }
 
 /* ---------- Signatures ---------- */
 .signatures {
-  padding: 40px 40px 44px;
+  padding: 50px 32px 40px;
   display: flex;
   justify-content: space-between;
   gap: 40px;
+  flex-shrink: 0;
 }
 .sig { flex: 1; }
 .sig-label {
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-soft);
-  margin-bottom: 36px;
+  margin-bottom: 52px;
 }
 .sig-line {
   border-top: 1px solid var(--ink);
-  padding-top: 8px;
-  font-size: 11px;
+  padding-top: 6px;
+  font-size: 10px;
   color: #9AA6B8;
 }
 
 /* ---------- Footer ---------- */
 .colophon {
   border-top: 1px solid var(--line);
-  padding: 16px 40px;
+  padding: 18px 32px;
   display: flex;
   justify-content: space-between;
-  font-size: 10.5px;
+  font-size: 10px;
   color: #9AA6B8;
+  flex-shrink: 0;
 }
 
 .rapport-empty {
@@ -329,7 +348,13 @@ body {
   font-size: 13px;
 }
 
+/* ---------- Print / PDF ---------- */
 @media print {
   body { background: #fff; padding: 0; }
-  .sheet { border: none; box-shadow: none; max-width: 100%; }
+  .sheet { border: none; box-shadow: none; max-width: 100%; min-height: 100vh; }
+}
+
+@page {
+  size: A4 portrait;
+  margin: 0;
 }

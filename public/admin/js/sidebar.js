@@ -246,6 +246,54 @@
     }
   }
 
+  // --- User Dropdown ---
+  window.__userDropdownAction = function(action) {
+    const dropdown = document.getElementById('user-dropdown');
+    if (dropdown) dropdown.classList.remove('open');
+
+    switch (action) {
+      case 'profile':
+        switchSection('settings');
+        setTimeout(() => {
+          const navItems = document.querySelectorAll('.settings-nav-item');
+          navItems.forEach(b => b.classList.remove('active'));
+          const secBtn = Array.from(navItems).find(b => b.textContent.includes('Sécurité'));
+          if (secBtn) { secBtn.classList.add('active'); settingsTab('securite', secBtn); }
+        }, 100);
+        break;
+      case 'password':
+        switchSection('settings');
+        setTimeout(() => {
+          const navItems = document.querySelectorAll('.settings-nav-item');
+          navItems.forEach(b => b.classList.remove('active'));
+          const secBtn = Array.from(navItems).find(b => b.textContent.includes('Sécurité'));
+          if (secBtn) { secBtn.classList.add('active'); settingsTab('securite', secBtn); }
+        }, 100);
+        break;
+      case '2fa':
+        switchSection('settings');
+        setTimeout(() => {
+          const navItems = document.querySelectorAll('.settings-nav-item');
+          navItems.forEach(b => b.classList.remove('active'));
+          const secBtn = Array.from(navItems).find(b => b.textContent.includes('Sécurité'));
+          if (secBtn) { secBtn.classList.add('active'); settingsTab('securite', secBtn); }
+        }, 100);
+        break;
+      case 'logout':
+        handleLogout();
+        break;
+    }
+  };
+
+  // Close dropdown on outside click
+  document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('user-dropdown');
+    const user = document.getElementById('sidebar-user');
+    if (dropdown && !dropdown.contains(e.target) && !user?.contains(e.target)) {
+      dropdown.classList.remove('open');
+    }
+  });
+
   // --- Public API ---
   window.Sidebar = {
     toggle: toggleCollapse,

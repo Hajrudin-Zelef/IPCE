@@ -58,6 +58,8 @@ app.use(express.static(path.join(__dirname, 'public'), {
   }
 }));
 
+app.use('/docs', express.static(path.join(__dirname, 'docs')));
+
 const createAuthRouter = require('./routes/auth');
 const createCollectesRouter = require('./routes/collectes');
 const createAdminRouter = require('./routes/admin');

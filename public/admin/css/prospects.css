@@ -1,12 +1,302 @@
-.prospect-card{background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:20px;transition:all var(--transition-fast)}
-.prospect-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
-.prospect-status{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600}
-.prospect-status.rdv{background:rgba(37,99,235,0.1);color:var(--primary)}
-.prospect-status.offre{background:var(--warning-light);color:var(--warning)}
-.prospect-status.bc{background:var(--success-light);color:var(--success)}
-.prospect-status.perdu{background:var(--danger-light);color:var(--danger)}
-.prospect-pipeline{display:flex;align-items:center;gap:4px;margin-top:12px}
-.prospect-pipeline-step{flex:1;height:4px;border-radius:2px;background:var(--border-light)}
-.prospect-pipeline-step.done{background:var(--success)}
-.prospect-pipeline-step.current{background:var(--primary);animation:pipelinePulse 1.5s ease infinite}
-@keyframes pipelinePulse{0%,100%{opacity:1}50%{opacity:0.5}}
+/* --- KPI Summary Bar --- */
+.prospects-kpi-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.prospects-kpi {
+  background: var(--card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.prospects-kpi::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.prospects-kpi.kpi-total::before { background: var(--primary); }
+.prospects-kpi.kpi-val::before { background: var(--success); }
+.prospects-kpi.kpi-avg::before { background: var(--warning); }
+.prospects-kpi.kpi-conv::before { background: #8B5CF6; }
+.prospects-kpi-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.prospects-kpi-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.prospects-kpi-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* --- View Toggle --- */
+.prospects-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.prospects-view-toggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.prospects-view-btn {
+  padding: 6px 12px;
+  border: none;
+  background: var(--card);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.prospects-view-btn:not(:last-child) { border-right: 1px solid var(--border); }
+.prospects-view-btn.active { background: var(--primary); color: #fff; }
+.prospects-view-btn:hover:not(.active) { background: var(--bg); }
+.prospects-view-btn svg { width: 14px; height: 14px; }
+
+/* --- Cards Grid View --- */
+.prospects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.prospect-card {
+  background: var(--card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 0;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.prospect-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  border-color: var(--primary);
+}
+.prospect-card-top {
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.prospect-avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+.prospect-avatar.s0 { background: linear-gradient(135deg, #3B82F6, #2563EB); }
+.prospect-avatar.s1 { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+.prospect-avatar.s2 { background: linear-gradient(135deg, #F59E0B, #D97706); }
+.prospect-avatar.s3 { background: linear-gradient(135deg, #10B981, #059669); }
+.prospect-avatar.s4 { background: linear-gradient(135deg, #EC4899, #DB2777); }
+.prospect-card-info { flex: 1; min-width: 0; }
+.prospect-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.prospect-card-commercial {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.prospect-card-commercial svg { width: 12px; height: 12px; opacity: 0.5; }
+.prospect-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.prospect-status.s0 { background: rgba(37,99,235,0.1); color: #2563EB; }
+.prospect-status.s1 { background: rgba(139,92,246,0.1); color: #7C3AED; }
+.prospect-status.s2 { background: rgba(245,158,11,0.1); color: #D97706; }
+.prospect-status.s3 { background: rgba(16,185,129,0.1); color: #059669; }
+.prospect-status.s4 { background: rgba(236,72,153,0.1); color: #DB2777; }
+.prospect-status.perdu { background: var(--danger-light); color: var(--danger); }
+.prospect-status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.prospect-card-body {
+  padding: 14px 18px;
+}
+.prospect-card-montant {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.prospect-card-montant span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 2px;
+}
+.prospect-card-date {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.prospect-card-date svg { width: 12px; height: 12px; opacity: 0.4; }
+.prospect-date-urgency {
+  font-weight: 600;
+}
+.prospect-date-urgency.overdue { color: var(--danger); }
+.prospect-date-urgency.today { color: var(--warning); }
+.prospect-date-urgency.upcoming { color: var(--success); }
+
+/* --- Pipeline (in card) --- */
+.prospect-pipeline {
+  display: flex;
+  gap: 3px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+}
+.prospect-pipeline-step {
+  flex: 1;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--border-light);
+  position: relative;
+  transition: all var(--transition-fast);
+}
+.prospect-pipeline-step.done { background: var(--success); }
+.prospect-pipeline-step.current {
+  background: var(--primary);
+  animation: pipelinePulse 2s ease infinite;
+}
+.prospect-pipeline-step.current::after {
+  content: "";
+  position: absolute;
+  top: -3px; left: 50%; transform: translateX(-50%);
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 2px solid var(--card);
+  box-shadow: 0 0 0 2px var(--primary);
+}
+.prospect-pipeline-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+.prospect-pipeline-label {
+  font-size: 8.5px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.6;
+}
+.prospect-pipeline-label.active { color: var(--primary); opacity: 1; }
+
+@keyframes pipelinePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* --- List View --- */
+.prospects-list {
+  background: var(--card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.prospects-list-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 2fr 100px;
+  gap: 12px;
+  padding: 12px 18px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.prospects-list-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 2fr 100px;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-light);
+  align-items: center;
+  font-size: 13px;
+  transition: background var(--transition-fast);
+  cursor: pointer;
+}
+.prospects-list-row:hover { background: rgba(37,99,235,0.03); }
+.prospects-list-row:last-child { border-bottom: none; }
+.prospects-list-name { font-weight: 600; color: var(--text); }
+.prospects-list-commercial { color: var(--muted); }
+.prospects-list-montant { font-weight: 700; font-variant-numeric: tabular-nums; }
+.prospects-list-date { color: var(--muted); font-size: 12px; }
+.prospects-list-pipeline {
+  display: flex;
+  gap: 2px;
+}
+.prospects-list-pipeline .prospect-pipeline-step {
+  height: 4px;
+}
+.prospects-list-pipeline .prospect-pipeline-step.current::after {
+  display: none;
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+  .prospects-grid { grid-template-columns: repeat(2, 1fr); }
+  .prospects-kpi-bar { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .prospects-grid { grid-template-columns: 1fr; }
+  .prospects-kpi-bar { grid-template-columns: 1fr 1fr; }
+  .prospects-list-header,
+  .prospects-list-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+}

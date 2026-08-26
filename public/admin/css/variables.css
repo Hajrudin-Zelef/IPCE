@@ -1,3 +1,4 @@
+/* === LIGHT THEME (default) === */
 :root {
   --bg: #F8FAFC;
   --card: #FFFFFF;
@@ -36,4 +37,466 @@
   --z-dropdown: 50;
   --z-sticky: 100;
   --z-modal: 1000;
+}
+
+/* === DARK THEME === */
+[data-theme="dark"] {
+  --bg: #0B1120;
+  --card: #111827;
+  --primary: #3B82F6;
+  --primary-light: #60A5FA;
+  --primary-dark: #2563EB;
+  --success: #34D399;
+  --success-light: rgba(52, 211, 153, 0.15);
+  --warning: #FBBF24;
+  --warning-light: rgba(251, 191, 36, 0.15);
+  --danger: #F87171;
+  --danger-light: rgba(248, 113, 113, 0.15);
+  --text: #F1F5F9;
+  --text-secondary: #CBD5E1;
+  --muted: #64748B;
+  --border: #1E293B;
+  --border-light: #1E293B;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+/* === DARK MODE OVERRIDES FOR ALL COMPONENTS === */
+
+/* Body & Base */
+[data-theme="dark"] body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Sidebar */
+[data-theme="dark"] .sidebar {
+  background: rgba(11, 17, 32, 0.95);
+  border-right-color: #1E293B;
+}
+
+[data-theme="dark"] .sidebar-logo {
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="dark"] .sidebar-collapse-btn {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .sidebar-collapse-btn:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+[data-theme="dark"] .sidebar-user-avatar .status-dot {
+  border-color: #111827;
+}
+
+/* Cards */
+[data-theme="dark"] .card,
+[data-theme="dark"] .settings-card,
+[data-theme="dark"] .prospect-card,
+[data-theme="dark"] .reminder-card,
+[data-theme="dark"] .inbox-card,
+[data-theme="dark"] .user-card,
+[data-theme="dark"] .insight-card,
+[data-theme="dark"] .insights-health,
+[data-theme="dark"] .insights-actions,
+[data-theme="dark"] .logs-timeline-item,
+[data-theme="dark"] .prospects-list,
+[data-theme="dark"] .validation-history {
+  background: #111827;
+  border-color: #1E293B;
+}
+
+/* KPI Cards */
+[data-theme="dark"] .kpi-card,
+[data-theme="dark"] .prospects-kpi,
+[data-theme="dark"] .reminders-kpi,
+[data-theme="dark"] .validation-kpi,
+[data-theme="dark"] .users-kpi,
+[data-theme="dark"] .logs-kpi {
+  background: #111827;
+  border-color: #1E293B;
+}
+
+/* Tables */
+[data-theme="dark"] .section-table th,
+[data-theme="dark"] .validation-history-header {
+  background: #0B1120;
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .section-table td,
+[data-theme="dark"] .validation-history-row {
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .section-table tr:hover td,
+[data-theme="dark"] .validation-history-row:hover {
+  background: rgba(59, 130, 246, 0.05);
+}
+
+[data-theme="dark"] .section-table th {
+  color: #94A3B8;
+}
+
+/* Forms */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: #0B1120;
+  border-color: #334155;
+  color: var(--text);
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #475569;
+}
+
+/* Buttons */
+[data-theme="dark"] .section-filter,
+[data-theme="dark"] .user-action-btn,
+[data-theme="dark"] .reminder-btn,
+[data-theme="dark"] .settings-btn,
+[data-theme="dark"] .prospects-view-btn {
+  background: #1E293B;
+  border-color: #334155;
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .section-filter:hover,
+[data-theme="dark"] .user-action-btn:hover,
+[data-theme="dark"] .settings-btn:hover {
+  background: #334155;
+  border-color: #475569;
+}
+
+[data-theme="dark"] .section-filter.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* Dropdowns & Menus */
+[data-theme="dark"] .fixed-export-dropdown,
+[data-theme="dark"] .notification-dropdown {
+  background: #111827;
+  border-color: #1E293B;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .fixed-export-dropdown-item:hover {
+  background: #1E293B;
+}
+
+[data-theme="dark"] .fixed-export-dropdown-divider {
+  border-color: #1E293B;
+}
+
+/* Badges */
+[data-theme="dark"] .prospect-status.s0 { background: rgba(59, 130, 246, 0.15); }
+[data-theme="dark"] .prospect-status.s1 { background: rgba(139, 92, 246, 0.15); }
+[data-theme="dark"] .prospect-status.s2 { background: rgba(245, 158, 11, 0.15); }
+[data-theme="dark"] .prospect-status.s3 { background: rgba(16, 185, 129, 0.15); }
+[data-theme="dark"] .prospect-status.s4 { background: rgba(236, 72, 153, 0.15); }
+
+[data-theme="dark"] .inbox-badge.pending { background: rgba(245, 158, 11, 0.15); }
+[data-theme="dark"] .inbox-badge.approved { background: rgba(16, 185, 129, 0.15); }
+[data-theme="dark"] .inbox-badge.rejected { background: rgba(248, 113, 113, 0.15); }
+
+[data-theme="dark"] .log-action-badge.approve { background: rgba(16, 185, 129, 0.15); }
+[data-theme="dark"] .log-action-badge.reject { background: rgba(248, 113, 113, 0.15); }
+[data-theme="dark"] .log-action-badge.create { background: rgba(59, 130, 246, 0.15); }
+
+[data-theme="dark"] .reminder-priority-badge.high { background: rgba(248, 113, 113, 0.15); }
+[data-theme="dark"] .reminder-priority-badge.medium { background: rgba(245, 158, 11, 0.15); }
+[data-theme="dark"] .reminder-priority-badge.low { background: rgba(16, 185, 129, 0.15); }
+
+[data-theme="dark"] .user-role-badge.admin { background: rgba(248, 113, 113, 0.15); }
+[data-theme="dark"] .user-role-badge.commercial { background: rgba(59, 130, 246, 0.15); }
+
+/* Progress Bars */
+[data-theme="dark"] .track,
+[data-theme="dark"] .prospect-pipeline-step,
+[data-theme="dark"] .insight-metric-bar-track {
+  background: #1E293B;
+}
+
+/* Modals */
+[data-theme="dark"] .cal-modal,
+[data-theme="dark"] .settings-modal,
+[data-theme="dark"] .users-modal {
+  background: #111827;
+  border-color: #1E293B;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .cal-modal-header,
+[data-theme="dark"] .settings-modal-header,
+[data-theme="dark"] .users-modal-header {
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .cal-modal-actions,
+[data-theme="dark"] .settings-modal-actions,
+[data-theme="dark"] .users-modal-actions {
+  border-color: #1E293B;
+}
+
+/* Toggle Switches */
+[data-theme="dark"] .toggle-switch {
+  background: #334155;
+}
+
+[data-theme="dark"] .toggle-switch::after {
+  background: #E2E8F0;
+}
+
+/* Notifications */
+[data-theme="dark"] .notification-item {
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .notification-item:hover {
+  background: #1E293B;
+}
+
+/* Charts */
+[data-theme="dark"] .chart {
+  background: #111827;
+  border-color: #1E293B;
+}
+
+/* Calendar */
+[data-theme="dark"] .cal-day {
+  background: #111827;
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .cal-day:hover {
+  background: #1E293B;
+}
+
+[data-theme="dark"] .cal-day.today {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+[data-theme="dark"] .cal-header-cell {
+  background: #0B1120;
+}
+
+[data-theme="dark"] .cal-timeline-item {
+  background: #111827;
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .cal-timeline-item:hover {
+  background: #1E293B;
+}
+
+/* Documentation */
+[data-theme="dark"] .docs-sidebar {
+  background: #111827;
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .docs-viewer {
+  background: #111827;
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .docs-page h2,
+[data-theme="dark"] .docs-page h3,
+[data-theme="dark"] .docs-page h4 {
+  color: var(--text);
+}
+
+[data-theme="dark"] .docs-page h2 {
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .d-inline-code {
+  background: #1E293B;
+  color: #93C5FD;
+}
+
+[data-theme="dark"] .d-code-block {
+  border-color: #334155;
+}
+
+[data-theme="dark"] .d-code-lang {
+  background: #0B1120;
+}
+
+[data-theme="dark"] .d-code-block pre {
+  background: #0B1120;
+}
+
+[data-theme="dark"] .d-table {
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .d-table th {
+  background: #0B1120;
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .d-table td {
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .d-table tr:hover td {
+  background: rgba(59, 130, 246, 0.05);
+}
+
+[data-theme="dark"] .d-blockquote {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: var(--primary);
+}
+
+[data-theme="dark"] .d-hr {
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .d-table-wrap {
+  border-color: #1E293B;
+}
+
+/* Leaderboard */
+[data-theme="dark"] .leaderboard-item {
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .leaderboard-item:hover {
+  background: #1E293B;
+}
+
+/* Graphs */
+[data-theme="dark"] .charts {
+  background: transparent;
+}
+
+[data-theme="dark"] .chart {
+  background: #111827;
+  border: 1px solid #1E293B;
+}
+
+/* Settings */
+[data-theme="dark"] .settings-sidebar {
+  background: #111827;
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .settings-info-item {
+  background: #0B1120;
+}
+
+/* Validation */
+[data-theme="dark"] .inbox-card-top {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+}
+
+[data-theme="dark"] .inbox-metric {
+  background: #0B1120;
+}
+
+[data-theme="dark"] .inbox-rdv-item {
+  background: #0B1120;
+  border-color: #1E293B;
+}
+
+/* Prospects */
+[data-theme="dark"] .prospect-card-top {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.03), rgba(139, 92, 246, 0.03));
+}
+
+[data-theme="dark"] .prospects-list-header {
+  background: #0B1120;
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .prospects-list-row {
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .prospects-list-row:hover {
+  background: rgba(59, 130, 246, 0.05);
+}
+
+/* Reminders */
+[data-theme="dark"] .reminder-icon {
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .reminder-card {
+  border-color: #1E293B;
+}
+
+[data-theme="dark"] .reminder-card:hover {
+  border-color: #334155;
+}
+
+/* Toast */
+[data-theme="dark"] .settings-toast {
+  background: #1E293B;
+  color: var(--text);
+}
+
+[data-theme="dark"] .settings-toast.success {
+  background: #065F46;
+}
+
+[data-theme="dark"] .settings-toast.error {
+  background: #991B1B;
+}
+
+/* Header */
+[data-theme="dark"] .dashboard-header {
+  background: linear-gradient(135deg, #0B1120, #1E293B);
+}
+
+/* Empty States */
+[data-theme="dark"] .section-empty svg,
+[data-theme="dark"] .logs-empty svg,
+[data-theme="dark"] .users-empty svg,
+[data-theme="dark"] .validation-empty svg {
+  opacity: 0.3;
+}
+
+/* KPI Detail Panel */
+[data-theme="dark"] .detail-panel {
+  background: #111827;
+  border-color: #1E293B;
+}
+
+/* Animations */
+[data-theme="dark"] .animate-fade-in-up {
+  animation: fadeInUp 0.3s ease forwards;
+}
+
+/* Selection */
+[data-theme="dark"] ::selection {
+  background: rgba(59, 130, 246, 0.3);
 }

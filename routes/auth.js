@@ -1,7 +1,63 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const { authenticate } = require('../middleware/auth');
+
+// --- TOTP Implementation ---
+function generateSecret() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let secret = '';
+  for (let i = 0; i < 16; i++) {
+    secret += chars[crypto.randomInt(chars.length)];
+  }
+  return secret;
+}
+
+function base32Decode(encoded) {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let bits = '';
+  for (const c of encoded.toUpperCase()) {
+    const val = alphabet.indexOf(c);
+    if (val === -1) continue;
+    bits += val.toString(2).padStart(5, '0');
+  }
+  const bytes = [];
+  for (let i = 0; i + 8 <= bits.length; i += 8) {
+    bytes.push(parseInt(bits.substr(i, 8), 2));
+  }
+  return Buffer.from(bytes);
+}
+
+function generateTOTP(secret, window = 1) {
+  const epoch = Math.floor(Date.now() / 1000);
+  const timeStep = Math.floor(epoch / 30);
+  const codes = [];
+  for (let i = -window; i <= window; i++) {
+    const time = timeStep + i;
+    const timeBuffer = Buffer.alloc(8);
+    timeBuffer.writeUInt32BE(0, 0);
+    timeBuffer.writeUInt32BE(time, 4);
+    const key = base32Decode(secret);
+    const hmac = crypto.createHmac('sha1', key).update(timeBuffer).digest();
+    const offset = hmac[hmac.length - 1] & 0x0f;
+    const code = ((hmac[offset] & 0x7f) << 24) |
+                 ((hmac[offset + 1] & 0xff) << 16) |
+                 ((hmac[offset + 2] & 0xff) << 8) |
+                 (hmac[offset + 3] & 0xff);
+    codes.push((code % 1000000).toString().padStart(6, '0'));
+  }
+  return codes;
+}
+
+function verifyTOTP(secret, token) {
+  const codes = generateTOTP(secret, 1);
+  return codes.includes(token);
+}
+
+function formatSecret(secret) {
+  return secret.match(/.{1,4}/g).join(' ');
+}
 
 function createAuthRouter(db) {
   const router = express.Router();
@@ -23,10 +79,11 @@ function createAuthRouter(db) {
       { expiresIn: '8h' }
     );
 
+    const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
     res.cookie('token', token, {
       httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
+      secure: isSecure,
+      sameSite: isSecure ? 'strict' : 'lax',
       maxAge: 8 * 60 * 60 * 1000,
       path: '/',
     });
@@ -86,6 +143,8 @@ function createAuthRouter(db) {
     const userRole = role === 'admin' ? 'admin' : 'commercial';
     const result = db.prepare('INSERT INTO users (nom, password, role, must_change_password) VALUES (?, ?, ?, ?)').run(nom, hash, userRole, 0);
 
+    db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'create_user', 'user:' + result.lastInsertRowid, `Utilisateur "${nom}" créé avec le rôle ${userRole}`);
+
     res.status(201).json({ id: result.lastInsertRowid, nom, role: userRole });
   });
 
@@ -105,6 +164,80 @@ function createAuthRouter(db) {
   router.post('/logout', (req, res) => {
     res.clearCookie('token', { path: '/' });
     res.json({ message: 'Deconnecte' });
+  });
+
+  // --- 2FA Endpoints ---
+
+  router.get('/2fa/status', authenticate, (req, res) => {
+    const user = db.prepare('SELECT two_factor_enabled FROM users WHERE id = ?').get(req.user.id);
+    if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
+    res.json({ enabled: user.two_factor_enabled === 1 });
+  });
+
+  router.post('/2fa/setup', authenticate, (req, res) => {
+    const user = db.prepare('SELECT two_factor_enabled FROM users WHERE id = ?').get(req.user.id);
+    if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
+    if (user.two_factor_enabled) {
+      return res.status(400).json({ error: '2FA déjà activée. Désactivez-la d\'abord.' });
+    }
+
+    const secret = generateSecret();
+    db.prepare('UPDATE users SET two_factor_secret = ? WHERE id = ?').run(secret, req.user.id);
+
+    res.json({
+      secret: secret,
+      formatted: formatSecret(secret),
+      issuer: 'IPCE Dashboard',
+      account: req.user.nom,
+    });
+  });
+
+  router.post('/2fa/verify', authenticate, (req, res) => {
+    const { code } = req.body;
+    if (!code || code.length !== 6) {
+      return res.status(400).json({ error: 'Code à 6 chiffres requis' });
+    }
+
+    const user = db.prepare('SELECT two_factor_secret, two_factor_enabled FROM users WHERE id = ?').get(req.user.id);
+    if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
+    if (!user.two_factor_secret) {
+      return res.status(400).json({ error: 'Aucun secret 2FA configuré. Lancez le setup d\'abord.' });
+    }
+
+    if (!verifyTOTP(user.two_factor_secret, code)) {
+      return res.status(400).json({ error: 'Code incorrect. Réessayez.' });
+    }
+
+    db.prepare('UPDATE users SET two_factor_enabled = 1 WHERE id = ?').run(req.user.id);
+    db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(
+      req.user.id, 'enable_2fa', 'user:' + req.user.id, 'Authentification à deux facteurs activée'
+    );
+
+    res.json({ message: '2FA activée avec succès' });
+  });
+
+  router.post('/2fa/disable', authenticate, (req, res) => {
+    const { code } = req.body;
+    if (!code || code.length !== 6) {
+      return res.status(400).json({ error: 'Code à 6 chiffres requis pour désactiver' });
+    }
+
+    const user = db.prepare('SELECT two_factor_secret, two_factor_enabled FROM users WHERE id = ?').get(req.user.id);
+    if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
+    if (!user.two_factor_enabled) {
+      return res.status(400).json({ error: '2FA non activée' });
+    }
+
+    if (!verifyTOTP(user.two_factor_secret, code)) {
+      return res.status(400).json({ error: 'Code incorrect. Réessayez.' });
+    }
+
+    db.prepare('UPDATE users SET two_factor_enabled = 0, two_factor_secret = NULL WHERE id = ?').run(req.user.id);
+    db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(
+      req.user.id, 'disable_2fa', 'user:' + req.user.id, 'Authentification à deux facteurs désactivée'
+    );
+
+    res.json({ message: '2FA désactivée' });
   });
 
   return router;

@@ -14,20 +14,22 @@ let currentTotals = {};
 async function loadStats() {
   try {
     const { users, totals } = await fetchJSON('/api/admin/stats');
+    let settings = {};
+    try { settings = await fetchJSON('/api/admin/settings'); } catch {}
     currentUsers = users;
     currentTotals = totals;
 
     renderKPI(totals);
     renderLeaderboard(users);
     renderCharts(users, totals);
-    renderInsights(users, totals);
+    renderInsights(users, totals, settings);
 
-    window.__chartsData = { users, totals };
+    window.__chartsData = { users, totals, settings };
 
     setupKPIClicks();
     animateCounters();
-  } catch {
-    console.error('Erreur chargement stats');
+  } catch (e) {
+    console.error('Erreur chargement stats:', e);
   }
 }
 
@@ -73,6 +75,20 @@ function showApp() {
 async function init() {
   const user = await checkAuth();
   if (!user) return;
+
+  // Load theme from settings or localStorage
+  let themeApplied = false;
+  try {
+    const settings = await fetchJSON('/api/admin/settings');
+    if (settings.theme) {
+      document.documentElement.setAttribute('data-theme', settings.theme);
+      themeApplied = true;
+    }
+  } catch {}
+  if (!themeApplied) {
+    const saved = localStorage.getItem('ipce_theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  }
 
   showApp();
   setupHeader();

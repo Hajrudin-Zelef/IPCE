@@ -18,7 +18,13 @@ function initDB() {
       role TEXT DEFAULT 'commercial' CHECK(role IN ('admin', 'commercial')),
       must_change_password INTEGER DEFAULT 0
     );
+  `);
 
+  // Add 2FA columns if they don't exist
+  try { db.exec("ALTER TABLE users ADD COLUMN two_factor_secret TEXT"); } catch {}
+  try { db.exec("ALTER TABLE users ADD COLUMN two_factor_enabled INTEGER DEFAULT 0"); } catch {}
+
+  db.exec(`
     CREATE TABLE IF NOT EXISTS collectes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,

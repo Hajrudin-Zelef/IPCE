@@ -1,5 +1,6 @@
 let chartCA = null;
-let chartPipeline = null;
+let chartDonut = null;
+let chartBar = null;
 
 const CHART_COLORS = {
   primary: '#2563EB',
@@ -138,11 +139,13 @@ function renderDonutChart(users) {
   const ctx = document.getElementById('chart-donut');
   if (!ctx) return;
 
+  if (chartDonut) chartDonut.destroy();
+
   const labels = users.map(u => u.nom);
   const caData = users.map(u => u.ca / 1e6);
   const colors = [CHART_COLORS.primary, CHART_COLORS.purple, CHART_COLORS.success, CHART_COLORS.warning];
 
-  new Chart(ctx, {
+  chartDonut = new Chart(ctx, {
     type: 'doughnut',
     data: {
       labels,
@@ -178,11 +181,13 @@ function renderHorizontalBarChart(users) {
   const ctx = document.getElementById('chart-bar');
   if (!ctx) return;
 
+  if (chartBar) chartBar.destroy();
+
   const sorted = [...users].sort((a, b) => b.ca - a.ca);
   const labels = sorted.map(u => u.nom);
   const caData = sorted.map(u => u.ca / 1e6);
 
-  new Chart(ctx, {
+  chartBar = new Chart(ctx, {
     type: 'bar',
     data: {
       labels,

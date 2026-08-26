@@ -396,6 +396,8 @@ function createAdminRouter(db) {
       require('bcryptjs').hashSync(process.env.ADMIN_PASSWORD || 'change_me', 12), 'admin'
     );
 
+    db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'reset_all', 'system', 'Réinitialisation complète de toutes les données');
+
     res.json({ message: 'Toutes les donnees ont ete reinitialisees' });
   });
 
@@ -427,6 +429,7 @@ function createAdminRouter(db) {
     if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
     if (user.role === 'admin') return res.status(400).json({ error: 'Impossible de supprimer un admin' });
     db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id);
+    db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'delete_user', 'user:' + req.params.id, `Utilisateur "${user.nom}" supprimé`);
     res.json({ message: 'Utilisateur supprimé' });
   });
 
@@ -436,11 +439,13 @@ function createAdminRouter(db) {
     const { role, reset_password } = req.body;
     if (role) {
       db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, req.params.id);
+      db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'update_user', 'user:' + req.params.id, `Rôle de "${user.nom}" changé en ${role}`);
     }
     if (reset_password) {
       const bcrypt = require('bcryptjs');
       const hash = bcrypt.hashSync(reset_password, 12);
       db.prepare('UPDATE users SET password = ?, must_change_password = 1 WHERE id = ?').run(hash, req.params.id);
+      db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'reset_password', 'user:' + req.params.id, `Mot de passe de "${user.nom}" réinitialisé`);
     }
     res.json({ message: 'Utilisateur mis à jour' });
   });
@@ -520,6 +525,8 @@ function createAdminRouter(db) {
       }
     });
     tx();
+    const keys = Object.keys(updates).join(', ');
+    db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'update_settings', 'settings', `Paramètres mis à jour : ${keys}`);
     res.json({ message: 'Paramètres mis à jour' });
   });
 
