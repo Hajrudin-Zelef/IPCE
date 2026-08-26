@@ -49,9 +49,13 @@
         </div>
         <div class="nav-group">
           <div class="nav-group-label">Compte</div>
+          <button class="nav-item" data-section="docs">
+            <span class="nav-icon">&#128214;</span>
+            <span class="nav-label">Documentation</span>
+          </button>
           <button class="nav-item" data-section="settings">
             <span class="nav-icon">&#9881;&#65039;</span>
-            <span class="nav-label">Paramètres</span>
+            <span class="nav-label">Param&#232;tres</span>
           </button>
         </div>
       </nav>
@@ -199,6 +203,12 @@
         </div>
       </div>
 
+      <!-- Section: Documentation -->
+      <div class="dashboard-section" id="section-docs" style="display:none;">
+        <div class="section-header"><h2 class="section-title">Documentation</h2></div>
+        <div class="section-content" id="section-docs-content"></div>
+      </div>
+
       <!-- Section: Settings -->
       <div class="dashboard-section" id="section-settings" style="display:none;">
         <div class="section-header"><h2 class="section-title">Paramètres</h2></div>
@@ -284,6 +294,7 @@
   <script src="/commercial/js/section-collectes.js"></script>
   <script src="/commercial/js/section-history.js"></script>
   <script src="/commercial/js/section-calendar.js"></script>
+  <script src="/commercial/js/section-docs.js"></script>
   <script src="/commercial/js/section-settings.js"></script>
   <script src="/admin/js/notifications.js"></script>
   <script>
