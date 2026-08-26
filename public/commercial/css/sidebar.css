@@ -129,7 +129,7 @@
   position: relative;
 }
 
-/* --- Notification in header --- */
+/* --- Notification in header (desktop only) --- */
 .content-header-right .notif-fixed-wrapper {
   position: static !important;
   z-index: auto !important;
@@ -137,8 +137,7 @@
   right: auto !important;
 }
 .content-header-right .notif-bell {
-  width: 34px;
-  height: 34px;
+  width: 34px; height: 34px;
   border-radius: 8px;
   background: var(--card);
   border: 1px solid var(--border);

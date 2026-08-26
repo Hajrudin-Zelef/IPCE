@@ -41,21 +41,22 @@ async function checkAuth() {
     var dateEl = document.getElementById('header-date');
     if (dateEl) dateEl.textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    // Move notification bell into content header (at the END, after avatar)
+    // Move notification bell into content header (desktop only)
     setTimeout(function() {
-      var notifWrapper = document.querySelector('.notif-fixed-wrapper');
-      var headerRight = document.querySelector('.content-header-right');
-      if (notifWrapper && headerRight) {
-        headerRight.appendChild(notifWrapper);
-        notifWrapper.style.position = 'static';
-        notifWrapper.style.zIndex = 'auto';
-        notifWrapper.style.top = 'auto';
-        notifWrapper.style.right = 'auto';
-        notifWrapper.style.pointerEvents = 'auto';
+      if (window.innerWidth > 768) {
+        var notifWrapper = document.querySelector('.notif-fixed-wrapper');
+        var headerRight = document.querySelector('.content-header-right');
+        if (notifWrapper && headerRight) {
+          headerRight.appendChild(notifWrapper);
+          notifWrapper.style.position = 'static';
+          notifWrapper.style.zIndex = 'auto';
+          notifWrapper.style.top = 'auto';
+          notifWrapper.style.right = 'auto';
+        }
       }
     }, 300);
 
-    // Force dashboard on first visit (reset bad localStorage)
+    // Force dashboard as default section
     var hash = window.location.hash.replace('#', '');
     if (!hash || !document.getElementById('section-' + hash)) {
       localStorage.setItem('commercial_section', 'dashboard');
