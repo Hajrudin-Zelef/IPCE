@@ -41,7 +41,7 @@ async function checkAuth() {
     var dateEl = document.getElementById('header-date');
     if (dateEl) dateEl.textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    // Move notification bell into content header (AFTER avatar)
+    // Move notification bell into content header (at the END, after avatar)
     setTimeout(function() {
       var notifWrapper = document.querySelector('.notif-fixed-wrapper');
       var headerRight = document.querySelector('.content-header-right');
@@ -51,8 +51,15 @@ async function checkAuth() {
         notifWrapper.style.zIndex = 'auto';
         notifWrapper.style.top = 'auto';
         notifWrapper.style.right = 'auto';
+        notifWrapper.style.pointerEvents = 'auto';
       }
     }, 300);
+
+    // Force dashboard on first visit (reset bad localStorage)
+    var hash = window.location.hash.replace('#', '');
+    if (!hash || !document.getElementById('section-' + hash)) {
+      localStorage.setItem('commercial_section', 'dashboard');
+    }
 
     // Init sidebar navigation (loads default section)
     if (typeof switchSection === 'function') {
