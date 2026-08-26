@@ -519,3 +519,161 @@
     height: 52px;
   }
 }
+
+/* ========================================
+   STREAMING ANIMATIONS
+   ======================================== */
+
+/* --- Chunk apparition --- */
+@keyframes chunkFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.ai-chunk {
+  display: inline;
+  animation: chunkFadeIn 0.18s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* --- Typing cursor --- */
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.ai-cursor {
+  display: inline-block;
+  width: 2.5px;
+  height: 1.1em;
+  background: linear-gradient(180deg, #2563EB, #7C3AED);
+  border-radius: 2px;
+  animation: cursorBlink 0.7s step-end infinite;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  transition: opacity 0.3s ease;
+}
+
+.ai-cursor-fadeout {
+  animation: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+[data-theme="dark"] .ai-cursor {
+  background: linear-gradient(180deg, #3B82F6, #A78BFA);
+}
+
+/* --- Settling effect --- */
+@keyframes settle {
+  0% { transform: scale(1.005); }
+  100% { transform: scale(1); }
+}
+
+.ai-settled {
+  animation: settle 0.2s ease-out;
+}
+
+/* --- Streaming bubble glow --- */
+.ai-streaming {
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-streaming::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #2563EB, #7C3AED, transparent);
+  background-size: 200% 100%;
+  animation: streamProgress 1.5s linear infinite;
+}
+
+@keyframes streamProgress {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* --- Shimmer loading (pre-stream) --- */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.ai-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(37, 99, 235, 0.06) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+/* --- FAB pulse during streaming --- */
+@keyframes fabPulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4); }
+  50% { box-shadow: 0 4px 30px rgba(37, 99, 235, 0.7), 0 0 0 8px rgba(37, 99, 235, 0.1); }
+}
+
+.ai-fab.streaming {
+  animation: fabPulse 1.5s ease-in-out infinite;
+}
+
+/* --- Message enter animation --- */
+@keyframes msgSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ai-msg {
+  animation: msgSlideIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Word stagger (for extra smooth feel) --- */
+.ai-chunk:nth-child(1) { animation-delay: 0ms; }
+.ai-chunk:nth-child(2) { animation-delay: 20ms; }
+.ai-chunk:nth-child(3) { animation-delay: 40ms; }
+.ai-chunk:nth-child(4) { animation-delay: 60ms; }
+
+/* --- Error shake --- */
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+}
+
+.ai-error {
+  animation: errorShake 0.4s ease;
+}
+
+/* --- Reduced motion --- */
+@media (prefers-reduced-motion: reduce) {
+  .ai-chunk,
+  .ai-cursor,
+  .ai-settled,
+  .ai-msg,
+  .ai-error,
+  .ai-streaming::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .ai-chunk { opacity: 1; }
+  .ai-cursor { opacity: 1; animation: cursorBlink 0.7s step-end infinite !important; }
+}

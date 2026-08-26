@@ -1,6 +1,7 @@
 const express = require('express');
 const { authenticate } = require('../middleware/auth');
-const { chat, generateInsights, generatePredictions, generateReport, PROVIDERS } = require('../lib/ai');
+const { chat, chatStream, generateInsights, generatePredictions, generateReport } = require('../lib/ai');
+const { router: aiRouter, MODELS } = require('../lib/ai-router');
 
 const godmodeSessions = new Map();
 const GODMODE_DURATION = 30 * 60 * 1000;
@@ -15,15 +16,24 @@ function isGodMode(userId) {
 function createAIRouter(db, broadcast) {
   const router = express.Router();
 
+  // Get AI config
   router.get('/config', authenticate, (req, res) => {
     const mode = process.env.AI_MODE || 'free';
-    const providers = {};
-    for (const [tier, list] of Object.entries(PROVIDERS)) {
-      providers[tier] = list.map(p => ({ name: p.name, model: p.model, available: !!process.env[p.keyEnv] }));
+    const status = aiRouter.getStatus();
+    const models = {};
+    for (const [tier, list] of Object.entries(MODELS)) {
+      models[tier] = list.map(m => ({
+        id: m.id,
+        name: m.name,
+        provider: m.provider,
+        available: !!process.env[m.keyEnv],
+        blacklisted: aiRouter.isBlacklisted(m.id),
+      }));
     }
-    res.json({ mode, providers, godmode: isGodMode(req.user.id) });
+    res.json({ mode, models, status, godmode: isGodMode(req.user.id) });
   });
 
+  // Set AI mode
   router.post('/config', authenticate, (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     const { mode } = req.body;
@@ -33,14 +43,16 @@ function createAIRouter(db, broadcast) {
     res.json({ mode });
   });
 
+  // Chat (STREAMING SSE)
   router.post('/chat', authenticate, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
-    let { message, history = [] } = req.body;
+    let { message, history = [], model: forceModel } = req.body;
     if (!message) return res.status(400).json({ error: 'Message requis' });
 
     const gm = isGodMode(req.user.id);
     const cmd = message.trim().toLowerCase();
 
+    // --- God Mode commands (non-streaming) ---
     if (cmd === '/rahian') {
       if (gm) return res.json({ content: 'God Mode est deja actif.', godmode: true, provider: 'system', model: 'godmode' });
       return res.json({ content: 'Entrez le mot de passe God Mode :', godmode_prompt: true, provider: 'system', model: 'godmode' });
@@ -66,34 +78,49 @@ function createAIRouter(db, broadcast) {
 
     if (cmd === '/cmds') {
       const cmds = gm
-        ? 'Commandes God Mode:\n/rahian - Activer God Mode\n/rahian <pass> - Verifier le mot de passe\n/deactivate - Desactiver God Mode\n/status - Voir le statut\n/cmds - Cette aide'
-        : 'Commandes:\n/rahian - Activer God Mode (admin)\n/status - Voir le statut\n/cmds - Cette aide';
+        ? 'Commandes God Mode:\n/rahian - Activer God Mode\n/rahian <pass> - Verifier le mot de passe\n/deactivate - Desactiver\n/status - Statut\n/cmds - Aide'
+        : 'Commandes:\n/rahian - Activer God Mode (admin)\n/status - Statut\n/cmds - Aide';
       return res.json({ content: cmds, godmode: gm, provider: 'system', model: 'godmode' });
     }
 
     if (cmd === '/status') {
       const mode = process.env.AI_MODE || 'free';
       const remaining = gm ? Math.round((godmodeSessions.get(req.user.id).expiresAt - Date.now()) / 60000) : 0;
+      const status = aiRouter.getStatus();
+      const avail = status[mode]?.available || 0;
       return res.json({
-        content: `Statut IA:\n- Mode: ${mode}\n- God Mode: ${gm ? 'ACTIF (' + remaining + ' min restantes)' : 'INACTIF'}`,
+        content: `Mode: ${mode} | Modeles disponibles: ${avail}\nGod Mode: ${gm ? 'ACTIF (' + remaining + ' min)' : 'INACTIF'}`,
         godmode: gm, provider: 'system', model: 'godmode',
       });
     }
 
+    // --- Streaming chat ---
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders();
+
+    await chatStream(message, history, db, process.env.AI_MODE || 'free', gm, forceModel, res);
+  });
+
+  // Chat (non-streaming, pour backward compat)
+  router.post('/chat-sync', authenticate, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
+    const { message, history = [], model: forceModel } = req.body;
+    if (!message) return res.status(400).json({ error: 'Message requis' });
     try {
       const mode = process.env.AI_MODE || 'free';
-      const result = await chat(message, history, db, mode, gm);
+      const gm = isGodMode(req.user.id);
+      const result = await chat(message, history, db, mode, gm, forceModel);
       result.godmode = gm;
       res.json(result);
     } catch (err) {
-      const msg = err.message || 'Erreur IA';
-      if (msg.includes('401') || msg.includes('Unauthorized') || msg.includes('API key')) {
-        return res.status(503).json({ error: 'Cle API invalide ou manquante.' });
-      }
-      res.status(500).json({ error: msg });
+      res.status(500).json({ error: err.message || 'Erreur IA' });
     }
   });
 
+  // Insights
   router.get('/insights', authenticate, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     try {
@@ -107,6 +134,7 @@ function createAIRouter(db, broadcast) {
     } catch (err) { res.status(500).json({ error: err.message }); }
   });
 
+  // Predictions
   router.get('/predictions', authenticate, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     try {
@@ -116,6 +144,7 @@ function createAIRouter(db, broadcast) {
     } catch (err) { res.status(500).json({ error: err.message }); }
   });
 
+  // Report
   router.post('/report', authenticate, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     try {
@@ -125,6 +154,7 @@ function createAIRouter(db, broadcast) {
     } catch (err) { res.status(500).json({ error: err.message }); }
   });
 
+  // Stored insights
   router.get('/stored-insights', authenticate, (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     const limit = Math.min(parseInt(req.query.limit) || 20, 100);
