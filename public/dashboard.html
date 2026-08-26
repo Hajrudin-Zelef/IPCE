@@ -3,142 +3,227 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Mon Tableau de Bord — IPCE</title>
+  <title>Dashboard Commercial — IPCE</title>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#1e3c72">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   <link rel="stylesheet" href="/commercial/css/variables.css">
+  <link rel="stylesheet" href="/commercial/css/sidebar.css">
   <link rel="stylesheet" href="/commercial/css/dashboard.css">
 </head>
 <body>
   <div class="loading" id="loading">Chargement...</div>
 
-  <div id="app" style="display:none;">
-    <div class="topbar">
-      <h2>IPCE Dashboard</h2>
-      <div class="user-info">
-        <button class="dark-toggle" id="dark-toggle" onclick="toggleDarkMode()" title="Basculer le th\u00e8me"></button>
-        <div class="user-avatar-menu">
-          <button class="user-avatar" id="user-avatar" onclick="toggleUserMenu()" title="Menu utilisateur"></button>
-          <div class="user-dropdown" id="user-dropdown">
-            <div class="dropdown-header">
-              <div class="dropdown-avatar" id="dropdown-avatar"></div>
-              <div>
-                <div class="dropdown-name" id="dropdown-name"></div>
-                <div class="dropdown-role" id="dropdown-role">Commercial</div>
+  <div id="app" class="app-layout" style="display:none;">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img class="sidebar-logo" src="/admin/img/logo-ipce-64.png" alt="IPCE">
+        <span class="sidebar-brand">IPCE</span>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-group">
+          <div class="nav-group-label">Principal</div>
+          <button class="nav-item active" data-section="dashboard">
+            <span class="nav-icon">&#128202;</span>
+            <span class="nav-label">Tableau de bord</span>
+          </button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">Données</div>
+          <button class="nav-item" data-section="collecte">
+            <span class="nav-icon">&#9998;&#65039;</span>
+            <span class="nav-label">Nouvelle Collecte</span>
+          </button>
+          <button class="nav-item" data-section="history">
+            <span class="nav-icon">&#128203;</span>
+            <span class="nav-label">Historique</span>
+          </button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">Visualisation</div>
+          <button class="nav-item" data-section="charts">
+            <span class="nav-icon">&#128200;</span>
+            <span class="nav-label">Graphiques</span>
+          </button>
+          <button class="nav-item" data-section="calendar">
+            <span class="nav-icon">&#128197;</span>
+            <span class="nav-label">Calendrier</span>
+          </button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">Compte</div>
+          <button class="nav-item" data-section="settings">
+            <span class="nav-icon">&#9881;&#65039;</span>
+            <span class="nav-label">Paramètres</span>
+          </button>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="nav-item" onclick="logout()">
+          <span class="nav-icon">&#128682;</span>
+          <span class="nav-label">Déconnexion</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Overlay mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- Content -->
+    <main class="content-area">
+      <div class="content-header">
+        <div class="content-header-left">
+          <button class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+          <span id="header-date" style="font-size:13px;color:var(--muted);"></span>
+        </div>
+        <div class="content-header-right">
+          <button class="dark-toggle" id="dark-toggle" onclick="toggleDarkMode()" title="Basculer le thème"></button>
+          <div class="user-avatar-menu">
+            <button class="user-avatar" id="user-avatar" onclick="toggleUserMenu()" title="Menu utilisateur"></button>
+            <div class="user-dropdown" id="user-dropdown">
+              <div class="dropdown-header">
+                <div class="dropdown-avatar" id="dropdown-avatar"></div>
+                <div>
+                  <div class="dropdown-name" id="dropdown-name"></div>
+                  <div class="dropdown-role" id="dropdown-role">Commercial</div>
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">&#128100; Profil</a>
+              <a class="dropdown-item" onclick="toggleDarkMode();closeUserMenu()">&#127912; Apparence</a>
+              <a class="dropdown-item" onclick="switchSection('settings');closeUserMenu()">&#9881;&#65039; Paramètres</a>
+              <a class="dropdown-item" href="#">&#10067; FAQ</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item dropdown-danger" onclick="logout()">&#128682; Déconnexion</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Dashboard -->
+      <div class="dashboard-section" id="section-dashboard">
+        <div class="section-header"><h2 class="section-title">Mon Tableau de Bord</h2></div>
+        <div class="section-content" id="section-dashboard-content"></div>
+      </div>
+
+      <!-- Section: Nouvelle Collecte -->
+      <div class="dashboard-section" id="section-collecte" style="display:none;">
+        <div class="section-header"><h2 class="section-title">Nouvelle Collecte</h2></div>
+        <div class="section-content" id="section-collecte-content">
+          <div class="card">
+            <h3>Saisir ma collecte</h3>
+            <div class="form-row-3">
+              <div class="form-group">
+                <label>CA (FCFA)</label>
+                <input type="number" id="inp-ca" min="0" placeholder="0" class="input-lg">
+              </div>
+              <div class="form-group">
+                <label>Offres Émises</label>
+                <input type="number" id="inp-offres" min="0" placeholder="0" class="input-lg">
+              </div>
+              <div class="form-group">
+                <label>BC Signés</label>
+                <input type="number" id="inp-bc" min="0" placeholder="0" class="input-lg">
               </div>
             </div>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">&#128100; Profil</a>
-            <a class="dropdown-item" onclick="toggleDarkMode();closeUserMenu()">&#127912; Apparence</a>
-            <a class="dropdown-item" href="#">&#9881;&#65039; Param\u00e8tres</a>
-            <a class="dropdown-item" href="#">&#10067; FAQ</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item dropdown-danger" onclick="logout()">&#128682; D\u00e9connexion</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="container">
-      <header>
-        <h1>Mon Tableau de Bord</h1>
-        <p>Suivi de mes collectes — <span id="date"></span></p>
-      </header>
-
-      <div class="section">Nouvelle Collecte</div>
-      <div class="card">
-        <h3>Saisir ma collecte</h3>
-        <div class="form-row-3">
-          <div class="form-group">
-            <label>CA (FCFA)</label>
-            <input type="number" id="inp-ca" min="0" placeholder="0" class="input-lg">
-          </div>
-          <div class="form-group">
-            <label>Offres Émises</label>
-            <input type="number" id="inp-offres" min="0" placeholder="0" class="input-lg">
-          </div>
-          <div class="form-group">
-            <label>BC Signés</label>
-            <input type="number" id="inp-bc" min="0" placeholder="0" class="input-lg">
-          </div>
-        </div>
-
-        <div class="rdv-section">
-          <div class="rdv-header">
-            <label class="rdv-label">RDV <span class="rdv-counter" id="rdv-counter">0</span></label>
-          </div>
-          <div class="rdv-list" id="rdv-list"></div>
-          <div class="rdv-form">
-            <div class="rdv-inputs">
-              <input type="text" id="rdv-prospect" placeholder="Prospect" class="rdv-input">
-              <input type="date" id="rdv-date" class="rdv-input">
-              <input type="number" id="rdv-montant" min="0" placeholder="Montant M" class="rdv-input rdv-input-sm">
-              <select id="rdv-statut" class="rdv-input rdv-input-sm">
-                <option>Prévu</option>
-                <option>Réalisé</option>
-                <option>Offre</option>
-                <option>BC Signé</option>
-              </select>
-              <button class="btn btn-add-rdv" onclick="addRdv()">+</button>
+            <div class="rdv-section">
+              <div class="rdv-header">
+                <label class="rdv-label">RDV <span class="rdv-counter" id="rdv-counter">0</span></label>
+              </div>
+              <div class="rdv-list" id="rdv-list"></div>
+              <div class="rdv-form">
+                <div class="rdv-inputs">
+                  <input type="text" id="rdv-prospect" placeholder="Prospect" class="rdv-input">
+                  <input type="date" id="rdv-date" class="rdv-input">
+                  <input type="number" id="rdv-montant" min="0" placeholder="Montant M" class="rdv-input rdv-input-sm">
+                  <select id="rdv-statut" class="rdv-input rdv-input-sm">
+                    <option>Prévu</option>
+                    <option>Réalisé</option>
+                    <option>Offre</option>
+                    <option>BC Signé</option>
+                  </select>
+                  <button class="btn btn-add-rdv" onclick="addRdv()">+</button>
+                </div>
+              </div>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-success" onclick="saveCollecte()">
+                <span class="btn-icon">&#128190;</span> Sauvegarder
+              </button>
+              <button class="btn btn-warning" onclick="validateCollecte()">
+                <span class="btn-icon">&#10003;</span> Valider et envoyer
+              </button>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="btn-group">
-          <button class="btn btn-success" onclick="saveCollecte()">
-            <span class="btn-icon">&#128190;</span> Sauvegarder
-          </button>
-          <button class="btn btn-warning" onclick="validateCollecte()">
-            <span class="btn-icon">&#10003;</span> Valider et envoyer
-          </button>
+      <!-- Section: Historique -->
+      <div class="dashboard-section" id="section-history" style="display:none;">
+        <div class="section-header"><h2 class="section-title">Historique de mes collectes</h2></div>
+        <div class="section-content" id="section-history-content">
+          <div class="card">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>CA</th>
+                  <th>Offres</th>
+                  <th>BC</th>
+                  <th>RDV</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="history-body"></tbody>
+            </table>
+            <div class="empty" id="empty-history">Aucune collecte pour le moment</div>
+          </div>
         </div>
       </div>
 
-      <div class="section">Historique de mes collectes</div>
-      <div class="card">
-        <table class="history-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>CA</th>
-              <th>Offres</th>
-              <th>BC</th>
-              <th>RDV</th>
-              <th>Statut</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="history-body"></tbody>
-        </table>
-        <div class="empty" id="empty-history">Aucune collecte pour le moment</div>
+      <!-- Section: Graphiques -->
+      <div class="dashboard-section" id="section-charts" style="display:none;">
+        <div class="section-header"><h2 class="section-title">Mes Graphiques</h2></div>
+        <div class="section-content" id="section-charts-content">
+          <div class="charts">
+            <div class="chart"><canvas id="ch-ca"></canvas></div>
+            <div class="chart"><canvas id="ch-offres"></canvas></div>
+            <div class="chart"><canvas id="ch-bc"></canvas></div>
+          </div>
+        </div>
       </div>
 
-      <div class="section">Mes Graphiques</div>
-      <div class="charts">
-        <div class="chart"><canvas id="ch-ca"></canvas></div>
-        <div class="chart"><canvas id="ch-offres"></canvas></div>
-        <div class="chart"><canvas id="ch-bc"></canvas></div>
+      <!-- Section: Calendrier -->
+      <div class="dashboard-section" id="section-calendar" style="display:none;">
+        <div class="section-header"><h2 class="section-title">Mon Calendrier</h2></div>
+        <div class="section-content" id="section-calendar-content">
+          <div class="card">
+            <div class="cal-toggle">
+              <button class="cal-toggle-btn active" data-view="month" onclick="calToggleView('month',this)">Vue Mois</button>
+              <button class="cal-toggle-btn" data-view="timeline" onclick="calToggleView('timeline',this)">Timeline</button>
+            </div>
+            <div class="cal-nav">
+              <button class="btn btn-sm btn-primary" onclick="calPrevMonth()">&#9664;</button>
+              <span id="cal-month-label"></span>
+              <button class="btn btn-sm btn-primary" onclick="calNextMonth()">&#9654;</button>
+            </div>
+            <div id="cal-month-view"></div>
+            <div id="cal-timeline-view" style="display:none;"></div>
+          </div>
+        </div>
       </div>
 
-      <div class="section">Mon Calendrier</div>
-      <div class="card">
-        <div class="cal-toggle">
-          <button class="cal-toggle-btn active" data-view="month" onclick="calToggleView('month',this)">Vue Mois</button>
-          <button class="cal-toggle-btn" data-view="timeline" onclick="calToggleView('timeline',this)">Timeline</button>
-        </div>
-        <div class="cal-nav">
-          <button class="btn btn-sm btn-primary" onclick="calPrevMonth()">&#9664;</button>
-          <span id="cal-month-label"></span>
-          <button class="btn btn-sm btn-primary" onclick="calNextMonth()">&#9654;</button>
-        </div>
-        <div id="cal-month-view"></div>
-        <div id="cal-timeline-view" style="display:none;"></div>
+      <!-- Section: Settings -->
+      <div class="dashboard-section" id="section-settings" style="display:none;">
+        <div class="section-header"><h2 class="section-title">Paramètres</h2></div>
+        <div class="section-content" id="section-settings-content"></div>
       </div>
-    </div>
+    </main>
   </div>
 
-  <!-- Modal détail du jour -->
+  <!-- Modals -->
   <div class="cal-modal-overlay" id="cal-day-modal" style="display:none;">
     <div class="cal-modal">
       <div class="cal-modal-header">
@@ -152,7 +237,6 @@
     </div>
   </div>
 
-  <!-- Modal détail collecte -->
   <div class="cal-modal-overlay" id="cal-collecte-modal" style="display:none;">
     <div class="cal-modal">
       <div class="cal-modal-header">
@@ -166,7 +250,6 @@
     </div>
   </div>
 
-  <!-- Modal détail RDV -->
   <div class="cal-modal-overlay" id="cal-modal" style="display:none;">
     <div class="cal-modal">
       <div class="cal-modal-header">
@@ -211,15 +294,18 @@
   <div class="toast-container" id="toast-container"></div>
 
   <!-- Scripts -->
-  <script src="/commercial/js/dashboard-app.js"></script>
-  <script src="/commercial/js/dashboard-collectes.js"></script>
-  <script src="/commercial/js/dashboard-history.js"></script>
-  <script src="/commercial/js/dashboard-charts.js"></script>
-  <script src="/commercial/js/dashboard-calendar.js"></script>
+  <script src="/commercial/js/app.js"></script>
+  <script src="/commercial/js/sidebar.js"></script>
+  <script src="/commercial/js/section-dashboard.js"></script>
+  <script src="/commercial/js/section-collectes.js"></script>
+  <script src="/commercial/js/section-history.js"></script>
+  <script src="/commercial/js/section-charts.js"></script>
+  <script src="/commercial/js/section-calendar.js"></script>
+  <script src="/commercial/js/section-settings.js"></script>
   <script src="/admin/js/notifications.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
+      navigator.serviceWorker.register('/sw.js').catch(function() {});
     }
   </script>
 </body>

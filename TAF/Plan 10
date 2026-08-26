@@ -1,0 +1,75 @@
+# PLAN 10 — Dashboard modulaire style SPA (sidebar + sections)
+
+## Résumé
+
+Transformation du dashboard commercial en SPA modulaire avec sidebar, navigation par sections, et chargement à la demande — même pattern que l'admin.
+
+---
+
+## 1. Structure cible
+
+```
+dashboard.html                     ← HTML avec sidebar + sections
+dashboard.html.back                ← backup ancien
+public/commercial/
+  css/
+    variables.css                  ← inchangé
+    sidebar.css                    ← NOUVEAU styles sidebar
+    dashboard.css                  ← restructuré layout sidebar+content
+  js/
+    app.js                         ← auth, API, dark mode, avatar (renommé)
+    sidebar.js                     ← NOUVEAU navigation sections
+    section-dashboard.js           ← NOUVEAU vue d'ensemble (KPIs)
+    section-collectes.js           ← renommé depuis dashboard-collectes.js
+    section-history.js             ← renommé depuis dashboard-history.js
+    section-charts.js              ← renommé depuis dashboard-charts.js
+    section-calendar.js            ← renommé depuis dashboard-calendar.js
+    section-settings.js            ← NOUVEAU paramètres placeholder
+```
+
+---
+
+## 2. Sidebar
+
+| Groupe | Items |
+|--------|-------|
+| Principal | Tableau de bord |
+| Données | Nouvelle Collecte, Historique |
+| Visualisation | Graphiques, Calendrier |
+| Compte | Paramètres |
+
+- Logo IPCE + nom en haut
+- Déconnexion en bas
+- Collapse/expand sur desktop
+- Hamburger + overlay sur mobile
+- Active section persistée dans localStorage
+
+---
+
+## 3. Sections
+
+| Section | Contenu |
+|---------|---------|
+| Dashboard | KPIs (CA, Offres, BC, RDV) + mini-graphs + dernières collectes |
+| Collecte | Formulaire saisie (existant) |
+| Historique | Tableau historique (existant) |
+| Graphiques | 3 graphiques détaillés (existant) |
+| Calendrier | Month grid + timeline (existant) |
+| Settings | Profil + Dark mode toggle + Notifications (placeholder) |
+
+---
+
+## 4. Convention de nommage (identique admin)
+
+```js
+window.__load_dashboard = function() { ... };
+window.__load_collecte = function() { ... };
+window.__load_history = function() { ... };
+window.__load_charts = function() { ... };
+window.__load_calendar = function() { ... };
+window.__load_settings = function() { ... };
+```
+
+---
+
+*Plan 10 — 26 Août 2026*

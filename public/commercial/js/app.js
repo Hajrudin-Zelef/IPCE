@@ -6,7 +6,7 @@
 let user = null;
 
 function api(method, url, body) {
-  const opts = { method, headers: { 'Content-Type': 'application/json' }, credentials: 'include' };
+  const opts = { method: method, headers: { 'Content-Type': 'application/json' }, credentials: 'include' };
   if (body) opts.body = JSON.stringify(body);
   return fetch(url, opts);
 }
@@ -34,12 +34,14 @@ async function checkAuth() {
     if (dropdownNameEl) dropdownNameEl.textContent = user.nom;
     if (dropdownRoleEl) dropdownRoleEl.textContent = user.role === 'admin' ? 'Administrateur' : 'Commercial';
 
-    document.getElementById('date').textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     document.getElementById('loading').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    renderRdvs();
-    loadHistory();
-    calLoadRdvs();
+    document.getElementById('app').style.display = '';
+
+    // Init sidebar navigation (loads default section)
+    if (typeof switchSection === 'function') {
+      var hash = window.location.hash.replace('#', '') || 'dashboard';
+      switchSection(hash);
+    }
   } catch {
     window.location.href = '/';
   }
@@ -86,7 +88,7 @@ function toggleDarkMode() {
 
 function updateDarkIcon(theme) {
   const btn = document.getElementById('dark-toggle');
-  if (btn) btn.textContent = theme === 'dark' ? '\u2600\uFE0F' : '\uD83C\uDF19';
+  if (btn) btn.textContent = theme === 'dark' ? '\u2600️' : '\uD83C\uDF19';
 }
 
 // --- Init ---
