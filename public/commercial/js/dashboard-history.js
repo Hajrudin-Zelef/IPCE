@@ -132,7 +132,7 @@ function addRdvToEdit() {
   const date = document.getElementById('edit-rdv-date').value;
   const montant = parseFloat(document.getElementById('edit-rdv-montant').value) || 0;
   const statut = document.getElementById('edit-rdv-statut').value;
-  if (!prospect || !date) return alert('Prospect et date requis');
+  if (!prospect || !date) return showToast('Prospect et date requis', 'warning');
   editRdvs.push({ prospect, date, montant, statut });
   renderEditRdvs();
   document.getElementById('edit-rdv-prospect').value = '';
@@ -154,12 +154,12 @@ async function saveCollecteEdit(id, e) {
     const res = await api('PUT', '/api/collectes/' + id, { ca, offres, bc, rdvs: editRdvs });
     if (res.status === 401) { window.location.href = '/'; return; }
     const data = await res.json();
-    if (!res.ok) { alert(data.error); return; }
+    if (!res.ok) { showToast(data.error, 'error'); return; }
     document.getElementById('cal-collecte-modal').style.display = 'none';
-    alert('Collecte mise \u00e0 jour !');
+    showToast('Collecte mise \u00e0 jour !', 'success');
     loadHistory();
     calLoadRdvs();
-  } catch { alert('Erreur serveur'); }
+  } catch { showToast('Erreur serveur', 'error'); }
 }
 
 async function deleteCollecte(id) {
@@ -168,9 +168,9 @@ async function deleteCollecte(id) {
     const res = await api('DELETE', '/api/collectes/' + id);
     if (res.status === 401) { window.location.href = '/'; return; }
     const data = await res.json();
-    if (!res.ok) { alert(data.error); return; }
-    alert('Collecte supprim\u00e9e !');
+    if (!res.ok) { showToast(data.error, 'error'); return; }
+    showToast('Collecte supprim\u00e9e !', 'success');
     loadHistory();
     calLoadRdvs();
-  } catch { alert('Erreur serveur'); }
+  } catch { showToast('Erreur serveur', 'error'); }
 }

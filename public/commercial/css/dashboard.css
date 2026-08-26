@@ -106,21 +106,74 @@ header p { font-size: 13px; opacity: 0.8; }
 .form-group select:focus { outline: none; border-color: var(--primary-light); }
 .form-group input::placeholder { color: var(--muted); }
 
+/* --- 3 Column Form --- */
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+.input-lg { padding: 12px 14px !important; font-size: 15px !important; font-weight: 600; text-align: center; }
+
+/* --- RDV Section --- */
+.rdv-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-light); }
+.rdv-header { margin-bottom: 10px; }
+.rdv-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+.rdv-counter {
+  background: var(--primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+.rdv-form { margin-top: 8px; }
+.rdv-inputs { display: flex; gap: 6px; align-items: flex-end; }
+.rdv-input { flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 12px; background: var(--card); color: var(--text); min-width: 0; }
+.rdv-input:focus { outline: none; border-color: var(--primary-light); }
+.rdv-input::placeholder { color: var(--muted); }
+.rdv-input-sm { flex: 0.7; }
+.btn-add-rdv {
+  width: 36px;
+  height: 36px;
+  border: 2px dashed var(--primary-light);
+  border-radius: 6px;
+  background: none;
+  color: var(--primary);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+.btn-add-rdv:hover { background: var(--primary); color: #fff; border-style: solid; }
+
 /* --- RDV List --- */
-.rdv-list { margin-top: 15px; }
+.rdv-list { margin-top: 10px; }
 .rdv-item {
   background: var(--bg-alt);
-  padding: 10px;
-  border-radius: 4px;
-  margin: 6px 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin: 4px 0;
   border-left: 3px solid var(--primary-light);
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 12px;
+  animation: rdvSlideIn 0.25s ease;
+}
+@keyframes rdvSlideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 .rdv-item .info { flex: 1; color: var(--text); }
 .rdv-item .info b { color: var(--primary); }
+.rdv-empty { text-align: center; padding: 12px; color: var(--muted); font-size: 12px; font-style: italic; }
+
+/* --- Buttons --- */
+.btn-icon { margin-right: 4px; }
+.btn-warning { background: #e65100; color: #fff; }
+.btn-warning:hover { background: #bf360c; }
 
 /* --- Status --- */
 .status { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; white-space: nowrap; }
@@ -365,8 +418,12 @@ header p { font-size: 13px; opacity: 0.8; }
   .container { padding: 0 12px; }
   header { padding: 18px 20px; }
   .form-row { grid-template-columns: 1fr; }
+  .form-row-3 { grid-template-columns: 1fr; }
   .charts { grid-template-columns: 1fr; }
   .cal-day { min-height: 60px; }
+  .rdv-inputs { flex-wrap: wrap; }
+  .rdv-input { flex: 1 1 45%; }
+  .btn-add-rdv { flex: 0 0 36px; }
 }
 
 @media (max-width: 480px) {
@@ -378,5 +435,38 @@ header p { font-size: 13px; opacity: 0.8; }
 
 /* --- Reduced Motion --- */
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; }
+  * { transition: none !important; animation: none !important; }
+}
+
+/* --- Toast --- */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+  max-width: 320px;
+}
+.toast-success { background: #10b981; }
+.toast-error { background: #ef4444; }
+.toast-info { background: #3b82f6; }
+.toast-warning { background: #f59e0b; color: #333; }
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes toastOut {
+  from { opacity: 1; }
+  to { opacity: 0; transform: translateY(-10px); }
 }

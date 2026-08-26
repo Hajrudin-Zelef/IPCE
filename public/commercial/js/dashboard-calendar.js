@@ -296,21 +296,23 @@ async function calSaveStatut() {
     const res = await api('PATCH', `/api/collectes/rdvs/${calSelectedRdv.id}`, { statut: newStatut });
     if (res.status === 401) { window.location.href = '/'; return; }
     const data = await res.json();
-    if (!res.ok) { alert(data.error); return; }
+    if (!res.ok) { showToast(data.error, 'error'); return; }
+    showToast('Statut mis \u00e0 jour', 'success');
     calCloseModal();
     calLoadRdvs();
-  } catch { alert('Erreur serveur'); }
+  } catch { showToast('Erreur serveur', 'error'); }
 }
 
 async function calDeleteRdv() {
   if (!calSelectedRdv) return;
-  if (!confirm(`Supprimer le RDV « ${calSelectedRdv.prospect} » ?`)) return;
+  if (!confirm(`Supprimer le RDV \u00ab ${calSelectedRdv.prospect} \u00bb ?`)) return;
   try {
     const res = await api('DELETE', `/api/collectes/rdvs/${calSelectedRdv.id}`);
     if (res.status === 401) { window.location.href = '/'; return; }
     const data = await res.json();
-    if (!res.ok) { alert(data.error); return; }
+    if (!res.ok) { showToast(data.error, 'error'); return; }
+    showToast('RDV supprim\u00e9', 'success');
     calCloseModal();
     calLoadRdvs();
-  } catch { alert('Erreur serveur'); }
+  } catch { showToast('Erreur serveur', 'error'); }
 }

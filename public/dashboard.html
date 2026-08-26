@@ -32,57 +32,49 @@
       <div class="section">Nouvelle Collecte</div>
       <div class="card">
         <h3>Saisir ma collecte</h3>
-        <div class="form-row">
+        <div class="form-row-3">
           <div class="form-group">
             <label>CA (FCFA)</label>
-            <input type="number" id="inp-ca" min="0" placeholder="0">
+            <input type="number" id="inp-ca" min="0" placeholder="0" class="input-lg">
           </div>
           <div class="form-group">
-            <label>Offres Émises</label>
-            <input type="number" id="inp-offres" min="0" placeholder="0">
+            <label>Offres \u00c9mises</label>
+            <input type="number" id="inp-offres" min="0" placeholder="0" class="input-lg">
           </div>
-        </div>
-        <div class="form-row">
           <div class="form-group">
-            <label>BC Signés</label>
-            <input type="number" id="inp-bc" min="0" placeholder="0">
+            <label>BC Sign\u00e9s</label>
+            <input type="number" id="inp-bc" min="0" placeholder="0" class="input-lg">
           </div>
         </div>
 
-        <div style="margin-top: 20px;">
-          <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase;">RDV</label>
+        <div class="rdv-section">
+          <div class="rdv-header">
+            <label class="rdv-label">RDV <span class="rdv-counter" id="rdv-counter">0</span></label>
+          </div>
           <div class="rdv-list" id="rdv-list"></div>
-          <div class="form-row" style="margin-top: 10px;">
-            <div class="form-group">
-              <label>Prospect</label>
-              <input type="text" id="rdv-prospect" placeholder="Nom du prospect">
-            </div>
-            <div class="form-group">
-              <label>Date</label>
-              <input type="date" id="rdv-date">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Montant (M FCFA)</label>
-              <input type="number" id="rdv-montant" min="0" placeholder="0">
-            </div>
-            <div class="form-group">
-              <label>Statut</label>
-              <select id="rdv-statut">
-                <option>Prévu</option>
-                <option>Réalisé</option>
+          <div class="rdv-form">
+            <div class="rdv-inputs">
+              <input type="text" id="rdv-prospect" placeholder="Prospect" class="rdv-input">
+              <input type="date" id="rdv-date" class="rdv-input">
+              <input type="number" id="rdv-montant" min="0" placeholder="Montant M" class="rdv-input rdv-input-sm">
+              <select id="rdv-statut" class="rdv-input rdv-input-sm">
+                <option>Pr\u00e9vu</option>
+                <option>R\u00e9alis\u00e9</option>
                 <option>Offre</option>
-                <option>BC Signé</option>
+                <option>BC Sign\u00e9</option>
               </select>
+              <button class="btn btn-add-rdv" onclick="addRdv()">+</button>
             </div>
           </div>
-          <button class="btn btn-primary" onclick="addRdv()">+ Ajouter RDV</button>
         </div>
 
         <div class="btn-group">
-          <button class="btn btn-success" onclick="saveCollecte()">Sauvegarder</button>
-          <button class="btn btn-primary" onclick="validateCollecte()" style="background: #e65100;">Valider et envoyer</button>
+          <button class="btn btn-success" onclick="saveCollecte()">
+            <span class="btn-icon">&#128190;</span> Sauvegarder
+          </button>
+          <button class="btn btn-warning" onclick="validateCollecte()">
+            <span class="btn-icon">&#10003;</span> Valider et envoyer
+          </button>
         </div>
       </div>
 
@@ -197,6 +189,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toast-container"></div>
 
   <!-- Scripts -->
   <script src="/commercial/js/dashboard-app.js"></script>
