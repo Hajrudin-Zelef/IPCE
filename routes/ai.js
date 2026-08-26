@@ -101,7 +101,14 @@ function createAIRouter(db, broadcast) {
     res.setHeader('X-Accel-Buffering', 'no');
     res.flushHeaders();
 
-    await chatStream(message, history, db, process.env.AI_MODE || 'free', gm, forceModel, res);
+    try {
+      await chatStream(message, history, db, process.env.AI_MODE || 'free', gm, forceModel, res);
+    } catch (err) {
+      try {
+        res.write(`data: ${JSON.stringify({ error: err.message || 'Erreur serveur', done: true })}\n\n`);
+      } catch {}
+      try { res.end(); } catch {}
+    }
   });
 
   // Chat (non-streaming, pour backward compat)
