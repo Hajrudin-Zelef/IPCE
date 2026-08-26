@@ -1,0 +1,59 @@
+# PLAN 9 — Refactorisation dashboard.html + Dark Mode
+
+## Résumé
+
+Refactorisation du dashboard commercial (605 lignes monolithiques) en fichiers modulaires + ajout du dark mode.
+
+---
+
+## 1. Structure cible
+
+```
+public/
+  dashboard.html                     ← HTML nettoyé (~160 lignes)
+  commercial/
+    css/
+      variables.css                  ← variables dark/light spécifiques dashboard
+      dashboard.css                  ← styles extraits + dark mode (~150 lignes)
+    js/
+      dashboard-app.js               ← auth, logout, api(), globals
+      dashboard-collectes.js         ← formulaires collecte + RDV
+      dashboard-history.js           ← historique tableau
+      dashboard-charts.js            ← Chart.js CA + pipeline
+      dashboard-calendar.js          ← calendrier mois/timeline + modal
+```
+
+---
+
+## 2. Fichiers créés (7)
+
+| Fichier | Contenu |
+|---------|---------|
+| `public/commercial/css/variables.css` | Variables dark/light dashboard |
+| `public/commercial/css/dashboard.css` | Styles extraits + dark mode |
+| `public/commercial/js/dashboard-app.js` | Auth, logout, api(), globals, dark toggle |
+| `public/commercial/js/dashboard-collectes.js` | Formulaires collecte + RDV |
+| `public/commercial/js/dashboard-history.js` | Historique tableau |
+| `public/commercial/js/dashboard-charts.js` | Chart.js (CA line + Pipeline bar) |
+| `public/commercial/js/dashboard-calendar.js` | Calendrier mois/timeline + modal |
+
+---
+
+## 3. Fichiers modifiés (1)
+
+| Fichier | Changement |
+|---------|------------|
+| `public/dashboard.html` | Nettoyé : HTML only + links/scripts |
+
+---
+
+## 4. Dark Mode
+
+- Toggle soleil/lune dans la topbar
+- Variables CSS dark (`[data-theme="dark"]`)
+- Persistance localStorage
+- Tous composants : topbar, cards, forms, table, charts, calendar, modal
+
+---
+
+*Plan 9 — 26 Août 2026*
