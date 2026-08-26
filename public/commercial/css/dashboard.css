@@ -297,6 +297,34 @@ header p { font-size: 13px; opacity: 0.8; }
 
 .cal-empty { text-align: center; padding: 30px; color: var(--muted); font-size: 13px; }
 
+/* --- Day Detail Modal --- */
+.cal-day-rdv-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  background: var(--bg-alt);
+  border-radius: 6px;
+  border-left: 3px solid var(--primary-light);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.cal-day-rdv-item:hover {
+  background: var(--cal-today-bg);
+  transform: translateX(4px);
+}
+.cal-day-rdv-left { flex: 1; }
+.cal-day-rdv-prospect { font-weight: 600; color: var(--primary); font-size: 14px; }
+.cal-day-rdv-montant { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.cal-day-rdv-statut {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* --- Responsive --- */
 @media (max-width: 768px) {
   .topbar { padding: 10px 16px; }

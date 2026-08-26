@@ -127,6 +127,21 @@
     </div>
   </div>
 
+  <!-- Modal détail du jour -->
+  <div class="cal-modal-overlay" id="cal-day-modal" style="display:none;">
+    <div class="cal-modal">
+      <div class="cal-modal-header">
+        <h3 id="cal-day-title">RDV du jour</h3>
+        <button class="cal-modal-close" onclick="calCloseDayModal()">&#10005;</button>
+      </div>
+      <div class="cal-modal-body" id="cal-day-body"></div>
+      <div class="cal-modal-actions">
+        <button class="btn btn-sm" style="background:var(--border);" onclick="calCloseDayModal()">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal détail RDV -->
   <div class="cal-modal-overlay" id="cal-modal" style="display:none;">
     <div class="cal-modal">
       <div class="cal-modal-header">

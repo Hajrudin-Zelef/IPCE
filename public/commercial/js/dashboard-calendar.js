@@ -119,14 +119,40 @@ function calRenderTimeline() {
 
 function calDayClick(dateStr) {
   const dayRdvs = calRdvs.filter(r => r.date === dateStr);
-  if (dayRdvs.length === 1) calOpenModal(dayRdvs[0]);
-  else if (dayRdvs.length > 1) {
-    let msg = `RDV le ${dateStr} :\n`;
-    dayRdvs.forEach((r, i) => { msg += `${i + 1}. ${r.prospect} — ${r.statut}\n`; });
-    msg += '\nEntrez le numéro du RDV à ouvrir :';
-    const idx = prompt(msg);
-    if (idx && dayRdvs[parseInt(idx) - 1]) calOpenModal(dayRdvs[parseInt(idx) - 1]);
-  }
+  if (dayRdvs.length === 0) return;
+  if (dayRdvs.length === 1) { calOpenModal(dayRdvs[0]); return; }
+
+  // Multiple RDVs — show day detail modal
+  const d = new Date(dateStr + 'T00:00:00');
+  const dateLabel = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('cal-day-title').textContent = dateLabel;
+
+  const statusColors = {
+    'Prevu': 'var(--status-brouillon-bg);color:var(--status-brouillon-text)',
+    'Realise': 'var(--status-approuvee-bg);color:var(--status-approuvee-text)',
+    'Offre': 'var(--status-validee-bg);color:var(--status-validee-text)',
+    'BC Signe': 'background:rgba(156,39,176,0.15);color:#9c27b0',
+  };
+
+  let html = `<div style="font-size:12px;color:var(--muted);margin-bottom:12px;">${dayRdvs.length} RDV ce jour</div>`;
+  dayRdvs.forEach(r => {
+    const style = statusColors[r.statut] || '';
+    html += `
+      <div class="cal-day-rdv-item" onclick="calCloseDayModal();calOpenModal(${JSON.stringify(r).replace(/"/g, '&quot;')})">
+        <div class="cal-day-rdv-left">
+          <div class="cal-day-rdv-prospect">${r.prospect}</div>
+          <div class="cal-day-rdv-montant">${r.montant} M FCFA</div>
+        </div>
+        <span class="cal-day-rdv-statut" style="${style}">${r.statut}</span>
+      </div>`;
+  });
+
+  document.getElementById('cal-day-body').innerHTML = html;
+  document.getElementById('cal-day-modal').style.display = 'flex';
+}
+
+function calCloseDayModal() {
+  document.getElementById('cal-day-modal').style.display = 'none';
 }
 
 function calPrevMonth() { calDate.setMonth(calDate.getMonth() - 1); calLoadRdvs(); }
