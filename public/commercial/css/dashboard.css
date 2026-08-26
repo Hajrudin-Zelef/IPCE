@@ -745,9 +745,65 @@ kbd {
   border-radius: 4px; font-family: monospace; color: var(--text);
 }
 
-/* --- Responsive --- */
+/* ========================================
+   RESPONSIVE — Mobile First
+   ======================================== */
+
+/* --- Tablet (≤768px) --- */
 @media (max-width: 768px) {
-  /* Layout docs */
+  /* Forms */
+  .form-row-3 { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .input-lg { font-size: 14px !important; padding: 10px 12px !important; }
+  .rdv-header { flex-wrap: wrap; }
+  .rdv-inputs { gap: 4px; }
+  .rdv-input { font-size: 11px; padding: 7px 8px; }
+  .rdv-item { flex-direction: column; align-items: flex-start; gap: 6px; padding: 8px 10px; }
+
+  /* History table */
+  .history-table { font-size: 11px; display: block; overflow-x: auto; white-space: nowrap; }
+  .history-table thead { display: table-header-group; }
+  .history-table tbody { display: table-row-group; }
+  .history-table tr { display: table-row; }
+  .history-table th, .history-table td { padding: 6px 8px; display: table-cell; }
+  .action-btns { gap: 2px; }
+  .action-btn { width: 22px; height: 22px; font-size: 10px; }
+
+  /* Dashboard */
+  .dash-kpis { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .dash-kpi { padding: 14px; }
+  .dash-kpi-value { font-size: 22px; }
+  .dash-charts-row { grid-template-columns: 1fr 1fr; }
+  .dash-chart-box { height: 180px; }
+  .dash-collecte-item { flex-direction: row; justify-content: space-between; align-items: center; }
+
+  /* Calendar */
+  .cal-day { min-height: 56px; padding: 3px; }
+  .cal-day-num { font-size: 10px; }
+  .cal-toggle { gap: 4px; }
+  .cal-toggle-btn { padding: 5px 10px; font-size: 11px; }
+  .cal-timeline-date { min-width: 70px; font-size: 11px; }
+
+  /* Modals */
+  .cal-modal-overlay { padding: 10px; }
+  .cal-modal { width: 100%; max-width: 400px; margin: 0 auto; max-height: 85vh; overflow-y: auto; }
+  .cal-modal-header { padding: 12px 14px; }
+  .cal-modal-body { padding: 14px; }
+  .cal-modal-actions { padding: 10px 14px; flex-wrap: wrap; gap: 6px; }
+  .cal-modal-field { margin-bottom: 10px; }
+  .cal-modal-field label { font-size: 10px; }
+  .cal-modal-field span { font-size: 13px; }
+  .cal-statut-select { font-size: 12px; padding: 6px 8px; }
+
+  /* Toast */
+  .toast-container { top: auto; bottom: 20px; right: 10px; left: 10px; }
+  .toast { max-width: 100%; font-size: 12px; padding: 10px 14px; border-radius: 8px; }
+
+  /* Settings */
+  .settings-group { padding: 14px; }
+  .settings-row { gap: 8px; }
+  .settings-toggle { flex-shrink: 0; }
+
+  /* Documentation */
   .docs-layout { flex-direction: column; }
   .docs-sidebar { width: 100%; position: static; border-radius: 12px; }
   .docs-sidebar-nav { max-height: none; padding: 4px 0; }
@@ -772,103 +828,162 @@ kbd {
   .docs-table th, .docs-table td { padding: 6px 8px; }
   .docs-text { font-size: 12px; }
   .docs-callout { font-size: 11px; padding: 10px 12px; }
-
-  /* Dashboard */
-  .dash-kpis { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .dash-kpi { padding: 14px; }
-  .dash-kpi-value { font-size: 22px; }
-  .dash-charts-row { grid-template-columns: 1fr; }
-  .dash-chart-box { height: 180px; }
-  .dash-actions { gap: 8px; }
-  .dash-collecte-item { flex-direction: column; gap: 6px; align-items: flex-start; }
-
-  /* Sidebar */
-  .sidebar { width: 100%; transform: translateX(-100%); }
-  .sidebar.mobile-open { transform: translateX(0); }
-  .content-area { margin-left: 0 !important; }
-  .content-header { padding: 10px 14px; }
-  .dashboard-section { padding: 14px; }
-
-  /* Forms */
-  .form-row-3 { grid-template-columns: 1fr; gap: 10px; }
-  .input-lg { font-size: 14px !important; padding: 10px 12px !important; }
-  .rdv-inputs { flex-wrap: wrap; gap: 4px; }
-  .rdv-input { flex: 1 1 45%; min-width: 0; font-size: 11px; padding: 7px 8px; }
-  .rdv-input-sm { flex: 1 1 45%; }
-  .btn-add-rdv { flex: 0 0 34px; height: 34px; font-size: 16px; }
-  .btn-group { flex-direction: column; gap: 6px; }
-  .btn { width: 100%; justify-content: center; }
-
-  /* Table history */
-  .history-table { font-size: 11px; }
-  .history-table th, .history-table td { padding: 6px 6px; }
-  .action-btns { gap: 2px; }
-  .action-btn { width: 22px; height: 22px; font-size: 10px; }
-
-  /* Calendar */
-  .cal-day { min-height: 56px; padding: 3px; }
-  .cal-day-num { font-size: 10px; }
-  .cal-toggle { gap: 4px; }
-  .cal-toggle-btn { padding: 5px 10px; font-size: 11px; }
-
-  /* Modals */
-  .cal-modal { width: 95%; max-width: none; margin: 10px; }
-  .cal-modal-header { padding: 12px 14px; }
-  .cal-modal-body { padding: 14px; }
-  .cal-modal-actions { padding: 10px 14px; flex-wrap: wrap; gap: 6px; }
-
-  /* Toast */
-  .toast-container { top: 10px; right: 10px; left: 10px; }
-  .toast { max-width: 100%; font-size: 12px; padding: 10px 14px; }
-
-  /* Settings */
-  .settings-group { padding: 14px; }
-  .settings-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .docs-faq-q { font-size: 12px; }
+  .docs-faq-a { font-size: 11px; }
+  kbd { padding: 1px 4px; font-size: 10px; }
 }
 
+/* --- Mobile (≤480px) --- */
 @media (max-width: 480px) {
-  /* Docs */
-  .docs-layout { gap: 12px; }
-  .docs-sidebar { border-radius: 10px; }
-  .docs-nav-group-toggle { padding: 8px 12px; font-size: 12px; }
-  .docs-nav-item { padding: 7px 12px; font-size: 11px; }
-  .docs-nav-item.sub { padding-left: 22px; font-size: 10px; }
-  .docs-section { padding: 12px; border-radius: 10px; }
-  .docs-title { font-size: 15px; }
-  .docs-subtitle { font-size: 13px; }
-  .docs-grid, .docs-grid-2, .docs-grid-3, .docs-grid-4 { grid-template-columns: 1fr; }
-  .docs-feature { padding: 14px 10px; }
-  .docs-step { gap: 8px; }
-  .docs-table-wrap { font-size: 10px; }
+  /* Forms */
+  .form-row-3 { grid-template-columns: 1fr; gap: 8px; }
+  .input-lg { font-size: 13px !important; padding: 9px 10px !important; }
+  .form-group label { font-size: 10px; }
+  .form-group input, .form-group select { font-size: 12px; padding: 8px; }
+  .rdv-section { margin-top: 14px; padding-top: 12px; }
+  .rdv-label { font-size: 11px; }
+  .rdv-counter { min-width: 18px; height: 18px; font-size: 9px; }
+  .rdv-inputs { flex-direction: column; gap: 4px; }
+  .rdv-input { flex: 1 1 100%; font-size: 12px; padding: 8px 10px; }
+  .rdv-input-sm { flex: 1 1 100%; }
+  .btn-add-rdv { flex: 0 0 36px; width: 100%; }
+  .rdv-item { padding: 8px; font-size: 11px; }
+  .rdv-item .info b { font-size: 12px; }
+  .btn-group { flex-direction: column; gap: 6px; }
+  .btn { width: 100%; justify-content: center; padding: 10px; font-size: 12px; }
+  .btn-sm { padding: 6px 10px; font-size: 11px; }
+
+  /* History table */
+  .history-table { font-size: 10px; min-width: 500px; }
+  .history-table th { font-size: 10px; padding: 5px 6px; }
+  .history-table td { font-size: 10px; padding: 5px 6px; }
+  .status { font-size: 9px; padding: 1px 5px; }
+  .action-btns { gap: 2px; }
+  .action-btn { width: 20px; height: 20px; font-size: 9px; border-radius: 4px; }
 
   /* Dashboard */
   .dash-kpis { grid-template-columns: 1fr 1fr; gap: 6px; }
-  .dash-kpi { padding: 10px; }
+  .dash-kpi { padding: 10px 8px; border-radius: 8px; border-top-width: 2px; }
   .dash-kpi-value { font-size: 18px; }
-  .dash-kpi-label { font-size: 10px; }
-  .dash-actions { flex-direction: column; }
-  .dash-actions .btn { font-size: 12px; padding: 8px 12px; }
-  .dash-chart-box { height: 160px; padding: 10px; }
-  .dash-section-title { font-size: 11px; }
-  .dash-collecte-item { padding: 10px 12px; font-size: 12px; }
-
-  /* RDV */
-  .rdv-inputs { flex-direction: column; }
-  .rdv-input { flex: 1 1 100%; }
-  .rdv-input-sm { flex: 1 1 100%; }
-  .btn-add-rdv { flex: 0 0 36px; width: 100%; }
+  .dash-kpi-label { font-size: 9px; }
+  .dash-actions { flex-direction: column; gap: 6px; }
+  .dash-actions .btn { font-size: 11px; padding: 8px 12px; }
+  .dash-charts-row { grid-template-columns: 1fr; }
+  .dash-chart-box { height: 160px; padding: 10px; border-radius: 8px; }
+  .dash-section-title { font-size: 10px; margin-bottom: 8px; }
+  .dash-collecte-item { padding: 8px 10px; font-size: 11px; border-radius: 6px; }
+  .dash-empty { padding: 24px; font-size: 12px; }
 
   /* Calendar */
-  .cal-day { min-height: 48px; padding: 2px; }
+  .cal-day { min-height: 44px; padding: 2px; }
   .cal-day-num { font-size: 9px; }
-  .cal-dot { width: 6px; height: 6px; }
-  .cal-day-count { width: 16px; height: 16px; font-size: 9px; }
-  .cal-timeline-item { padding: 8px 10px; }
-  .cal-timeline-date { min-width: 60px; font-size: 11px; }
-  .cal-timeline-prospect { font-size: 12px; }
+  .cal-dot { width: 5px; height: 5px; margin: 0 1px; }
+  .cal-day-count { width: 14px; height: 14px; font-size: 8px; top: 2px; right: 2px; }
+  .cal-header-cell { font-size: 9px; padding: 4px; }
+  .cal-toggle { gap: 3px; }
+  .cal-toggle-btn { padding: 4px 8px; font-size: 10px; border-radius: 4px; }
+  .cal-nav { gap: 8px; margin-bottom: 10px; }
+  .cal-nav span { font-size: 12px; }
+  .cal-timeline-item { padding: 8px; gap: 8px; border-radius: 4px; }
+  .cal-timeline-date { min-width: 55px; font-size: 10px; }
+  .cal-timeline-prospect { font-size: 11px; }
+  .cal-timeline-montant { font-size: 10px; }
+  .cal-timeline-statut { font-size: 9px; padding: 1px 5px; }
 
-  /* Topbar */
-  .topbar h2 { font-size: 14px; }
-  .dark-toggle { width: 32px; height: 32px; font-size: 16px; }
-  .user-avatar { width: 34px; height: 34px; font-size: 13px; }
+  /* Modals */
+  .cal-modal-overlay { padding: 8px; align-items: flex-end; }
+  .cal-modal { width: 100%; max-width: none; border-radius: 12px 12px 0 0; max-height: 80vh; }
+  .cal-modal-header { padding: 10px 12px; }
+  .cal-modal-header h3 { font-size: 14px; }
+  .cal-modal-close { font-size: 16px; width: 28px; height: 28px; }
+  .cal-modal-body { padding: 12px; }
+  .cal-modal-field { margin-bottom: 8px; }
+  .cal-modal-field label { font-size: 9px; }
+  .cal-modal-field span { font-size: 12px; }
+  .cal-statut-select { font-size: 12px; padding: 6px; width: 100%; }
+  .cal-modal-actions { padding: 8px 12px; gap: 6px; }
+  .cal-modal-actions .btn { flex: 1; font-size: 11px; padding: 7px; }
+  .cal-empty { padding: 16px; font-size: 12px; }
+  #cal-modal-readonly { font-size: 11px; }
+
+  /* Toast */
+  .toast-container { bottom: 12px; right: 8px; left: 8px; }
+  .toast { font-size: 11px; padding: 8px 12px; border-radius: 6px; }
+
+  /* Settings */
+  .settings-group { padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+  .settings-title { font-size: 13px; margin-bottom: 10px; }
+  .settings-row { padding: 8px 0; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .settings-label { font-size: 12px; }
+  .settings-value { font-size: 12px; }
+  .settings-desc { font-size: 10px; }
+  .settings-toggle { width: 40px; height: 22px; }
+
+  /* Documentation */
+  .docs-layout { gap: 10px; }
+  .docs-sidebar { border-radius: 10px; }
+  .docs-sidebar-header { padding: 10px 12px; font-size: 13px; }
+  .docs-nav-group-toggle { padding: 8px 12px; font-size: 11px; }
+  .docs-arrow { font-size: 9px; }
+  .docs-nav-item { padding: 7px 12px; font-size: 11px; }
+  .docs-nav-item.sub { padding-left: 20px; font-size: 10px; }
+  .docs-section { padding: 12px; border-radius: 10px; }
+  .docs-breadcrumb { font-size: 10px; }
+  .docs-title { font-size: 15px; }
+  .docs-subtitle { font-size: 12px; margin: 12px 0 6px; }
+  .docs-text { font-size: 11px; line-height: 1.6; }
+  .docs-grid, .docs-grid-2, .docs-grid-3, .docs-grid-4 { grid-template-columns: 1fr; gap: 6px; }
+  .docs-feature { padding: 10px 8px; }
+  .docs-feature-icon { font-size: 22px; }
+  .docs-feature-title { font-size: 12px; }
+  .docs-feature-desc { font-size: 10px; }
+  .docs-list li { font-size: 11px; line-height: 1.6; }
+  .docs-step { gap: 8px; padding: 6px 0; }
+  .docs-step-num { width: 22px; height: 22px; font-size: 11px; }
+  .docs-step-content { font-size: 11px; }
+  .docs-callout { font-size: 10px; padding: 8px 10px; border-radius: 6px; margin: 8px 0; }
+  .docs-table { font-size: 10px; }
+  .docs-table th, .docs-table td { padding: 5px 6px; }
+  .docs-compare-header { font-size: 12px; padding: 8px 12px; }
+  .docs-compare .docs-list { padding: 8px 12px 8px 24px; }
+  .docs-flow-item { padding: 8px 10px; }
+  .docs-flow-label { font-size: 12px; }
+  .docs-flow-desc { font-size: 10px; }
+  .docs-legend { font-size: 11px; gap: 6px; }
+  .docs-dot { width: 10px; height: 10px; }
+  .docs-badge { font-size: 10px; padding: 1px 6px; }
+  .docs-faq-item { padding: 8px 0; }
+  .docs-faq-q { font-size: 12px; }
+  .docs-faq-a { font-size: 11px; padding: 6px 0 0 10px; }
+  .docs-anatomy-item { padding: 8px 10px; }
+  .docs-anatomy-desc { font-size: 11px; }
+  .docs-check-item { font-size: 11px; padding: 4px 0; }
+  kbd { padding: 1px 3px; font-size: 9px; }
+}
+
+/* --- Small mobile (≤360px) --- */
+@media (max-width: 360px) {
+  .form-row-3 { gap: 6px; }
+  .input-lg { font-size: 12px !important; padding: 8px !important; }
+  .dash-kpi-value { font-size: 16px; }
+  .dash-kpi { padding: 8px 6px; }
+  .cal-day { min-height: 38px; }
+  .cal-day-num { font-size: 8px; }
+  .cal-dot { width: 4px; height: 4px; }
+  .cal-modal { border-radius: 8px 8px 0 0; }
+  .docs-section { padding: 10px; }
+  .docs-title { font-size: 14px; }
+}
+
+/* --- Landscape phones --- */
+@media (max-height: 500px) and (orientation: landscape) {
+  .cal-day { min-height: 36px; }
+  .cal-modal { max-height: 90vh; }
+  .dashboard-section { padding: 8px; }
+}
+
+/* --- Safe area (notch) --- */
+@supports (padding: env(safe-area-inset-top)) {
+  .content-header { padding-top: env(safe-area-inset-top); }
+  .sidebar { height: calc(100dvh + env(safe-area-inset-bottom)); }
 }
