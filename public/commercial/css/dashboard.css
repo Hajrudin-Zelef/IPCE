@@ -145,8 +145,22 @@ header p { font-size: 13px; opacity: 0.8; }
   cursor: pointer;
   flex-shrink: 0;
   transition: all var(--transition-fast);
+  position: relative;
 }
 .btn-add-rdv:hover { background: var(--primary); color: #fff; border-style: solid; }
+.btn-add-rdv::after {
+  content: 'Ajouter';
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
 /* --- RDV List --- */
 .rdv-list { margin-top: 10px; }
