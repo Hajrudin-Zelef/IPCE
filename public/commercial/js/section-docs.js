@@ -1,258 +1,560 @@
 /* ========================================
    SECTION — Documentation (Guide Complet)
+   Sidebar + Modules structurés
    ======================================== */
 
 window.__load_docs = function() {
   var el = document.getElementById('section-docs-content');
   if (!el) return;
 
-  var html = '';
+  var html = '<div class="docs-layout">';
 
-  // Navigation rapide
-  html += '<div class="docs-nav">';
-  html += '<div class="docs-nav-title">Dans cette page</div>';
-  html += '<a class="docs-nav-link" href="#docs-intro">Introduction</a>';
-  html += '<a class="docs-nav-link" href="#docs-dashboard">Tableau de bord</a>';
-  html += '<a class="docs-nav-link" href="#docs-collecte">Saisir une collecte</a>';
-  html += '<a class="docs-nav-link" href="#docs-rdv">Gestion des RDV</a>';
-  html += '<a class="docs-nav-link" href="#docs-historique">Historique</a>';
-  html += '<a class="docs-nav-link" href="#docs-calendrier">Calendrier</a>';
-  html += '<a class="docs-nav-link" href="#docs-notifications">Notifications</a>';
-  html += '<a class="docs-nav-link" href="#docs-darkmode">Mode sombre</a>';
-  html += '<a class="docs-nav-link" href="#docs-shortcuts">Raccourcis</a>';
-  html += '<a class="docs-nav-link" href="#docs-faq">FAQ</a>';
+  // --- SIDEBAR DOCUMENTATION ---
+  html += '<aside class="docs-sidebar">';
+  html += '<div class="docs-sidebar-header">&#128214; Guide IPCE</div>';
+  html += '<nav class="docs-sidebar-nav">';
+
+  // Module 1: Bien démarrer
+  html += '<div class="docs-nav-group">';
+  html += '<div class="docs-nav-group-label">Bien démarrer</div>';
+  html += '<a class="docs-nav-item active" data-docs="intro" onclick="docsNavigate(\'intro\',this)">&#128075; Bienvenue</a>';
+  html += '<a class="docs-nav-item" data-docs="role" onclick="docsNavigate(\'role\',this)">&#128188; Mon rôle</a>';
+  html += '<a class="docs-nav-item" data-docs="interface" onclick="docsNavigate(\'interface\',this)">&#128187; L\'interface</a>';
   html += '</div>';
 
-  // --- Introduction ---
-  html += '<div class="docs-card" id="docs-intro">';
-  html += '<h3 class="docs-title">&#128218; Introduction</h3>';
-  html += '<p class="docs-text"><strong>IPCE Dashboard</strong> est votre outil de pilotage commercial. Il vous permet de suivre vos performances, g&#233;rer vos collectes, planifier vos rendez-vous et visualiser votre activit&#233; en temps r&#233;el.</p>';
+  // Module 2: Collectes
+  html += '<div class="docs-nav-group">';
+  html += '<div class="docs-nav-group-label">Collectes</div>';
+  html += '<a class="docs-nav-item" data-docs="saisie" onclick="docsNavigate(\'saisie\',this)">&#9998;&#65039; Saisir une collecte</a>';
+  html += '<a class="docs-nav-item sub" data-docs="saisie-champs" onclick="docsNavigate(\'saisie-champs\',this)">Les champs</a>';
+  html += '<a class="docs-nav-item sub" data-docs="saisie-rdv" onclick="docsNavigate(\'saisie-rdv\',this)">Ajouter des RDV</a>';
+  html += '<a class="docs-nav-item sub" data-docs="saisie-actions" onclick="docsNavigate(\'saisie-actions\',this)">Sauvegarder / Valider</a>';
+  html += '<a class="docs-nav-item" data-docs="historique" onclick="docsNavigate(\'historique\',this)">&#128203; Historique</a>';
+  html += '<a class="docs-nav-item sub" data-docs="hist-actions" onclick="docsNavigate(\'hist-actions\',this)">Actions sur collectes</a>';
+  html += '<a class="docs-nav-item sub" data-docs="hist-modifier" onclick="docsNavigate(\'hist-modifier\',this)">Modifier une collecte</a>';
+  html += '<a class="docs-nav-item sub" data-docs="hist-supprimer" onclick="docsNavigate(\'hist-supprimer\',this)">Supprimer une collecte</a>';
+  html += '</div>';
+
+  // Module 3: RDV
+  html += '<div class="docs-nav-group">';
+  html += '<div class="docs-nav-group-label">Rendez-vous</div>';
+  html += '<a class="docs-nav-item" data-docs="rdv-statuts" onclick="docsNavigate(\'rdv-statuts\',this)">&#128197; Statuts des RDV</a>';
+  html += '<a class="docs-nav-item" data-docs="rdv-modifier" onclick="docsNavigate(\'rdv-modifier\',this)">&#9998; Modifier un RDV</a>';
+  html += '<a class="docs-nav-item" data-docs="rdv-supprimer" onclick="docsNavigate(\'rdv-supprimer\',this)">&#10005; Supprimer un RDV</a>';
+  html += '</div>';
+
+  // Module 4: Visualisation
+  html += '<div class="docs-nav-group">';
+  html += '<div class="docs-nav-group-label">Visualisation</div>';
+  html += '<a class="docs-nav-item" data-docs="dashboard" onclick="docsNavigate(\'dashboard\',this)">&#128202; Tableau de bord</a>';
+  html += '<a class="docs-nav-item sub" data-docs="dash-kpis" onclick="docsNavigate(\'dash-kpis\',this)">Comprendre les KPIs</a>';
+  html += '<a class="docs-nav-item sub" data-docs="dash-graphs" onclick="docsNavigate(\'dash-graphs\',this)">Les graphiques</a>';
+  html += '<a class="docs-nav-item" data-docs="calendrier" onclick="docsNavigate(\'calendrier\',this)">&#128197; Calendrier</a>';
+  html += '<a class="docs-nav-item sub" data-docs="cal-navigation" onclick="docsNavigate(\'cal-navigation\',this)">Navigation</a>';
+  html += '<a class="docs-nav-item sub" data-docs="cal-couleurs" onclick="docsNavigate(\'cal-couleurs\',this)">Codes couleur</a>';
+  html += '<a class="docs-nav-item sub" data-docs="cal-interactions" onclick="docsNavigate(\'cal-interactions\',this)">Interactions</a>';
+  html += '</div>';
+
+  // Module 5: Outils
+  html += '<div class="docs-nav-group">';
+  html += '<div class="docs-nav-group-label">Outils</div>';
+  html += '<a class="docs-nav-item" data-docs="notifications" onclick="docsNavigate(\'notifications\',this)">&#128276; Notifications</a>';
+  html += '<a class="docs-nav-item" data-docs="darkmode" onclick="docsNavigate(\'darkmode\',this)">&#127769; Mode sombre</a>';
+  html += '<a class="docs-nav-item" data-docs="raccourcis" onclick="docsNavigate(\'raccourcis\',this)">&#9000;&#65039; Raccourcis</a>';
+  html += '<a class="docs-nav-item" data-docs="mobile" onclick="docsNavigate(\'mobile\',this)">&#128241; Version mobile</a>';
+  html += '</div>';
+
+  // Module 6: Aide
+  html += '<div class="docs-nav-group">';
+  html += '<div class="docs-nav-group-label">Aide</div>';
+  html += '<a class="docs-nav-item" data-docs="statuts" onclick="docsNavigate(\'statuts\',this)">&#127919; Signification des statuts</a>';
+  html += '<a class="docs-nav-item" data-docs="faq" onclick="docsNavigate(\'faq\',this)">&#10067; FAQ</a>';
+  html += '</div>';
+
+  html += '</nav></aside>';
+
+  // --- CONTENU ---
+  html += '<div class="docs-content">';
+
+  // ===== BIEN DÉMARRER =====
+  // Introduction
+  html += '<div class="docs-section active" id="docs-intro">';
+  html += '<div class="docs-breadcrumb">Bien démarrer &rsaquo; Bienvenue</div>';
+  html += '<h2 class="docs-title">&#128075; Bienvenue dans IPCE Dashboard</h2>';
+  html += '<p class="docs-text"><strong>IPCE Dashboard</strong> est votre outil de pilotage commercial. Il vous permet de suivre vos performances, gérer vos collectes, planifier vos rendez-vous et visualiser votre activité en temps réel.</p>';
   html += '<div class="docs-callout docs-callout-info">';
-  html += '<strong>&#128161; &#201;tes-vous nouveau ?</strong> Commencez par la section "Nouvelle Collecte" pour saisir votre premi&#232;re collecte. Le reste viendra naturellement.';
+  html += '<strong>&#128161; Premier pas ?</strong> Commencez par la section <strong>"Saisir une collecte"</strong> pour enregistrer votre première journée de travail.';
   html += '</div>';
-  html += '<p class="docs-text"><strong>Votre r&#244;le :</strong> En tant que commercial, vous pouvez :</p>';
+  html += '<div class="docs-grid docs-grid-3">';
+  html += '<div class="docs-feature"><div class="docs-feature-icon">&#128202;</div><div class="docs-feature-title">Tableau de bord</div><div class="docs-feature-desc">Vue d\'ensemble de vos performances</div></div>';
+  html += '<div class="docs-feature"><div class="docs-feature-icon">&#9998;&#65039;</div><div class="docs-feature-title">Collectes</div><div class="docs-feature-desc">Saisir et gérer vos résultats</div></div>';
+  html += '<div class="docs-feature"><div class="docs-feature-icon">&#128197;</div><div class="docs-feature-title">Calendrier</div><div class="docs-feature-desc">Planifier vos rendez-vous</div></div>';
+  html += '</div>';
+  html += '</div>';
+
+  // Mon rôle
+  html += '<div class="docs-section" id="docs-role" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Bien démarrer &rsaquo; Mon rôle</div>';
+  html += '<h2 class="docs-title">&#128188; Mon rôle en tant que commercial</h2>';
+  html += '<p class="docs-text">En tant que commercial IPCE, vous êtes le pilier de l\'activité commerciale. Votre mission : développer le portefeuille clients et atteindre vos objectifs.</p>';
+  html += '<h3 class="docs-subtitle">Vos responsabilités quotidiennes</h3>';
+  html += '<div class="docs-checklist">';
+  html += '<div class="docs-check-item">&#9989; Saisir vos collectes quotidiennes (CA, offres, BC)</div>';
+  html += '<div class="docs-check-item">&#9989; Planifier et suivre vos rendez-vous prospects</div>';
+  html += '<div class="docs-check-item">&#9989; Mettre à jour le statut de vos RDV (Prévu → Réalisé → Offre → BC Signé)</div>';
+  html += '<div class="docs-check-item">&#9989; Consulter vos performances via le tableau de bord</div>';
+  html += '<div class="docs-check-item">&#9989; Valider vos collectes pour notification à l\'admin</div>';
+  html += '</div>';
+  html += '<h3 class="docs-subtitle">Ce que vous ne pouvez PAS faire</h3>';
   html += '<ul class="docs-list">';
-  html += '<li>Saisir et valider des collectes (CA, offres, BC)</li>';
-  html += '<li>Ajouter des rendez-vous (RDV) &#224; vos collectes</li>';
-  html += '<li>Consulter votre historique et vos graphiques</li>';
-  html += '<li>Planifier vos RDV via le calendrier</li>';
-  html += '<li>Suivre vos performances via le tableau de bord</li>';
+  html += '<li>Modifier ou supprimer une collecte déjà validée/approuvée</li>';
+  html += '<li>Accéder aux données des autres commerciaux</li>';
+  html += '<li>Modifier les paramètres système (objectifs, etc.)</li>';
+  html += '<li>Approuver ou rejeter des collectes (réservé à l\'admin)</li>';
   html += '</ul>';
   html += '</div>';
 
-  // --- Tableau de bord ---
-  html += '<div class="docs-card" id="docs-dashboard">';
-  html += '<h3 class="docs-title">&#128202; Tableau de bord</h3>';
-  html += '<p class="docs-text">Le tableau de bord est votre vue d&#8217;ensemble. Il affiche :</p>';
-  html += '<div class="docs-grid">';
-  html += '<div class="docs-grid-item"><div class="docs-grid-icon">&#128176;</div><div class="docs-grid-label">CA Total</div><div class="docs-grid-desc">Chiffre d&#8217;affaires total de vos collectes valid&#233;es</div></div>';
-  html += '<div class="docs-grid-item"><div class="docs-grid-icon">&#128196;</div><div class="docs-grid-label">Offres</div><div class="docs-grid-desc">Nombre total d&#8217;offres &#233;mises</div></div>';
-  html += '<div class="docs-grid-item"><div class="docs-grid-icon">&#9989;</div><div class="docs-grid-label">BC Sign&#233;s</div><div class="docs-grid-desc">Bons de commande sign&#233;s</div></div>';
-  html += '<div class="docs-grid-item"><div class="docs-grid-icon">&#128197;</div><div class="docs-grid-label">RDV</div><div class="docs-grid-desc">Rendez-vous planifi&#233;s</div></div>';
+  // L'interface
+  html += '<div class="docs-section" id="docs-interface" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Bien démarrer &rsaquo; L\'interface</div>';
+  html += '<h2 class="docs-title">&#128187; Comprendre l\'interface</h2>';
+  html += '<p class="docs-text">L\'interface est organisée en <strong>sidebar</strong> (menu latéral) et <strong>sections</strong> de contenu.</p>';
+  html += '<div class="docs-anatomy">';
+  html += '<div class="docs-anatomy-item"><div class="docs-anatomy-label">Sidebar</div><div class="docs-anatomy-desc">Menu latéral avec les sections. Cliquez pour naviguer.</div></div>';
+  html += '<div class="docs-anatomy-item"><div class="docs-anatomy-label">Header</div><div class="docs-anatomy-desc">En haut : bouton menu, date, dark mode, avatar.</div></div>';
+  html += '<div class="docs-anatomy-item"><div class="docs-anatomy-label">Avatar</div><div class="docs-anatomy-desc">Votre initiale. Cliquez pour le menu (Profil, Apparence, Déconnexion).</div></div>';
+  html += '<div class="docs-anatomy-item"><div class="docs-anatomy-label">Cloche</div><div class="docs-anatomy-desc">Notifications en temps réel. Cliquez pour voir les alertes.</div></div>';
   html += '</div>';
-  html += '<p class="docs-text">Vous y trouverez &#233;galement :</p>';
-  html += '<ul class="docs-list">';
-  html += '<li><strong>3 mini graphiques</strong> : &#233;volution du CA, r&#233;partition des offres et BC</li>';
-  html += '<li><strong>Boutons d&#8217;action rapide</strong> : acc&#233;der directement aux autres sections</li>';
-  html += '<li><strong>Derni&#232;res collectes</strong> : vos 3 derni&#232;res saisies avec leur statut</li>';
-  html += '</ul>';
   html += '<div class="docs-callout docs-callout-tip">';
-  html += '<strong>&#128161; Astuce</strong> : Cliquez sur "Saisir une collecte" pour commencer imm&#233;diatement.';
+  html += '<strong>&#128161;</strong> Sur mobile, la sidebar se cache. Utilisez le bouton &#9776; pour l\'ouvrir.';
   html += '</div>';
   html += '</div>';
 
-  // --- Saisir une collecte ---
-  html += '<div class="docs-card" id="docs-collecte">';
-  html += '<h3 class="docs-title">&#9998;&#65039; Saisir une collecte</h3>';
-  html += '<p class="docs-text">C&#8217;est la fonction principale. Pour chaque journ&#233;e de travail, vous saisissez vos r&#233;sultats :</p>';
-  html += '<h4 class="docs-subtitle">1. Remplir les donn&#233;es</h4>';
-  html += '<div class="docs-table-wrap">';
-  html += '<table class="docs-table">';
-  html += '<thead><tr><th>Champ</th><th>Description</th><th>Exemple</th></tr></thead>';
-  html += '<tbody>';
-  html += '<tr><td><strong>CA (FCFA)</strong></td><td>Chiffre d&#8217;affaires r&#233;alis&#233;</td><td>2 500 000</td></tr>';
-  html += '<tr><td><strong>Offres &#233;mises</strong></td><td>Nombre d&#8217;offres envoy&#233;es aux prospects</td><td>5</td></tr>';
-  html += '<tr><td><strong>BC Sign&#233;s</strong></td><td>Bons de commande sign&#233;s</td><td>2</td></tr>';
-  html += '</tbody></table></div>';
-  html += '<h4 class="docs-subtitle">2. Ajouter des RDV (optionnel)</h4>';
-  html += '<p class="docs-text">Pour chaque rendez-vous li&#233; &#224; cette collecte :</p>';
-  html += '<ol class="docs-list docs-list-ordered">';
-  html += '<li>Entrez le <strong>nom du prospect</strong></li>';
-  html += '<li>La <strong>date</strong> est pr&#233;-remplie avec aujourd&#8217;hui (modifiable)</li>';
-  html += '<li>Ajoutez le <strong>montant</strong> en millions FCFA</li>';
-  html += '<li>S&#233;lectionnez le <strong>statut</strong> : Pr&#233;vu, R&#233;alis&#233;, Offre, ou BC Sign&#233;</li>';
-  html += '<li>Cliquez sur <strong>+</strong> pour ajouter</li>';
-  html += '</ol>';
+  // ===== COLLECTES =====
+  // Saisir une collecte
+  html += '<div class="docs-section" id="docs-saisie" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Collectes &rsaquo; Saisir une collecte</div>';
+  html += '<h2 class="docs-title">&#9998;&#65039; Saisir une collecte</h2>';
+  html += '<p class="docs-text">C\'est la fonction principale. Pour chaque journée de travail, vous saisissez vos résultats commerciaux.</p>';
+  html += '<div class="docs-steps">';
+  html += '<div class="docs-step"><div class="docs-step-num">1</div><div class="docs-step-content"><strong>Remplissez les champs</strong> : CA, Offres émises, BC signés</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">2</div><div class="docs-step-content"><strong>Ajoutez vos RDV</strong> (optionnel) : prospect, date, montant, statut</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">3</div><div class="docs-step-content"><strong>Choisissez l\'action</strong> : Sauvegarder (brouillon) ou Valider (envoyer à l\'admin)</div></div>';
+  html += '</div>';
   html += '<div class="docs-callout docs-callout-warning">';
-  html += '<strong>&#9888;&#65039; Important</strong> : Le bouton <strong>+</strong> ne fonctionne que si le prospect et la date sont remplis.';
+  html += '<strong>&#9888;&#65039; Attention</strong> : La date des RDV est pré-remplie avec aujourd\'hui. Modifiez-la si le RDV est programmé pour un autre jour.';
   html += '</div>';
-  html += '<h4 class="docs-subtitle">3. Sauvegarder ou Valider</h4>';
-  html += '<div class="docs-grid docs-grid-2">';
-  html += '<div class="docs-action-card">';
-  html += '<div class="docs-action-icon">&#128190;</div>';
-  html += '<div class="docs-action-title">Sauvegarder</div>';
-  html += '<div class="docs-action-desc">Enregistre la collecte en <strong>brouillon</strong>. Vous pourrez la modifier ou la supprimer plus tard.</div>';
   html += '</div>';
-  html += '<div class="docs-action-card docs-action-warn">';
-  html += '<div class="docs-action-icon">&#10003;</div>';
-  html += '<div class="docs-action-title">Valider et envoyer</div>';
-  html += '<div class="docs-action-desc">Enregistre et <strong>valide</strong> la collecte. L&#8217;administrateur est notifi&#233;. <strong>Plus possible de modifier.</strong></div>';
+
+  // Les champs
+  html += '<div class="docs-section" id="docs-saisie-champs" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Collectes &rsaquo; Saisir une collecte &rsaquo; Les champs</div>';
+  html += '<h2 class="docs-title">&#128221; Les champs de saisie</h2>';
+  html += '<div class="docs-table-wrap"><table class="docs-table">';
+  html += '<thead><tr><th>Champ</th><th>Type</th><th>Description</th><th>Exemple</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td><strong>CA (FCFA)</strong></td><td>Nombre</td><td>Chiffre d\'affaires réalisé dans la journée</td><td>2 500 000</td></tr>';
+  html += '<tr><td><strong>Offres émises</strong></td><td>Nombre entier</td><td>Nombre d\'offres envoyées aux prospects</td><td>5</td></tr>';
+  html += '<tr><td><strong>BC signés</strong></td><td>Nombre entier</td><td>Bons de commande signés par les clients</td><td>2</td></tr>';
+  html += '</tbody></table></div>';
+  html += '<div class="docs-callout docs-callout-info">';
+  html += '<strong>&#128161;</strong> Tous les champs sont optionnels, mais au moins un doit être rempli pour sauvegarder.';
   html += '</div>';
+  html += '</div>';
+
+  // Ajouter des RDV
+  html += '<div class="docs-section" id="docs-saisie-rdv" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Collectes &rsaquo; Saisir une collecte &rsaquo; Ajouter des RDV</div>';
+  html += '<h2 class="docs-title">&#128197; Ajouter des RDV à votre collecte</h2>';
+  html += '<p class="docs-text">Chaque rendez-vous peut être associé à une collecte. Voici comment les ajouter :</p>';
+  html += '<div class="docs-steps">';
+  html += '<div class="docs-step"><div class="docs-step-num">1</div><div class="docs-step-content">Entrez le <strong>nom du prospect</strong> (obligatoire)</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">2</div><div class="docs-step-content">Vérifiez la <strong>date</strong> (pré-remplie avec aujourd\'hui)</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">3</div><div class="docs-step-content">Ajoutez le <strong>montant</strong> en millions FCFA (optionnel)</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">4</div><div class="docs-step-content">Choisissez le <strong>statut</strong> initial (généralement "Prévu")</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">5</div><div class="docs-step-content">Cliquez sur <strong>+</strong> pour ajouter à la liste</div></div>';
   html += '</div>';
   html += '<div class="docs-callout docs-callout-danger">';
-  html += '<strong>&#128308; Attention</strong> : Une collecte valid&#233;e ne peut plus &#234;tre modifi&#233;e ni supprim&#233;e. V&#233;rifiez vos donn&#233;es avant de valider.';
+  html += '<strong>&#128308; Erreur courante</strong> : Si le bouton "+" ne réagit pas, vérifiez que le prospect ET la date sont remplis.';
   html += '</div>';
   html += '</div>';
 
-  // --- Gestion des RDV ---
-  html += '<div class="docs-card" id="docs-rdv">';
-  html += '<h3 class="docs-title">&#128197; Gestion des RDV</h3>';
-  html += '<p class="docs-text">Chaque rendez-vous est associ&#233; &#224; une collecte. Voici les statuts possibles :</p>';
-  html += '<div class="docs-grid docs-grid-4">';
-  html += '<div class="docs-status-card" style="border-left: 3px solid #3b82f6;"><div class="docs-status-label">Pr&#233;vu</div><div class="docs-status-desc">RDV planifi&#233;, pas encore effectu&#233;</div></div>';
-  html += '<div class="docs-status-card" style="border-left: 3px solid #10b981;"><div class="docs-status-label">R&#233;alis&#233;</div><div class="docs-status-desc">RDV effectu&#233;</div></div>';
-  html += '<div class="docs-status-card" style="border-left: 3px solid #f59e0b;"><div class="docs-status-label">Offre</div><div class="docs-status-desc">Offre envoy&#233;e au prospect</div></div>';
-  html += '<div class="docs-status-card" style="border-left: 3px solid #8b5cf6;"><div class="docs-status-label">BC Sign&#233;</div><div class="docs-status-desc">Bon de commande sign&#233;</div></div>';
-  html += '</div>';
-  html += '<h4 class="docs-subtitle">Modifier un RDV</h4>';
-  html += '<p class="docs-text">Depuis le <strong>calendrier</strong>, cliquez sur un jour pour voir les RDV. Cliquez sur un RDV pour en modifier le statut ou le supprimer.</p>';
-  html += '<div class="docs-callout docs-callout-warning">';
-  html += '<strong>&#9888;&#65039;</strong> Les RDV d&#8217;une collecte valid&#233;e ne peuvent plus &#234;tre modifi&#233;s.';
-  html += '</div>';
-  html += '</div>';
-
-  // --- Historique ---
-  html += '<div class="docs-card" id="docs-historique">';
-  html += '<h3 class="docs-title">&#128203; Historique des collectes</h3>';
-  html += '<p class="docs-text">Retrouvez toutes vos collectes pass&#233;es dans un tableau avec :</p>';
+  // Sauvegarder / Valider
+  html += '<div class="docs-section" id="docs-saisie-actions" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Collectes &rsaquo; Saisir une collecte &rsaquo; Sauvegarder / Valider</div>';
+  html += '<h2 class="docs-title">&#128190; Sauvegarder vs Valider</h2>';
+  html += '<div class="docs-grid docs-grid-2">';
+  html += '<div class="docs-compare">';
+  html += '<div class="docs-compare-header docs-compare-save">&#128190; Sauvegarder</div>';
   html += '<ul class="docs-list">';
-  html += '<li><strong>Date</strong> de cr&#233;ation</li>';
-  html += '<li><strong>CA, Offres, BC, RDV</strong> : vos r&#233;sultats</li>';
-  html += '<li><strong>Statut</strong> : brouillon, valid&#233;e, approuv&#233;e, rejet&#233;e</li>';
-  html += '<li><strong>Actions</strong> : Voir, Modifier, Supprimer (brouillons uniquement)</li>';
-  html += '</ul>';
-  html += '<h4 class="docs-subtitle">Actions disponibles</h4>';
-  html += '<div class="docs-table-wrap">';
-  html += '<table class="docs-table">';
+  html += '<li>Enregistre en <strong>brouillon</strong></li>';
+  html += '<li><strong>Modifiable</strong> et supprimable</li>';
+  html += '<li>Pas de notification à l\'admin</li>';
+  html += '<li>Idéal si vous n\'êtes pas sûr des données</li>';
+  html += '</ul></div>';
+  html += '<div class="docs-compare">';
+  html += '<div class="docs-compare-header docs-compare-validate">&#10003; Valider et envoyer</div>';
+  html += '<ul class="docs-list">';
+  html += '<li>Enregistre et <strong>valide</strong> la collecte</li>';
+  html += '<li><strong>Non modifiable</strong> ensuite</li>';
+  html += '<li>Notification envoyée à l\'admin</li>';
+  html += '<li>L\'admin l\'approuvera ou la rejettera</li>';
+  html += '</ul></div>';
+  html += '</div>';
+  html += '<div class="docs-callout docs-callout-danger">';
+  html += '<strong>&#128308; Irréversible</strong> : Une collecte validée ne peut plus être ni modifiée ni supprimée. Vérifiez bien avant de valider.';
+  html += '</div>';
+  html += '</div>';
+
+  // Historique
+  html += '<div class="docs-section" id="docs-historique" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Collectes &rsaquo; Historique</div>';
+  html += '<h2 class="docs-title">&#128203; Historique de vos collectes</h2>';
+  html += '<p class="docs-text">Retrouvez toutes vos collectes passées dans un tableau chronologique.</p>';
+  html += '<div class="docs-table-wrap"><table class="docs-table">';
+  html += '<thead><tr><th>Colonne</th><th>Description</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td><strong>Date</strong></td><td>Date de création de la collecte</td></tr>';
+  html += '<tr><td><strong>CA</strong></td><td>Chiffre d\'affaires en millions FCFA</td></tr>';
+  html += '<tr><td><strong>Offres</strong></td><td>Nombre d\'offres émises</td></tr>';
+  html += '<tr><td><strong>BC</strong></td><td>Nombre de bons de commande signés</td></tr>';
+  html += '<tr><td><strong>RDV</strong></td><td>Nombre de rendez-vous associés</td></tr>';
+  html += '<tr><td><strong>Statut</strong></td><td>Brouillon, Validée, Approuvée, Rejetée</td></tr>';
+  html += '<tr><td><strong>Actions</strong></td><td>Boutons disponibles (brouillons uniquement)</td></tr>';
+  html += '</tbody></table></div>';
+  html += '</div>';
+
+  // Actions sur collectes
+  html += '<div class="docs-section" id="docs-hist-actions" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Collectes &rsaquo; Historique &rsaquo; Actions</div>';
+  html += '<h2 class="docs-title">&#128195; Actions sur les collectes</h2>';
+  html += '<p class="docs-text">Seules les collectes en <strong>brouillon</strong> disposent d\'actions.</p>';
+  html += '<div class="docs-table-wrap"><table class="docs-table">';
   html += '<thead><tr><th>Bouton</th><th>Action</th><th>Conditions</th></tr></thead>';
   html += '<tbody>';
-  html += '<tr><td>&#128065;</td><td><strong>Voir</strong> : d&#233;tails de la collecte</td><td>Tous les statuts</td></tr>';
-  html += '<tr><td>&#9998;</td><td><strong>Modifier</strong> : formulaire &#233;ditable</td><td>Brouillon uniquement</td></tr>';
-  html += '<tr><td>&#10005;</td><td><strong>Supprimer</strong> : confirmation requise</td><td>Brouillon uniquement</td></tr>';
+  html += '<tr><td class="docs-center">&#128065;</td><td><strong>Voir</strong> — Affiche les détails complets</td><td>Tous les statuts</td></tr>';
+  html += '<tr><td class="docs-center">&#9998;</td><td><strong>Modifier</strong> — Ouvre le formulaire d\'édition</td><td>Brouillon uniquement</td></tr>';
+  html += '<tr><td class="docs-center">&#10005;</td><td><strong>Supprimer</strong> — Supprime définitivement</td><td>Brouillon uniquement</td></tr>';
   html += '</tbody></table></div>';
+  html += '</div>';
+
+  // Modifier
+  html += '<div class="docs-section" id="docs-hist-modifier" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Collectes &rsaquo; Historique &rsaquo; Modifier</div>';
+  html += '<h2 class="docs-title">&#9998; Modifier une collecte</h2>';
+  html += '<p class="docs-text">Seules les collectes en brouillon sont modifiables.</p>';
+  html += '<div class="docs-steps">';
+  html += '<div class="docs-step"><div class="docs-step-num">1</div><div class="docs-step-content">Dans l\'historique, cliquez sur <strong>&#9998;</strong> (crayon)</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">2</div><div class="docs-step-content">Modifiez les champs souhaités (CA, Offres, BC)</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">3</div><div class="docs-step-content">Ajoutez ou supprimez des RDV si nécessaire</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">4</div><div class="docs-step-content">Cliquez sur <strong>Enregistrer</strong></div></div>';
+  html += '</div>';
+  html += '</div>';
+
+  // Supprimer
+  html += '<div class="docs-section" id="docs-hist-supprimer" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Collectes &rsaquo; Historique &rsaquo; Supprimer</div>';
+  html += '<h2 class="docs-title">&#10005; Supprimer une collecte</h2>';
+  html += '<div class="docs-steps">';
+  html += '<div class="docs-step"><div class="docs-step-num">1</div><div class="docs-step-content">Dans l\'historique, cliquez sur <strong>&#10005;</strong> (croix rouge)</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">2</div><div class="docs-step-content">Confirmez la suppression dans la boîte de dialogue</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">3</div><div class="docs-step-content">La collecte et ses RDV associés sont supprimés</div></div>';
+  html += '</div>';
+  html += '<div class="docs-callout docs-callout-danger">';
+  html += '<strong>&#128308; Attention</strong> : Cette action est irréversible. Les RDV associés sont également supprimés.';
+  html += '</div>';
+  html += '</div>';
+
+  // ===== RDV =====
+  // Statuts
+  html += '<div class="docs-section" id="docs-rdv-statuts" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Rendez-vous &rsaquo; Statuts</div>';
+  html += '<h2 class="docs-title">&#128197; Comprendre les statuts des RDV</h2>';
+  html += '<p class="docs-text">Chaque RDV passe par un cycle de statuts :</p>';
+  html += '<div class="docs-flow">';
+  html += '<div class="docs-flow-item" style="border-color:#3b82f6;"><div class="docs-flow-label">Prévu</div><div class="docs-flow-desc">RDV planifié, pas encore effectué</div></div>';
+  html += '<div class="docs-flow-arrow">&#10132;</div>';
+  html += '<div class="docs-flow-item" style="border-color:#10b981;"><div class="docs-flow-label">Réalisé</div><div class="docs-flow-desc">RDV effectué, rencontre réalisée</div></div>';
+  html += '<div class="docs-flow-arrow">&#10132;</div>';
+  html += '<div class="docs-flow-item" style="border-color:#f59e0b;"><div class="docs-flow-label">Offre</div><div class="docs-flow-desc">Offre envoyée au prospect</div></div>';
+  html += '<div class="docs-flow-arrow">&#10132;</div>';
+  html += '<div class="docs-flow-item" style="border-color:#8b5cf6;"><div class="docs-flow-label">BC Signé</div><div class="docs-flow-desc">Bon de commande signé</div></div>';
+  html += '</div>';
   html += '<div class="docs-callout docs-callout-info">';
-  html += '<strong>&#128161;</strong> Une collecte approuv&#233;e par l&#8217;admin est signal&#233;e par un statut vert. Vous ne pouvez plus la modifier.';
+  html += '<strong>&#128161;</strong> Vous pouvez changer le statut à tout moment depuis le calendrier, sauf si la collecte associée est déjà validée.';
   html += '</div>';
   html += '</div>';
 
-  // --- Calendrier ---
-  html += '<div class="docs-card" id="docs-calendrier">';
-  html += '<h3 class="docs-title">&#128197; Calendrier</h3>';
-  html += '<p class="docs-text">Le calendrier affiche vos RDV et collectes du mois.</p>';
-  html += '<h4 class="docs-subtitle">Navigation</h4>';
+  // Modifier RDV
+  html += '<div class="docs-section" id="docs-rdv-modifier" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Rendez-vous &rsaquo; Modifier</div>';
+  html += '<h2 class="docs-title">&#9998; Modifier le statut d\'un RDV</h2>';
+  html += '<div class="docs-steps">';
+  html += '<div class="docs-step"><div class="docs-step-num">1</div><div class="docs-step-content">Ouvrez le <strong>calendrier</strong></div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">2</div><div class="docs-step-content">Cliquez sur le jour concerné</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">3</div><div class="docs-step-content">Cliquez sur le RDV à modifier</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">4</div><div class="docs-step-content">Changez le <strong>statut</strong> dans le menu déroulant</div></div>';
+  html += '<div class="docs-step"><div class="docs-step-num">5</div><div class="docs-step-content">Cliquez sur <strong>Enregistrer</strong></div></div>';
+  html += '</div>';
+  html += '</div>';
+
+  // Supprimer RDV
+  html += '<div class="docs-section" id="docs-rdv-supprimer" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Rendez-vous &rsaquo; Supprimer</div>';
+  html += '<h2 class="docs-title">&#10005; Supprimer un RDV</h2>';
+  html += '<p class="docs-text">Depuis le calendrier, ouvrez le détail du RDV et cliquez sur <strong>Supprimer</strong>. Confirmez l\'action.</p>';
+  html += '<div class="docs-callout docs-callout-warning">';
+  html += '<strong>&#9888;&#65039;</strong> Un RDV supprimé ne peut pas être récupéré.';
+  html += '</div>';
+  html += '</div>';
+
+  // ===== VISUALISATION =====
+  // Dashboard
+  html += '<div class="docs-section" id="docs-dashboard" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Visualisation &rsaquo; Tableau de bord</div>';
+  html += '<h2 class="docs-title">&#128202; Tableau de bord</h2>';
+  html += '<p class="docs-text">Vue d\'ensemble de votre activité avec KPIs, graphiques et dernières collectes.</p>';
+  html += '<div class="docs-callout docs-callout-tip">';
+  html += '<strong>&#128161;</strong> Le tableau de bord se met à jour automatiquement quand vous saisissez une nouvelle collecte.';
+  html += '</div>';
+  html += '</div>';
+
+  // KPIs
+  html += '<div class="docs-section" id="docs-dash-kpis" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Visualisation &rsaquo; Tableau de bord &rsaquo; KPIs</div>';
+  html += '<h2 class="docs-title">&#127919; Comprendre les KPIs</h2>';
+  html += '<div class="docs-table-wrap"><table class="docs-table">';
+  html += '<thead><tr><th>KPI</th><th>Calcul</th><th>Interprétation</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td><strong>CA Total</strong></td><td>Somme de tous les CA validés</td><td>Votre chiffre d\'affaires total</td></tr>';
+  html += '<tr><td><strong>Offres</strong></td><td>Somme des offres émises</td><td>Votre activité de prospection</td></tr>';
+  html += '<tr><td><strong>BC Signés</strong></td><td>Somme des bons de commande</td><td>Vos ventes concrètes</td></tr>';
+  html += '<tr><td><strong>RDV</strong></td><td>Total des rendez-vous planifiés</td><td>Votre engagement terrain</td></tr>';
+  html += '</tbody></table></div>';
+  html += '</div>';
+
+  // Graphiques
+  html += '<div class="docs-section" id="docs-dash-graphs" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Visualisation &rsaquo; Tableau de bord &rsaquo; Graphiques</div>';
+  html += '<h2 class="docs-title">&#128200; Les graphiques du tableau de bord</h2>';
+  html += '<div class="docs-table-wrap"><table class="docs-table">';
+  html += '<thead><tr><th>Graphique</th><th>Type</th><th>Données affichées</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td><strong>CA (M FCFA)</strong></td><td>Ligne</td><td>Évolution de votre chiffre d\'affaires</td></tr>';
+  html += '<tr><td><strong>Offres</strong></td><td>Donut</td><td>Total des offres émises</td></tr>';
+  html += '<tr><td><strong>BC</strong></td><td>Donut</td><td>Total des bons de commande</td></tr>';
+  html += '</tbody></table></div>';
+  html += '</div>';
+
+  // Calendrier
+  html += '<div class="docs-section" id="docs-calendrier" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Visualisation &rsaquo; Calendrier</div>';
+  html += '<h2 class="docs-title">&#128197; Le calendrier</h2>';
+  html += '<p class="docs-text">Visualisez vos RDV et collectes du mois sous forme de grille ou de timeline.</p>';
+  html += '<div class="docs-callout docs-callout-info">';
+  html += '<strong>&#128161;</strong> Le calendrier se charge automatiquement avec les données du mois en cours.';
+  html += '</div>';
+  html += '</div>';
+
+  // Navigation calendrier
+  html += '<div class="docs-section" id="docs-cal-navigation" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Visualisation &rsaquo; Calendrier &rsaquo; Navigation</div>';
+  html += '<h2 class="docs-title">&#128261; Naviguer dans le calendrier</h2>';
   html += '<ul class="docs-list">';
-  html += '<li><strong>Fl&#232;ches &#9664; &#9654;</strong> : mois pr&#233;c&#233;dent / suivant</li>';
-  html += '<li><strong>Vue Mois</strong> : grille du mois avec les jours</li>';
-  html += '<li><strong>Timeline</strong> : liste chronologique des RDV</li>';
+  html += '<li><strong>Flèches &#9664; &#9654;</strong> : mois précédent / suivant</li>';
+  html += '<li><strong>Vue Mois</strong> : grille du mois avec indicateurs par jour</li>';
+  html += '<li><strong>Timeline</strong> : liste chronologique de tous les RDV</li>';
+  html += '<li><strong>Badge nombre</strong> : indique le nombre d\'éléments sur un jour</li>';
   html += '</ul>';
-  html += '<h4 class="docs-subtitle">Comprendre les indicateurs</h4>';
+  html += '</div>';
+
+  // Couleurs calendrier
+  html += '<div class="docs-section" id="docs-cal-couleurs" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Visualisation &rsaquo; Calendrier &rsaquo; Codes couleur</div>';
+  html += '<h2 class="docs-title">&#127912; Codes couleur du calendrier</h2>';
+  html += '<h3 class="docs-subtitle">Collectes</h3>';
   html += '<div class="docs-grid docs-grid-2">';
-  html += '<div class="docs-legend"><span class="docs-dot" style="background:#60a5fa;"></span> Brouillon (collecte non valid&#233;e)</div>';
-  html += '<div class="docs-legend"><span class="docs-dot" style="background:#f59e0b;"></span> Valid&#233;e (en attente admin)</div>';
-  html += '<div class="docs-legend"><span class="docs-dot" style="background:#34d399;"></span> Approuv&#233;e (confirm&#233;e par admin)</div>';
-  html += '<div class="docs-legend"><span class="docs-dot" style="background:#f87171;"></span> Rejet&#233;e</div>';
-  html += '<div class="docs-legend"><span class="docs-dot" style="background:#3b82f6;"></span> RDV Pr&#233;vu</div>';
-  html += '<div class="docs-legend"><span class="docs-dot" style="background:#10b981;"></span> RDV R&#233;alis&#233;</div>';
-  html += '<div class="docs-legend"><span class="docs-dot" style="background:#f59e0b;"></span> RDV Offre</div>';
-  html += '<div class="docs-legend"><span class="docs-dot" style="background:#8b5cf6;"></span> RDV BC Sign&#233;</div>';
+  html += '<div class="docs-legend"><span class="docs-dot" style="background:#60a5fa;"></span> <strong>Brouillon</strong> — Collecte non validée</div>';
+  html += '<div class="docs-legend"><span class="docs-dot" style="background:#f59e0b;"></span> <strong>Validée</strong> — En attente de l\'admin</div>';
+  html += '<div class="docs-legend"><span class="docs-dot" style="background:#34d399;"></span> <strong>Approuvée</strong> — Confirmée par l\'admin</div>';
+  html += '<div class="docs-legend"><span class="docs-dot" style="background:#f87171;"></span> <strong>Rejetée</strong> — Refusée par l\'admin</div>';
   html += '</div>';
-  html += '<h4 class="docs-subtitle">Interagir avec le calendrier</h4>';
-  html += '<ul class="docs-list">';
-  html += '<li><strong>Clic sur un jour sans donn&#233;es</strong> : rien ne se passe</li>';
-  html += '<li><strong>Clic sur un jour avec 1 RDV</strong> : ouvre directement le modal d&#8217;&#233;dition</li>';
-  html += '<li><strong>Clic sur un jour avec plusieurs &#233;l&#233;ments</strong> : affiche la liste (collectes + RDV)</li>';
-  html += '<li><strong>Badge nombre</strong> : indique le nombre total d&#8217;&#233;l&#233;ments ce jour</li>';
-  html += '</ul>';
+  html += '<h3 class="docs-subtitle">RDV</h3>';
+  html += '<div class="docs-grid docs-grid-2">';
+  html += '<div class="docs-legend"><span class="docs-dot" style="background:#3b82f6;"></span> <strong>Prévu</strong></div>';
+  html += '<div class="docs-legend"><span class="docs-dot" style="background:#10b981;"></span> <strong>Réalisé</strong></div>';
+  html += '<div class="docs-legend"><span class="docs-dot" style="background:#f59e0b;"></span> <strong>Offre</strong></div>';
+  html += '<div class="docs-legend"><span class="docs-dot" style="background:#8b5cf6;"></span> <strong>BC Signé</strong></div>';
+  html += '</div>';
   html += '</div>';
 
-  // --- Notifications ---
-  html += '<div class="docs-card" id="docs-notifications">';
-  html += '<h3 class="docs-title">&#128276; Notifications</h3>';
-  html += '<p class="docs-text">Les notifications vous informent en temps r&#233;el :</p>';
+  // Interactions calendrier
+  html += '<div class="docs-section" id="docs-cal-interactions" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Visualisation &rsaquo; Calendrier &rsaquo; Interactions</div>';
+  html += '<h2 class="docs-title">&#128433; Interagir avec le calendrier</h2>';
+  html += '<div class="docs-table-wrap"><table class="docs-table">';
+  html += '<thead><tr><th>Action</th><th>Résultat</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td>Clic sur un jour vide</td><td>Rien ne se passe</td></tr>';
+  html += '<tr><td>Clic sur 1 RDV</td><td>Ouvre le modal d\'édition directement</td></tr>';
+  html += '<tr><td>Clic sur plusieurs éléments</td><td>Affiche la liste (collectes + RDV)</td></tr>';
+  html += '<tr><td>Clic sur une collecte dans la liste</td><td>Ouvre le détail de la collecte</td></tr>';
+  html += '<tr><td>Clic sur un RDV dans la liste</td><td>Ouvre l\'édition du RDV</td></tr>';
+  html += '</tbody></table></div>';
+  html += '</div>';
+
+  // ===== OUTILS =====
+  // Notifications
+  html += '<div class="docs-section" id="docs-notifications" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Outils &rsaquo; Notifications</div>';
+  html += '<h2 class="docs-title">&#128276; Notifications</h2>';
+  html += '<p class="docs-text">Les notifications vous informent en temps réel de l\'évolution de vos collectes.</p>';
+  html += '<h3 class="docs-subtitle">Types de notifications</h3>';
   html += '<ul class="docs-list">';
-  html += '<li><strong>Collecte valid&#233;e</strong> : vous &#234;tes notifi&#233; quand votre collecte est approuv&#233;e ou rejet&#233;e</li>';
-  html += '<li><strong>Nouveau rappel</strong> : des rappels vous sont envoy&#233;s</li>';
-  html += '<li><strong>Informations syst&#232;me</strong> : mises &#224; jour importantes</li>';
+  html += '<li><strong>Collecte validée</strong> : votre collecte est en attente</li>';
+  html += '<li><strong>Collecte approuvée</strong> : votre collecte est acceptée</li>';
+  html += '<li><strong>Collecte rejetée</strong> : votre collecte est refusée</li>';
+  html += '<li><strong>Rappel</strong> : rappel de tâche</li>';
+  html += '<li><strong>Système</strong> : informations importantes</li>';
   html += '</ul>';
-  html += '<h4 class="docs-subtitle">G&#233;rer vos notifications</h4>';
+  html += '<h3 class="docs-subtitle">Gestion</h3>';
   html += '<ul class="docs-list">';
   html += '<li>Cliquez sur la <strong>cloche</strong> pour ouvrir le panneau</li>';
-  html += '<li>Filtrez par type (toutes, non lues, en attente, etc.)</li>';
+  html += '<li>Filtrez par type (toutes, non lues, etc.)</li>';
   html += '<li>Cliquez sur une notification pour la marquer comme lue</li>';
-  html += '<li>Utilisez "Tout marquer comme lu" pour tout acquitter</li>';
-  html += '<li>Activez/d&#233;sactivez le <strong>son</strong> avec le bouton speaker</li>';
+  html += '<li>Activez/désactivez le son avec le bouton speaker</li>';
   html += '</ul>';
-  html += '<div class="docs-callout docs-callout-tip">';
-  html += '<strong>&#128161;</strong> Les notifications apparaissent &#233;galement sur votre mobile si vous avez install&#233; l&#8217;application (PWA).';
-  html += '</div>';
   html += '</div>';
 
-  // --- Dark mode ---
-  html += '<div class="docs-card" id="docs-darkmode">';
-  html += '<h3 class="docs-title">&#127769; Mode sombre</h3>';
-  html += '<p class="docs-text">Basculer entre le mode clair et sombre pour plus de confort visuel.</p>';
-  html += '<h4 class="docs-subtitle">Comment activer</h4>';
+  // Dark mode
+  html += '<div class="docs-section" id="docs-darkmode" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Outils &rsaquo; Mode sombre</div>';
+  html += '<h2 class="docs-title">&#127769; Mode sombre</h2>';
+  html += '<p class="docs-text">Basculer entre le mode clair et sombre pour plus de confort visuel, surtout en faible luminosité.</p>';
+  html += '<h3 class="docs-subtitle">3 façons d\'activer</h3>';
   html += '<ol class="docs-list docs-list-ordered">';
-  html += '<li>Cliquez sur l&#8217;ic&#244;ne <strong>&#127769;</strong> (lune) dans le header</li>';
-  html += '<li>Ou allez dans <strong>Param&#232;tres &gt; Apparence</strong></li>';
-  html += '<li>Ou utilisez le menu d&#8217;utilisateur (clic sur votre avatar)</li>';
+  html += '<li>Bouton <strong>&#127769;</strong> dans le header</li>';
+  html += '<li>Menu <strong>Paramètres &rsaquo; Apparence</strong></li>';
+  html += '<li>Menu <strong>avatar &rsaquo; Apparence</strong></li>';
   html += '</ol>';
-  html += '<p class="docs-text">Le choix est <strong>sauvegard&#233;</strong> automatiquement et persiste entre les sessions.</p>';
+  html += '<p class="docs-text">Le choix est sauvegardé automatiquement et persiste entre les sessions.</p>';
   html += '</div>';
 
-  // --- Raccourcis ---
-  html += '<div class="docs-card" id="docs-shortcuts">';
-  html += '<h3 class="docs-title">&#9000;&#65039; Raccourcis clavier</h3>';
-  html += '<div class="docs-table-wrap">';
-  html += '<table class="docs-table">';
+  // Raccourcis
+  html += '<div class="docs-section" id="docs-raccourcis" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Outils &rsaquo; Raccourcis</div>';
+  html += '<h2 class="docs-title">&#9000;&#65039; Raccourcis clavier</h2>';
+  html += '<div class="docs-table-wrap"><table class="docs-table">';
   html += '<thead><tr><th>Raccourci</th><th>Action</th></tr></thead>';
   html += '<tbody>';
-  html += '<tr><td><kbd>Ctrl</kbd> + <kbd>B</kbd></td><td>Replier/d&#233;plier la sidebar</td></tr>';
-  html += '<tr><td><kbd>Espace</kbd></td><td>Envoyer le formulaire (quand un input est focus)</td></tr>';
-  html += '<tr><td><kbd>Echap</kbd></td><td>Fermer la sidebar mobile / un modal ouvert</td></tr>';
+  html += '<tr><td><kbd>Ctrl</kbd> + <kbd>B</kbd></td><td>Replier/déplier la sidebar</td></tr>';
+  html += '<tr><td><kbd>Echap</kbd></td><td>Fermer la sidebar mobile ou un modal</td></tr>';
+  html += '<tr><td><kbd>Entrée</kbd></td><td>Envoyer le formulaire (dans un champ)</td></tr>';
   html += '</tbody></table></div>';
   html += '</div>';
 
-  // --- FAQ ---
-  html += '<div class="docs-card" id="docs-faq">';
-  html += '<h3 class="docs-title">&#10067; Questions fr&#233;quentes</h3>';
+  // Mobile
+  html += '<div class="docs-section" id="docs-mobile" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Outils &rsaquo; Version mobile</div>';
+  html += '<h2 class="docs-title">&#128241; Utiliser sur mobile</h2>';
+  html += '<p class="docs-text">IPCE Dashboard est optimisé pour les smartphones. Vous pouvez l\'installer comme une application (PWA).</p>';
+  html += '<h3 class="docs-subtitle">Installer l\'app</h3>';
+  html += '<ol class="docs-list docs-list-ordered">';
+  html += '<li>Ouvrez le dashboard dans Safari (iOS) ou Chrome (Android)</li>';
+  html += '<li>Cliquez sur "Ajouter à l\'écran d\'accueil"</li>';
+  html += '<li>L\'app s\'ouvre en plein écran, comme une app native</li>';
+  html += '</ol>';
+  html += '<h3 class="docs-subtitle">Fonctionnalités mobiles</h3>';
+  html += '<ul class="docs-list">';
+  html += '<li>Sidebar : glissez depuis la gauche ou utilisez le bouton &#9776;</li>';
+  html += '<li>Formulaires : inputs adaptés au clavier mobile</li>';
+  html += '<li>Notifications : son et vibrations (si activés)</li>';
+  html += '<li>Hors ligne : accès en lecture seule aux données cachées</li>';
+  html += '</ul>';
+  html += '</div>';
+
+  // ===== AIDE =====
+  // Statuts
+  html += '<div class="docs-section" id="docs-statuts" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Aide &rsaquo; Signification des statuts</div>';
+  html += '<h2 class="docs-title">&#127919; Signification des statuts</h2>';
+  html += '<h3 class="docs-subtitle">Statuts de collecte</h3>';
+  html += '<div class="docs-table-wrap"><table class="docs-table">';
+  html += '<thead><tr><th>Statut</th><th>Couleur</th><th>Signification</th><th>Action possible</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td><strong>Brouillon</strong></td><td><span class="docs-badge" style="background:#dbeafe;color:#1d4ed8;">brouillon</span></td><td>Collecte en cours de rédaction</td><td>Modifier, Supprimer, Valider</td></tr>';
+  html += '<tr><td><strong>Validée</strong></td><td><span class="docs-badge" style="background:#fef3c7;color:#b45309;">validée</span></td><td>Envoyée à l\'admin, en attente</td><td>Aucune</td></tr>';
+  html += '<tr><td><strong>Approuvée</strong></td><td><span class="docs-badge" style="background:#d1fae5;color:#047857;">approuvée</span></td><td>Acceptée par l\'admin</td><td>Aucune</td></tr>';
+  html += '<tr><td><strong>Rejetée</strong></td><td><span class="docs-badge" style="background:#fee2e2;color:#b91c1c;">rejetée</span></td><td>Refusée par l\'admin</td><td>Aucune</td></tr>';
+  html += '</tbody></table></div>';
+  html += '<h3 class="docs-subtitle">Statuts de RDV</h3>';
+  html += '<div class="docs-table-wrap"><table class="docs-table">';
+  html += '<thead><tr><th>Statut</th><th>Couleur</th><th>Signification</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td><strong>Prévu</strong></td><td><span class="docs-dot-inline" style="background:#3b82f6;"></span> Bleu</td><td>RDV planifié, pas encore effectué</td></tr>';
+  html += '<tr><td><strong>Réalisé</strong></td><td><span class="docs-dot-inline" style="background:#10b981;"></span> Vert</td><td>RDV effectué</td></tr>';
+  html += '<tr><td><strong>Offre</strong></td><td><span class="docs-dot-inline" style="background:#f59e0b;"></span> Orange</td><td>Offre envoyée au prospect</td></tr>';
+  html += '<tr><td><strong>BC Signé</strong></td><td><span class="docs-dot-inline" style="background:#8b5cf6;"></span> Violet</td><td>Bon de commande signé</td></tr>';
+  html += '</tbody></table></div>';
+  html += '</div>';
+
+  // FAQ
+  html += '<div class="docs-section" id="docs-faq" style="display:none;">';
+  html += '<div class="docs-breadcrumb">Aide &rsaquo; FAQ</div>';
+  html += '<h2 class="docs-title">&#10067; Questions fréquentes</h2>';
   html += '<div class="docs-faq">';
-  html += '<div class="docs-faq-item">';
-  html += '<div class="docs-faq-q">Pourquoi ne puis-je pas modifier une collecte ?</div>';
-  html += '<div class="docs-faq-a">Une collecte avec le statut "valid&#233;e" ou "approuv&#233;e" ne peut plus &#234;tre modifi&#233;e. Seules les collectes en <strong>brouillon</strong> sont &#233;ditable.</div>';
+  html += '<div class="docs-faq-item" onclick="this.classList.toggle(\'open\')">';
+  html += '<div class="docs-faq-q">&#9660; Pourquoi ne puis-je pas modifier une collecte ?</div>';
+  html += '<div class="docs-faq-a">Une collecte avec le statut "validée" ou "approuvée" ne peut plus être modifiée. Seules les collectes en <strong>brouillon</strong> sont éditables.</div>';
   html += '</div>';
-  html += '<div class="docs-faq-item">';
-  html += '<div class="docs-faq-q">Comment supprimer une collecte ?</div>';
-  html += '<div class="docs-faq-a">Allez dans <strong>Historique</strong>, cliquez sur le bouton <strong>&#10005;</strong> (rouge) &#224; droite de la ligne. Confirmez la suppression. Seuls les brouillons peuvent &#234;tre supprim&#233;s.</div>';
+  html += '<div class="docs-faq-item" onclick="this.classList.toggle(\'open\')">';
+  html += '<div class="docs-faq-q">&#9660; Comment supprimer une collecte ?</div>';
+  html += '<div class="docs-faq-a">Dans <strong>Historique</strong>, cliquez sur &#10005; (rouge) à droite de la ligne. Confirmez la suppression. Seuls les brouillons peuvent être supprimés.</div>';
   html += '</div>';
-  html += '<div class="docs-faq-item">';
-  html += '<div class="docs-faq-q">Que signifient les couleurs dans le calendrier ?</div>';
-  html += '<div class="docs-faq-a">Bleu = RDV Pr&#233;vu, Vert = R&#233;alis&#233;, Orange = Offre, Violet = BC Sign&#233;. Pour les collectes : bleu clair = brouillon, jaune = valid&#233;e, vert = approuv&#233;e.</div>';
+  html += '<div class="docs-faq-item" onclick="this.classList.toggle(\'open\')">';
+  html += '<div class="docs-faq-q">&#9660; Que signifient les couleurs dans le calendrier ?</div>';
+  html += '<div class="docs-faq-a">Voir la section <strong>Codes couleur du calendrier</strong> dans la documentation.</div>';
   html += '</div>';
-  html += '<div class="docs-faq-item">';
-  html += '<div class="docs-faq-q">Comment voir les d&#233;tails d&#8217;une collecte ?</div>';
-  html += '<div class="docs-faq-a">Dans <strong>Historique</strong>, cliquez sur l&#8217;ic&#244;ne <strong>&#128065;</strong> (oeil). Un modal affiche CA, offres, BC, statut et les RDVs associ&#233;s.</div>';
+  html += '<div class="docs-faq-item" onclick="this.classList.toggle(\'open\')">';
+  html += '<div class="docs-faq-q">&#9660; Comment voir les détails d\'une collecte ?</div>';
+  html += '<div class="docs-faq-a">Dans <strong>Historique</strong>, cliquez sur &#128065; (oeil). Un modal affiche CA, offres, BC, statut et les RDVs associés.</div>';
   html += '</div>';
-  html += '<div class="docs-faq-item">';
-  html += '<div class="docs-faq-q">Mon collecte a &#233;t&#233; rejet&#233;e, que faire ?</div>';
-  html += '<div class="docs-faq-a">Contactez votre administrateur pour conna&#238;tre la raison du rejet. Vous pouvez cr&#233;er une nouvelle collecte avec les donn&#233;es corrig&#233;es.</div>';
+  html += '<div class="docs-faq-item" onclick="this.classList.toggle(\'open\')">';
+  html += '<div class="docs-faq-q">&#9660; Ma collecte a été rejetée, que faire ?</div>';
+  html += '<div class="docs-faq-a">Contactez votre administrateur pour connaître la raison. Vous pouvez créer une nouvelle collecte avec les données corrigées.</div>';
   html += '</div>';
-  html += '<div class="docs-faq-item">';
-  html += '<div class="docs-faq-q">Comment contacter l&#8217;administrateur ?</div>';
-  html += '<div class="docs-faq-a">Utilisez les canaux de communication de votre entreprise (email, messagerie interne). Le dashboard ne dispose pas de messagerie interne.</div>';
+  html += '<div class="docs-faq-item" onclick="this.classList.toggle(\'open\')">';
+  html += '<div class="docs-faq-q">&#9660; Le bouton + pour ajouter un RDV ne fonctionne pas</div>';
+  html += '<div class="docs-faq-a">Vérifiez que le <strong>prospect</strong> et la <strong>date</strong> sont remplis. Le bouton ne réagit que si ces deux champs sont renseignés.</div>';
+  html += '</div>';
+  html += '<div class="docs-faq-item" onclick="this.classList.toggle(\'open\')">';
+  html += '<div class="docs-faq-q">&#9660; Comment contacter l\'administrateur ?</div>';
+  html += '<div class="docs-faq-a">Utilisez les canaux de communication de votre entreprise. Le dashboard ne dispose pas de messagerie interne.</div>';
+  html += '</div>';
+  html += '<div class="docs-faq-item" onclick="this.classList.toggle(\'open\')">';
+  html += '<div class="docs-faq-q">&#9660; Les notifications n\'apparaissent pas</div>';
+  html += '<div class="docs-faq-a">Vérifiez que le WebSocket est actif (la cloche doit être visible). Si le problème persiste, rafraîchissez la page.</div>';
   html += '</div>';
   html += '</div>';
   html += '</div>';
+
+  html += '</div>'; // docs-content
+  html += '</div>'; // docs-layout
 
   el.innerHTML = html;
 };
+
+// --- Navigation docs ---
+function docsNavigate(section, btn) {
+  // Hide all sections
+  document.querySelectorAll('.docs-section').forEach(function(el) { el.style.display = 'none'; });
+  // Show target
+  var target = document.getElementById('docs-' + section);
+  if (target) target.style.display = '';
+  // Update sidebar active
+  document.querySelectorAll('.docs-nav-item').forEach(function(el) { el.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  // Scroll to top
+  var content = document.querySelector('.docs-content');
+  if (content) content.scrollTop = 0;
+}
