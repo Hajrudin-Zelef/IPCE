@@ -1,0 +1,54 @@
+# PLAN 8 — Correction Faiblesses + Stabilisation
+
+## Résumé
+
+Correction des 6 points faibles identifies par l'Agent 6 + implementation des priorites 1 a 3.
+
+---
+
+## 1. Points faibles corriges
+
+| # | Faible | Correction |
+|---|--------|------------|
+| 1 | Pas de tests routes IA | `tests/unit/ai.test.js` — Mock websearch_agent, tests endpoints chat/insights/predictions/report + God Mode |
+| 2 | Pas de monitoring erreurs IA | `lib/ai.js` — Compteur erreurs Map + logs BDD + endpoint `/api/ai/status` |
+| 3 | Pas de highlighting code IA | `ai-chat.js` — Application `hljs.highlightElement()` apres rendu markdown |
+| 4 | Pas de mode hors ligne admin | `sw.js` + `manifest.json` — PWA admin complete avec cache strategie |
+| 5 | Pas de rate limiting IA | `server.js` — Rate limiter 20 req/min chat, 5 req/min insights/report |
+| 6 | Base connaissance statique | `lib/ai-knowledge.js` — Auto-refresh depuis BDD a chaque conversation |
+
+---
+
+## 2. Priorite 1 — Stabilisation
+
+| # | Tache | Detail |
+|---|-------|--------|
+| 1.1 | Chat IA mobile responsive | `ai-chat.css` — Plein ecran <480px, safe-area, touch targets 44px, orientations |
+| 1.2 | Fallback websearch down | `lib/ai.js` — Message erreur clair + `ai-chat.js` — UI fallback |
+| 1.3 | Timeout client 60s | `ai-chat.js` — AbortController + bouton annuler |
+| 1.4 | WebSocket reconnexion mobile | `notifications.js` — visibilitychange reconnexion |
+
+---
+
+## 3. Priorite 2 — Fonctionnel
+
+| # | Tache | Detail |
+|---|-------|--------|
+| 2.1 | Rate limiting IA | Middleware in-memory dans `server.js` |
+| 2.2 | Historique conversations BDD | Table `ai_conversations` + log dans `routes/ai.js` |
+| 2.3 | Notifications WebSocket insights | Verification broadcast + payload `new_insights` |
+
+---
+
+## 4. Priorite 3 — Qualite
+
+| # | Tache | Detail |
+|---|-------|--------|
+| 3.1 | Tests routes IA | `tests/unit/ai.test.js` — 15+ tests |
+| 3.2 | Monitoring erreurs IA | `lib/ai.js` — `aiErrors` Map + `logAIError()` |
+| 3.3 | Stylelint CSS | `.stylelintrc.json` + script npm |
+| 3.4 | Tests de charge | `tests/load/ai-load.js` — Script artiller-style |
+
+---
+
+*Plan 8 — 26 Aout 2026*

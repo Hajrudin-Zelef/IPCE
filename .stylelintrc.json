@@ -1,0 +1,25 @@
+{
+  "extends": "stylelint-config-standard",
+  "rules": {
+    "color-no-invalid-hex": true,
+    "block-no-empty": true,
+    "no-duplicate-selectors": true,
+    "no-empty-source": null,
+    "selector-class-pattern": null,
+    "custom-property-pattern": null,
+    "font-family-no-missing-generic-family-keyword": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    "shorthand-property-no-redundant-values": null,
+    "declaration-no-important": null,
+    "selector-pseudo-class-no-unknown": [true, { "ignorePseudoClasses": ["global"] }],
+    "property-no-vendor-prefix": null,
+    "at-rule-no-vendor-prefix": null,
+    "media-feature-range-notation": null,
+    "alpha-value-notation": null,
+    "color-function-notation": null,
+    "import-notation": null,
+    "length-zero-no-unit": null,
+    "no-descending-specificity": null
+  },
+  "ignoreFiles": ["node_modules/**", "public/admin/css/responsive.css", "public/admin/css/variables.css"]
+}

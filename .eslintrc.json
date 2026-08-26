@@ -13,5 +13,29 @@
     "no-console": "off",
     "eqeqeq": "error",
     "no-undef": "warn"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["tests/**/*.js"],
+      "env": {
+        "jest": true
+      }
+    },
+    {
+      "files": ["public/admin/js/*.js"],
+      "env": {
+        "browser": true,
+        "node": false
+      },
+      "globals": {
+        "marked": "readonly",
+        "hljs": "readonly",
+        "Chart": "readonly",
+        "html2canvas": "readonly",
+        "jsPDF": "readonly",
+        "ExcelJS": "readonly",
+        "QRCode": "readonly"
+      }
+    }
+  ]
 }

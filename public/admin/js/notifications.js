@@ -222,6 +222,9 @@
           unreadCount = 0;
           updateBadge();
           renderList('all');
+        } else if (data.type === 'new_insights') {
+          fetchNotifications();
+          if (audioEnabled) playNotifSound();
         }
       } catch {}
     };
@@ -237,6 +240,17 @@
       ws.close();
     };
   }
+
+  // Reconnect on visibility change (mobile tab switch)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      if (ws && ws.readyState !== WebSocket.OPEN) {
+        reconnectDelay = 1000;
+        connectWS();
+      }
+      fetchNotifications();
+    }
+  });
 
   function togglePanel() {
     const panel = document.getElementById('notif-panel');

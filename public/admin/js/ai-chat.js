@@ -3,6 +3,7 @@
   let isLoading = false;
   let history = [];
   let godmode = false;
+  let currentAbortController = null;
 
   const SUGGESTIONS = [
     'Quel est le CA total ?',
@@ -88,6 +89,10 @@
     `;
     container.appendChild(msg);
     container.scrollTop = container.scrollHeight;
+    // Apply syntax highlighting to code blocks
+    if (typeof hljs !== 'undefined') {
+      msg.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+    }
     history.push({ role, content });
     if (history.length > 50) history = history.slice(-50);
     try { localStorage.setItem('ai_history', JSON.stringify(history)); } catch {}
@@ -130,19 +135,30 @@
     addMessage('user', text);
     addTyping();
 
+    // AbortController for timeout (60s)
+    currentAbortController = new AbortController();
+    const timeoutId = setTimeout(() => {
+      if (currentAbortController) currentAbortController.abort();
+    }, 60000);
+
     try {
       const res = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ message: text }),
+        signal: currentAbortController.signal,
       });
 
+      clearTimeout(timeoutId);
       removeTyping();
       const data = await res.json();
 
-      if (data.error) { addError(data.error); status.textContent = 'Erreur'; }
-      else if (data.godmode !== undefined) {
+      if (data.error) {
+        const isDown = data.error.includes('indisponible') || data.error.includes('Timeout') || data.error.includes('ECONNREFUSED');
+        addError(isDown ? '⚠️ ' + data.error : data.error);
+        status.textContent = isDown ? 'IA indisponible' : 'Erreur';
+      } else if (data.godmode !== undefined) {
         godmode = data.godmode;
         updateGodModeUI();
         if (data.godmode_prompt) {
@@ -159,11 +175,18 @@
         status.textContent = data.model || 'IA';
       }
     } catch (err) {
+      clearTimeout(timeoutId);
       removeTyping();
-      addError(err.message);
-      status.textContent = 'Erreur';
+      if (err.name === 'AbortError') {
+        addError('⚠️ Temps d\'attente depasse (60s). Le serveur IA ne repond pas.');
+        status.textContent = 'Timeout';
+      } else {
+        addError(err.message);
+        status.textContent = 'Erreur';
+      }
     }
 
+    currentAbortController = null;
     isLoading = false;
     sendBtn.disabled = false;
     input.focus();

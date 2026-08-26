@@ -1,9 +1,28 @@
 const express = require('express');
 const { authenticate } = require('../middleware/auth');
-const { chat, generateInsights, generatePredictions, generateReport, callWebSearch } = require('../lib/ai');
+const { chat, generateInsights, generatePredictions, generateReport, getAIErrorStats } = require('../lib/ai');
 
 const godmodeSessions = new Map();
 const GODMODE_DURATION = 30 * 60 * 1000;
+
+// --- Rate Limiting for AI ---
+const aiRateLimits = new Map();
+const AI_RATE_WINDOW = 60 * 1000;
+
+function aiRateLimit(maxPerMinute) {
+  return (req, res, next) => {
+    const key = `${req.user.id}`;
+    const now = Date.now();
+    const hits = aiRateLimits.get(key) || [];
+    const recent = hits.filter(t => now - t < AI_RATE_WINDOW);
+    if (recent.length >= maxPerMinute) {
+      return res.status(429).json({ error: `Trop de requetes IA. Limite: ${maxPerMinute}/min.` });
+    }
+    recent.push(now);
+    aiRateLimits.set(key, recent);
+    next();
+  };
+}
 
 function isGodMode(userId) {
   const s = godmodeSessions.get(userId);
@@ -20,7 +39,7 @@ function createAIRouter(db, broadcast) {
   });
 
   // Chat (simple, via websearch_agent)
-  router.post('/chat', authenticate, async (req, res) => {
+  router.post('/chat', authenticate, aiRateLimit(20), async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     const { message } = req.body;
     if (!message) return res.status(400).json({ error: 'Message requis' });
@@ -64,23 +83,35 @@ function createAIRouter(db, broadcast) {
       return res.json({ content: `God Mode: ${gm ? 'ACTIF (' + remaining + ' min)' : 'INACTIF'}`, godmode: gm });
     }
 
+    // Log user message
+    const startTime = Date.now();
+    db.prepare("INSERT INTO ai_conversations (user_id, role, message, godmode) VALUES (?, 'user', ?, ?)").run(req.user.id, message, gm ? 1 : 0);
+
     // Chat via websearch_agent
     try {
       const result = await chat(message, [], db, gm);
+      const responseTime = Date.now() - startTime;
+      db.prepare("INSERT INTO ai_conversations (user_id, role, message, model, godmode, response_time_ms) VALUES (?, 'assistant', ?, ?, ?, ?)").run(req.user.id, result.content, result.model, gm ? 1 : 0, responseTime);
       res.json({ content: result.content, godmode: gm, model: result.model, provider: result.provider });
     } catch (err) {
-      res.status(500).json({ error: err.message || 'Erreur IA' });
+      const responseTime = Date.now() - startTime;
+      db.prepare("INSERT INTO ai_conversations (user_id, role, message, godmode, response_time_ms) VALUES (?, 'assistant', 'ERROR', ?, ?)").run(req.user.id, gm ? 1 : 0, responseTime);
+      // Fallback message if websearch_agent is down
+      const fallbackMsg = err.message.includes('indisponible') || err.message.includes('Timeout')
+        ? 'Le serveur IA est temporairement indisponible. Verifiez que websearch_agent est actif sur le port 4500.'
+        : err.message || 'Erreur IA inconnue';
+      res.status(500).json({ error: fallbackMsg });
     }
   });
 
-  router.get('/insights', authenticate, async (req, res) => {
+  router.get('/insights', authenticate, aiRateLimit(5), async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     try {
       const gm = isGodMode(req.user.id);
       const insights = await generateInsights(db, gm);
       const insert = db.prepare("INSERT INTO ai_insights (type, title, message, priority) VALUES (?, ?, ?, ?)");
       for (const i of insights) insert.run(i.type, i.title, i.message, i.priority || 0);
-      if (broadcast && insights.length > 0) broadcast({ type: 'new_insights', count: insights.length });
+      if (broadcast && insights.length > 0) broadcast({ type: 'new_insights', count: insights.length, insights });
       res.json(insights);
     } catch (err) { res.status(500).json({ error: err.message }); }
   });
@@ -91,7 +122,7 @@ function createAIRouter(db, broadcast) {
     catch (err) { res.status(500).json({ error: err.message }); }
   });
 
-  router.post('/report', authenticate, async (req, res) => {
+  router.post('/report', authenticate, aiRateLimit(5), async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     try { res.json(await generateReport(db, isGodMode(req.user.id))); }
     catch (err) { res.status(500).json({ error: err.message }); }
@@ -110,6 +141,37 @@ function createAIRouter(db, broadcast) {
   router.delete('/insights/:id', authenticate, (req, res) => {
     db.prepare("DELETE FROM ai_insights WHERE id = ?").run(req.params.id);
     res.json({ ok: true });
+  });
+
+  // Conversation history
+  router.get('/conversations', authenticate, (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
+    const limit = Math.min(parseInt(req.query.limit) || 50, 200);
+    const offset = parseInt(req.query.offset) || 0;
+    const rows = db.prepare("SELECT * FROM ai_conversations ORDER BY created_at DESC LIMIT ? OFFSET ?").all(limit, offset);
+    const total = db.prepare("SELECT COUNT(*) as count FROM ai_conversations").get().count;
+    res.json({ conversations: rows, total });
+  });
+
+  router.delete('/conversations', authenticate, (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
+    db.prepare("DELETE FROM ai_conversations").run();
+    res.json({ ok: true });
+  });
+
+  // AI Status & Error monitoring
+  router.get('/status', authenticate, (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
+    const convCount = db.prepare("SELECT COUNT(*) as count FROM ai_conversations").get().count;
+    const errorStats = getAIErrorStats();
+    const avgResponseTime = db.prepare("SELECT AVG(response_time_ms) as avg FROM ai_conversations WHERE role = 'assistant' AND message != 'ERROR'").get();
+    res.json({
+      websearch_url: process.env.WEBSEARCH_URL || 'http://127.0.0.1:4500',
+      total_conversations: convCount,
+      avg_response_time_ms: Math.round(avgResponseTime.avg || 0),
+      errors: errorStats,
+      godmode_sessions: godmodeSessions.size,
+    });
   });
 
   return router;
