@@ -375,17 +375,21 @@ ExecStart=/usr/bin/node server.js
 ExecReload=/bin/kill -HUP $MAINPID
 
 # Redémarrage
-Restart=always
-RestartSec=5
+Restart=on-failure
+RestartSec=3
 StartLimitBurst=5
 StartLimitIntervalSec=60
+
+# Limites ressources
+MemoryMax=512M
+CPUQuota=150%
 
 # Sécurité
 NoNewPrivileges=yes
 ProtectSystem=strict
 ProtectHome=yes
 ReadWritePaths=/var/www/IPCE/data
-ReadWritePaths=/var/www/IPCE/.env
+ReadWritePaths=/var/www/IPCE/logs
 PrivateTmp=yes
 
 # Logs
@@ -395,7 +399,6 @@ SyslogIdentifier=ipce
 
 # Limites
 LimitNOFILE=65536
-MemoryMax=512M
 
 [Install]
 WantedBy=multi-user.target

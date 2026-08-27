@@ -86,25 +86,18 @@ function createAdminRouter(db) {
   });
 
   router.get('/stats', authenticate, requireRole('admin'), (req, res) => {
-    const users = db.prepare('SELECT id, nom, role FROM users WHERE role = ?').all('commercial');
-
-    const stats = users.map(u => {
-      const collectes = db.prepare(
-        'SELECT ca, offres, bc FROM collectes WHERE user_id = ? AND statut IN (?, ?)'
-      ).all(u.id, 'validee', 'approuvee');
-
-      const rdvCount = db.prepare(`
-        SELECT COUNT(*) as count FROM rdvs r
-        JOIN collectes c ON c.id = r.collecte_id
-        WHERE c.user_id = ? AND c.statut IN (?, ?)
-      `).get(u.id, 'validee', 'approuvee').count;
-
-      const ca = collectes.reduce((s, c) => s + c.ca, 0);
-      const offres = collectes.reduce((s, c) => s + c.offres, 0);
-      const bc = collectes.reduce((s, c) => s + c.bc, 0);
-
-      return { ...u, ca, offres, bc, rdvCount };
-    });
+    const stats = db.prepare(`
+      SELECT u.id, u.nom, u.role,
+        COALESCE(SUM(CASE WHEN c.statut IN ('validee','approuvee') THEN c.ca ELSE 0 END), 0) as ca,
+        COALESCE(SUM(CASE WHEN c.statut IN ('validee','approuvee') THEN c.offres ELSE 0 END), 0) as offres,
+        COALESCE(SUM(CASE WHEN c.statut IN ('validee','approuvee') THEN c.bc ELSE 0 END), 0) as bc,
+        (SELECT COUNT(*) FROM rdvs r JOIN collectes c2 ON c2.id = r.collecte_id
+           WHERE c2.user_id = u.id AND c2.statut IN ('validee','approuvee')) as rdvCount
+      FROM users u
+      LEFT JOIN collectes c ON c.user_id = u.id
+      WHERE u.role = 'commercial'
+      GROUP BY u.id
+    `).all();
 
     const totals = stats.reduce((acc, s) => ({
       ca: acc.ca + s.ca,
@@ -283,16 +276,23 @@ function createAdminRouter(db) {
       cell.border = cellBorder;
     });
 
+    const perUserStats = db.prepare(`
+      SELECT u.id,
+        COALESCE(SUM(c.ca), 0) as ca,
+        COALESCE(SUM(c.offres), 0) as offres,
+        COALESCE(SUM(c.bc), 0) as bc,
+        (SELECT COUNT(*) FROM rdvs r JOIN collectes c2 ON c2.id = r.collecte_id
+           WHERE c2.user_id = u.id AND c2.statut IN ('validee','approuvee')) as rdv
+      FROM users u
+      LEFT JOIN collectes c ON c.user_id = u.id AND c.statut IN ('validee','approuvee')
+      WHERE u.role = 'commercial'
+      GROUP BY u.id
+    `).all();
+    const statsById = Object.fromEntries(perUserStats.map(s => [s.id, s]));
+
     users.forEach(u => {
-      const uc = allCollectes.filter(c => c.user_id === u.id);
-      const ca = uc.reduce((s, c) => s + c.ca, 0);
-      const offres = uc.reduce((s, c) => s + c.offres, 0);
-      const bc = uc.reduce((s, c) => s + c.bc, 0);
-      const rdv = db.prepare(`
-        SELECT COUNT(*) as count FROM rdvs r
-        JOIN collectes c ON c.id = r.collecte_id
-        WHERE c.user_id = ? AND c.statut IN ('validee', 'approuvee')
-      `).get(u.id).count;
+      const s = statsById[u.id] || { ca: 0, offres: 0, bc: 0, rdv: 0 };
+      const { ca, offres, bc, rdv } = s;
 
       const row = ws2.addRow({
         nom: u.nom,
@@ -373,16 +373,26 @@ function createAdminRouter(db) {
     csv += 'OFFRES EMISES,' + escCsv(totals.offres) + ',Objectif 6\n';
     csv += 'BC SIGNES,' + escCsv(totals.bc) + ',Objectif 6\n';
     csv += 'RDV,' + escCsv(rdvTotal) + ',Objectif 6\n\n';
+    const perUserStats = db.prepare(`
+      SELECT u.id,
+        COALESCE(SUM(c.ca), 0) as ca,
+        COALESCE(SUM(c.offres), 0) as offres,
+        COALESCE(SUM(c.bc), 0) as bc,
+        (SELECT COUNT(*) FROM rdvs r JOIN collectes c2 ON c2.id = r.collecte_id
+           WHERE c2.user_id = u.id AND c2.statut IN ('validee','approuvee')) as rdv
+      FROM users u
+      LEFT JOIN collectes c ON c.user_id = u.id AND c.statut IN ('validee','approuvee')
+      WHERE u.role = 'commercial'
+      GROUP BY u.id
+    `).all();
+    const statsById = Object.fromEntries(perUserStats.map(s => [s.id, s]));
+
     csv += 'DETAIL PAR COMMERCIALE\n';
     csv += 'Commerciale,CA,Offres,BC,RDV,Conv%\n';
     users.forEach(u => {
-      const uc = allCollectes.filter(c => c.user_id === u.id);
-      const ca = uc.reduce((s, c) => s + c.ca, 0);
-      const offres = uc.reduce((s, c) => s + c.offres, 0);
-      const bc = uc.reduce((s, c) => s + c.bc, 0);
-      const rdv = db.prepare('SELECT COUNT(*) as count FROM rdvs r JOIN collectes c ON c.id = r.collecte_id WHERE c.user_id = ? AND c.statut IN (?, ?)').get(u.id, 'validee', 'approuvee').count;
-      const conv = rdv > 0 ? ((offres / rdv) * 100).toFixed(0) : 0;
-      csv += escCsv(u.nom) + ',' + escCsv(ca) + ',' + escCsv(offres) + ',' + escCsv(bc) + ',' + escCsv(rdv) + ',' + escCsv(conv) + '%\n';
+      const s = statsById[u.id] || { ca: 0, offres: 0, bc: 0, rdv: 0 };
+      const conv = s.rdv > 0 ? ((s.offres / s.rdv) * 100).toFixed(0) : 0;
+      csv += escCsv(u.nom) + ',' + escCsv(s.ca) + ',' + escCsv(s.offres) + ',' + escCsv(s.bc) + ',' + escCsv(s.rdv) + ',' + escCsv(conv) + '%\n';
     });
     csv += '\nDETAIL RDV\n';
     csv += 'Commerciale,Prospect,Date,Montant,Statut\n';
@@ -479,6 +489,9 @@ function createAdminRouter(db) {
       db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'update_user', 'user:' + req.params.id, `Rôle de "${user.nom}" changé en ${role}`);
     }
     if (reset_password) {
+      // Note: un JWT déjà émis pour cet utilisateur ne verra le nouveau
+      // must_change_password qu'à sa prochaine connexion (expiration 8h max),
+      // car le flag est porté par le token et non revérifié en DB à chaque requête.
       const bcrypt = require('bcryptjs');
       const hash = bcrypt.hashSync(reset_password, 12);
       db.prepare('UPDATE users SET password = ?, must_change_password = 1 WHERE id = ?').run(hash, req.params.id);
@@ -582,6 +595,21 @@ function createAdminRouter(db) {
     if (conditions.length) sql += ' WHERE ' + conditions.join(' AND ');
     sql += ' ORDER BY vh.created_at DESC LIMIT 100';
     res.json(db.prepare(sql).all(...params));
+  });
+
+  // --- Maintenance: Purge old logs and conversations ---
+  router.post('/maintenance/purge-logs', authenticate, requireRole('admin'), (req, res) => {
+    const { olderThanDays } = req.body;
+    const days = Number(olderThanDays) || 90;
+    if (days < 30) return res.status(400).json({ error: 'Minimum 30 jours pour éviter une purge accidentelle' });
+
+    const deletedLogs = db.prepare(`DELETE FROM logs WHERE created_at < datetime('now', '-' || ? || ' days')`).run(days);
+    const deletedConv = db.prepare(`DELETE FROM ai_conversations WHERE created_at < datetime('now', '-' || ? || ' days')`).run(days);
+
+    db.pragma('wal_checkpoint(TRUNCATE)');
+    db.exec('VACUUM');
+
+    res.json({ message: 'Purge effectuée', logsDeleted: deletedLogs.changes, conversationsDeleted: deletedConv.changes });
   });
 
   // --- Admin Delete Collecte (override user scope) ---

@@ -2,6 +2,29 @@ const express = require('express');
 const { authenticate } = require('../middleware/auth');
 const { sendValidationEmail } = require('../email/mailer');
 
+function toValidNumber(value, fieldName) {
+  if (value === undefined || value === null || value === '') return 0;
+  const n = Number(value);
+  if (!Number.isFinite(n) || n < 0) {
+    throw new Error(`${fieldName} doit être un nombre positif`);
+  }
+  return n;
+}
+
+const MAX_NOTES_LENGTH = 5000;
+const MAX_ZONE_LENGTH = 200;
+
+function validateCollecteInput(body) {
+  const ca = toValidNumber(body.ca, 'ca');
+  const offres = toValidNumber(body.offres, 'offres');
+  const bc = toValidNumber(body.bc, 'bc');
+  const visites = toValidNumber(body.visites, 'visites');
+  const contacts = toValidNumber(body.contacts, 'contacts');
+  const zone = body.zone ? String(body.zone).slice(0, MAX_ZONE_LENGTH) : null;
+  const notes = body.notes ? String(body.notes).slice(0, MAX_NOTES_LENGTH) : null;
+  return { ca, offres, bc, visites, contacts, zone, notes };
+}
+
 function createCollectesRouter(db) {
   const router = express.Router();
 
@@ -57,22 +80,34 @@ function createCollectesRouter(db) {
       return res.status(403).json({ error: 'Seuls les commerciaux peuvent créer des collectes' });
     }
 
-    const { ca, offres, bc, visites, contacts, zone, notes, rdvs } = req.body;
-    const result = db.prepare(
-      'INSERT INTO collectes (user_id, ca, offres, bc, visites, contacts, zone, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-    ).run(req.user.id, ca || 0, offres || 0, bc || 0, visites || 0, contacts || 0, zone || null, notes || null);
-
-    const collecteId = result.lastInsertRowid;
-
-    if (Array.isArray(rdvs)) {
-      const insertRdv = db.prepare(
-        'INSERT INTO rdvs (collecte_id, prospect, date, montant, statut) VALUES (?, ?, ?, ?, ?)'
-      );
-      for (const r of rdvs) {
-        insertRdv.run(collecteId, r.prospect, r.date, r.montant || 0, r.statut || 'Prévu');
-      }
+    let ca, offres, bc, visites, contacts, zone, notes;
+    try {
+      ({ ca, offres, bc, visites, contacts, zone, notes } = validateCollecteInput(req.body));
+    } catch (e) {
+      return res.status(400).json({ error: e.message });
     }
+    const { rdvs } = req.body;
 
+    const createCollecteTx = db.transaction(() => {
+      const result = db.prepare(
+        'INSERT INTO collectes (user_id, ca, offres, bc, visites, contacts, zone, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+      ).run(req.user.id, ca, offres, bc, visites, contacts, zone, notes);
+
+      const collecteId = result.lastInsertRowid;
+
+      if (Array.isArray(rdvs)) {
+        const insertRdv = db.prepare(
+          'INSERT INTO rdvs (collecte_id, prospect, date, montant, statut) VALUES (?, ?, ?, ?, ?)'
+        );
+        for (const r of rdvs) {
+          insertRdv.run(collecteId, r.prospect, r.date, r.montant || 0, r.statut || 'Prévu');
+        }
+      }
+
+      return collecteId;
+    });
+
+    const collecteId = createCollecteTx();
     res.status(201).json({ id: collecteId, message: 'Collecte créée' });
   });
 
@@ -85,20 +120,30 @@ function createCollectesRouter(db) {
       return res.status(400).json({ error: 'Impossible de modifier une collecte déjà validée' });
     }
 
-    const { ca, offres, bc, visites, contacts, zone, notes, rdvs } = req.body;
-    db.prepare('UPDATE collectes SET ca = ?, offres = ?, bc = ?, visites = ?, contacts = ?, zone = ?, notes = ? WHERE id = ?')
-      .run(ca || 0, offres || 0, bc || 0, visites || 0, contacts || 0, zone || null, notes || null, req.params.id);
-
-    if (Array.isArray(rdvs)) {
-      db.prepare('DELETE FROM rdvs WHERE collecte_id = ?').run(req.params.id);
-      const insertRdv = db.prepare(
-        'INSERT INTO rdvs (collecte_id, prospect, date, montant, statut) VALUES (?, ?, ?, ?, ?)'
-      );
-      for (const r of rdvs) {
-        insertRdv.run(req.params.id, r.prospect, r.date, r.montant || 0, r.statut || 'Prévu');
-      }
+    let ca, offres, bc, visites, contacts, zone, notes;
+    try {
+      ({ ca, offres, bc, visites, contacts, zone, notes } = validateCollecteInput(req.body));
+    } catch (e) {
+      return res.status(400).json({ error: e.message });
     }
+    const { rdvs } = req.body;
 
+    const updateCollecteTx = db.transaction(() => {
+      db.prepare('UPDATE collectes SET ca = ?, offres = ?, bc = ?, visites = ?, contacts = ?, zone = ?, notes = ? WHERE id = ?')
+        .run(ca, offres, bc, visites, contacts, zone, notes, req.params.id);
+
+      if (Array.isArray(rdvs)) {
+        db.prepare('DELETE FROM rdvs WHERE collecte_id = ?').run(req.params.id);
+        const insertRdv = db.prepare(
+          'INSERT INTO rdvs (collecte_id, prospect, date, montant, statut) VALUES (?, ?, ?, ?, ?)'
+        );
+        for (const r of rdvs) {
+          insertRdv.run(req.params.id, r.prospect, r.date, r.montant || 0, r.statut || 'Prévu');
+        }
+      }
+    });
+
+    updateCollecteTx();
     res.json({ message: 'Collecte mise à jour' });
   });
 
@@ -187,18 +232,28 @@ function createCollectesRouter(db) {
     sql += ` ORDER BY c.created_at DESC`;
     const collectes = db.prepare(sql).all(...params);
 
-    const result = collectes.map(c => {
-      const rdvs = db.prepare('SELECT id, prospect, date, montant, statut FROM rdvs WHERE collecte_id = ?').all(c.id);
-      return {
-        id: c.id,
-        ca: c.ca,
-        offres: c.offres,
-        bc: c.bc,
-        statut: c.statut,
-        date: c.created_at.split(' ')[0],
-        rdvs,
-      };
-    });
+    if (collectes.length === 0) return res.json([]);
+
+    const ids = collectes.map(c => c.id);
+    const placeholders = ids.map(() => '?').join(',');
+    const allRdvs = db.prepare(
+      `SELECT id, prospect, date, montant, statut, collecte_id FROM rdvs WHERE collecte_id IN (${placeholders})`
+    ).all(...ids);
+
+    const rdvsByCollecte = {};
+    for (const r of allRdvs) {
+      (rdvsByCollecte[r.collecte_id] ||= []).push(r);
+    }
+
+    const result = collectes.map(c => ({
+      id: c.id,
+      ca: c.ca,
+      offres: c.offres,
+      bc: c.bc,
+      statut: c.statut,
+      date: c.created_at.split(' ')[0],
+      rdvs: rdvsByCollecte[c.id] || [],
+    }));
 
     res.json(result);
   });

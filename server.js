@@ -1,8 +1,17 @@
 require('dotenv').config();
 
+process.on('uncaughtException', (err) => {
+  console.error('❌ Exception non capturée:', err);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('❌ Promise rejetée non gérée:', reason);
+});
+
 const http = require('http');
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const { WebSocketServer } = require('ws');
@@ -47,6 +56,7 @@ app.set('db', db);
 app.use(express.json({ limit: '1mb' }));
 
 app.disable('x-powered-by');
+app.use(compression());
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
@@ -105,7 +115,12 @@ app.use('/api/collectes', createCollectesRouter(db));
 app.use('/api/admin', createAdminRouter(db));
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
+  try {
+    db.prepare('SELECT 1').get();
+    res.json({ status: 'ok', uptime: process.uptime(), memory: process.memoryUsage().rss });
+  } catch (err) {
+    res.status(503).json({ status: 'error', error: err.message });
+  }
 });
 
 // --- WebSocket Server ---
@@ -181,3 +196,33 @@ const PORT = process.env.PORT || 4600;
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`🚀 IPCE Dashboard running on 127.0.0.1:${PORT} (localhost only)`);
 });
+
+// --- Graceful shutdown ---
+let shuttingDown = false;
+function shutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log(`\n${signal} reçu — arrêt propre en cours...`);
+
+  wss.clients.forEach(client => client.close(1001, 'Serveur en redémarrage'));
+
+  server.close(() => {
+    console.log('Serveur HTTP fermé.');
+    try {
+      db.pragma('wal_checkpoint(TRUNCATE)');
+      db.close();
+      console.log('Base de données fermée proprement.');
+    } catch (err) {
+      console.error('Erreur fermeture DB:', err.message);
+    }
+    process.exit(0);
+  });
+
+  setTimeout(() => {
+    console.error('Arrêt forcé après 10s (connexions bloquantes).');
+    process.exit(1);
+  }, 10000).unref();
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

@@ -64,7 +64,7 @@ function createAuthRouter(db) {
         return res.status(200).json({
           twoFactorRequired: true,
           pendingToken,
-          user: { id: user.id, nom: user.nom, role: user.role },
+          user: { id: user.id, nom: user.nom, role: user.role, mustChangePassword: user.must_change_password === 1 },
         });
       }
       if (!verifyTOTP(user.two_factor_secret, String(totp))) {
@@ -73,7 +73,7 @@ function createAuthRouter(db) {
     }
 
     const token = jwt.sign(
-      { id: user.id, nom: user.nom, role: user.role },
+      { id: user.id, nom: user.nom, role: user.role, mustChangePassword: user.must_change_password === 1 },
       process.env.JWT_SECRET,
       { expiresIn: '8h', jwtid: crypto.randomUUID() }
     );
@@ -131,7 +131,7 @@ function createAuthRouter(db) {
     clearTwoFaFailures(decoded.id);
 
     const token = jwt.sign(
-      { id: user.id, nom: user.nom, role: user.role },
+      { id: user.id, nom: user.nom, role: user.role, mustChangePassword: user.must_change_password === 1 },
       process.env.JWT_SECRET,
       { expiresIn: '8h', jwtid: crypto.randomUUID() }
     );
@@ -174,6 +174,16 @@ function createAuthRouter(db) {
 
     const hash = await bcrypt.hash(newPassword, 12);
     db.prepare('UPDATE users SET password = ?, must_change_password = 0 WHERE id = ?').run(hash, req.user.id);
+
+    const freshToken = jwt.sign(
+      { id: user.id, nom: user.nom, role: user.role, mustChangePassword: false },
+      process.env.JWT_SECRET,
+      { expiresIn: '8h', jwtid: crypto.randomUUID() }
+    );
+    const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
+    res.cookie('token', freshToken, {
+      httpOnly: true, secure: isSecure, sameSite: 'strict', maxAge: 8 * 60 * 60 * 1000, path: '/',
+    });
 
     res.json({ message: 'Mot de passe change avec succes' });
   });

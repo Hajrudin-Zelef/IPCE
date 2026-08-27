@@ -1,15 +1,25 @@
 const Database = require('better-sqlite3');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const fs = require('fs');
 const path = require('path');
 
 const DB_PATH = path.join(__dirname, '..', 'data', 'ipce.db');
 
 function initDB() {
+  const dataDir = path.dirname(DB_PATH);
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+
   const db = new Database(DB_PATH);
 
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
+  db.pragma('busy_timeout = 5000');
+  db.pragma('synchronous = NORMAL');
+  db.pragma('cache_size = -16000');
+  db.pragma('temp_store = MEMORY');
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -132,6 +142,16 @@ function initDB() {
 
     CREATE INDEX IF NOT EXISTS idx_ai_conv_user ON ai_conversations(user_id);
     CREATE INDEX IF NOT EXISTS idx_ai_conv_created ON ai_conversations(created_at DESC);
+
+    CREATE INDEX IF NOT EXISTS idx_collectes_user ON collectes(user_id);
+    CREATE INDEX IF NOT EXISTS idx_collectes_statut ON collectes(statut);
+    CREATE INDEX IF NOT EXISTS idx_collectes_created ON collectes(created_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_rdvs_collecte ON rdvs(collecte_id);
+    CREATE INDEX IF NOT EXISTS idx_rdvs_date ON rdvs(date);
+    CREATE INDEX IF NOT EXISTS idx_logs_created ON logs(created_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_logs_user ON logs(user_id);
+    CREATE INDEX IF NOT EXISTS idx_validation_history_collecte ON validation_history(collecte_id);
+    CREATE INDEX IF NOT EXISTS idx_reminders_user ON reminders(user_id);
   `);
 
   db.prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)').run('ca_objectif', '100000000');

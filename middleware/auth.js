@@ -83,14 +83,11 @@ function authenticate(req, res, next) {
   req.user = decoded;
   req.token = token;
 
-  // Enforce must_change_password unless the route is allowed pre-change.
-  // Checked against the DB so it also covers passwords reset by an admin.
-  const db = req.app && req.app.get ? req.app.get('db') : null;
-  if (db && !PASSWORD_FREE_PATHS.has(req.path)) {
-    const row = db.prepare('SELECT must_change_password FROM users WHERE id = ?').get(decoded.id);
-    if (row && row.must_change_password === 1) {
-      return res.status(403).json({ error: 'Veuillez d\'abord changer votre mot de passe' });
-    }
+  // Enforce must_change_password directly from the JWT claim — avoids a DB
+  // round-trip on every authenticated request. The claim is refreshed on
+  // login and on password change, so staleness is bounded by token lifetime.
+  if (!PASSWORD_FREE_PATHS.has(req.path) && decoded.mustChangePassword) {
+    return res.status(403).json({ error: 'Veuillez d\'abord changer votre mot de passe' });
   }
 
   next();
