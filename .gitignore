@@ -19,3 +19,4 @@ test-results/
 *.seed
 coverage/
 .nyc_output/
+.agents/
