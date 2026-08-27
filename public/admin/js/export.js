@@ -730,8 +730,6 @@ export function initExport() {
   window.__exportEditorialJPEG = exportEditorialJPEG;
   window.__exportEditorialCSV = exportEditorialCSV;
   window.__exportEditorialXLSX = exportEditorialXLSX;
-
-  buildFixedExportButton();
 }
 
 export async function exportEditorialXLSX() {
