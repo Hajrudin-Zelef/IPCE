@@ -11,6 +11,16 @@ function api(method, url, body) {
   return fetch(url, opts);
 }
 
+// HTML-escape user-controlled values before injecting them via innerHTML.
+function escapeHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function getInitial(name) {
   return name ? name.charAt(0).toUpperCase() : '?';
 }

@@ -60,7 +60,7 @@ window.__load_dashboard = function() {
         var style = statusColors[c.statut] || '';
         html += '<div class="dash-collecte-item">';
         html += '<div><strong>' + (c.ca / 1e6).toFixed(1) + 'M FCFA</strong> — ' + c.offres + ' offres — ' + c.bc + ' BC — ' + (c.visites || 0) + ' vis. — ' + (c.contacts || 0) + ' contacts</div>';
-        html += '<span class="cal-day-rdv-statut" style="' + style + '">' + c.statut + '</span>';
+        html += '<span class="cal-day-rdv-statut" style="' + style + '">' + escapeHtml(c.statut) + '</span>';
         html += '</div>';
       });
       html += '</div>';

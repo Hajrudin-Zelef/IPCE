@@ -18,10 +18,32 @@ const db = initDB();
 const app = express();
 const server = http.createServer(app);
 
+// Trust proxy if running behind one (needed for req.ip rate-limiting and secure cookies)
+if (process.env.TRUST_PROXY) {
+  app.set('trust proxy', process.env.TRUST_PROXY === 'true' ? true : process.env.TRUST_PROXY);
+}
+
+// CORS — strict allowlist. Never reflect arbitrary origins when using credentials.
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:4600,http://127.0.0.1:4600')
+  .split(',').map(o => o.trim()).filter(Boolean);
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && !allowedOrigins.includes(origin)) {
+    return res.status(403).json({ error: 'Origine non autorisée par CORS' });
+  }
+  next();
+});
+
 app.use(cors({
   origin: true,
   credentials: true,
+  optionsSuccessStatus: 204,
 }));
+
+// Expose the DB to middleware handlers (must_change_password enforcement, etc.)
+app.set('db', db);
+
 app.use(express.json({ limit: '1mb' }));
 
 app.disable('x-powered-by');
@@ -37,6 +59,16 @@ app.use((req, res, next) => {
 const loginAttempts = new Map();
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000;
 const RATE_LIMIT_MAX = 10;
+
+// Periodically purge stale rate-limit entries to avoid unbounded memory growth.
+setInterval(() => {
+  const cutoff = Date.now() - RATE_LIMIT_WINDOW;
+  for (const [ip, attempts] of loginAttempts) {
+    if (attempts.length === 0 || attempts[attempts.length - 1] < cutoff) {
+      loginAttempts.delete(ip);
+    }
+  }
+}, 5 * 60 * 1000).unref();
 
 app.use('/api/auth/login', (req, res, next) => {
   if (req.method !== 'POST') return next();

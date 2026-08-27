@@ -31,7 +31,7 @@ window.__load_commercial_suivi = async function() {
       const pct = data.totals.ca > 0 ? ((u.ca / data.totals.ca) * 100).toFixed(1) : 0;
       content += '<div class="section-card" style="border-top:3px solid ' + colors[i % colors.length] + ';padding:14px;">'
         + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
-        + '<div style="font-weight:700;font-size:14px;color:var(--text);">' + u.nom + '</div>'
+        + '<div style="font-weight:700;font-size:14px;color:var(--text);">' + escapeHtml(u.nom) + '</div>'
         + '<div style="font-size:10px;padding:2px 8px;border-radius:10px;background:' + colors[i % colors.length] + '15;color:' + colors[i % colors.length] + ';font-weight:600;">' + pct + '% du CA</div>'
         + '</div>'
         + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;">'
@@ -62,7 +62,7 @@ window.__load_commercial_suivi = async function() {
       const pct = data.totals.ca > 0 ? ((u.ca / data.totals.ca) * 100).toFixed(1) : 0;
       content += '<tr style="border-bottom:1px solid var(--border-light);" onmouseenter="this.style.background=\'rgba(37,99,235,0.04)\'" onmouseleave="this.style.background=\'\'">';
       content += '<td style="padding:10px 14px;font-size:12px;color:var(--muted);text-align:center;">' + (i + 1) + '</td>';
-      content += '<td style="padding:10px 14px;font-size:13px;font-weight:600;color:var(--text);">' + u.nom + '</td>';
+      content += '<td style="padding:10px 14px;font-size:13px;font-weight:600;color:var(--text);">' + escapeHtml(u.nom) + '</td>';
       content += '<td style="padding:10px 14px;font-size:13px;text-align:right;color:var(--text);font-variant-numeric:tabular-nums;">' + formatCA(u.ca) + '</td>';
       content += '<td style="padding:10px 14px;font-size:13px;text-align:right;color:var(--text);">' + u.rdvCount + '</td>';
       content += '<td style="padding:10px 14px;font-size:13px;text-align:right;color:var(--text);">' + u.offres + '</td>';

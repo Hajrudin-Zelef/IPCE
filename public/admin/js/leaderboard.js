@@ -1,3 +1,5 @@
+import { escapeHtml } from './api.js';
+
 function getInitials(name) {
   return name.split('').filter(c => c.match(/[A-ZÀ-Ü]/i)).slice(0, 2).join('').toUpperCase();
 }
@@ -15,9 +17,9 @@ function renderLeaderCard(user, index, totalCA) {
   return `
     <div class="leader-card ${isTop ? 'top' : ''} hover-lift animate-fade-in-up delay-${index + 1}">
       <div class="leader-header">
-        <div class="leader-avatar color-${index % 4}">${getInitials(user.nom)}</div>
+        <div class="leader-avatar color-${index % 4}">${escapeHtml(getInitials(user.nom))}</div>
         <div class="leader-info">
-          <div class="leader-name">${user.nom}</div>
+          <div class="leader-name">${escapeHtml(user.nom)}</div>
           ${isTop ? '<span class="leader-badge top-performer">🏆 Top Performer</span>' : ''}
         </div>
       </div>

@@ -99,17 +99,17 @@ window.__load_prospects = async function() {
         const idx = stageMap[r.statut] || 0;
         const urg = dateUrgency(r.date);
         return `
-          <div class="prospect-card" data-statut="${r.statut}">
+          <div class="prospect-card" data-statut="${escapeHtml(r.statut)}">
             <div class="prospect-card-top">
-              <div class="prospect-avatar s${idx}">${getInitials(r.prospect)}</div>
+              <div class="prospect-avatar s${idx}">${escapeHtml(getInitials(r.prospect))}</div>
               <div class="prospect-card-info">
-                <div class="prospect-card-name" title="${r.prospect}">${r.prospect}</div>
+                <div class="prospect-card-name" title="${escapeHtml(r.prospect)}">${escapeHtml(r.prospect)}</div>
                 <div class="prospect-card-commercial">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  ${r.commercial}
+                  ${escapeHtml(r.commercial)}
                 </div>
               </div>
-              <span class="prospect-status s${idx}"><span class="prospect-status-dot"></span>${r.statut}</span>
+              <span class="prospect-status s${idx}"><span class="prospect-status-dot"></span>${escapeHtml(r.statut)}</span>
             </div>
             <div class="prospect-card-body">
               <div class="prospect-card-montant">${formatCA(r.montant)}<span>FCFA</span></div>
@@ -138,14 +138,14 @@ window.__load_prospects = async function() {
         const idx = stageMap[r.statut] || 0;
         const urg = dateUrgency(r.date);
         return `
-          <div class="prospects-list-row" data-statut="${r.statut}">
-            <span class="prospects-list-name">${r.prospect}</span>
-            <span class="prospects-list-commercial">${r.commercial}</span>
+          <div class="prospects-list-row" data-statut="${escapeHtml(r.statut)}">
+            <span class="prospects-list-name">${escapeHtml(r.prospect)}</span>
+            <span class="prospects-list-commercial">${escapeHtml(r.commercial)}</span>
             <span class="prospects-list-montant">${formatCA(r.montant)} FCFA</span>
             <span class="prospects-list-date">
               ${urg.cls ? `<span class="prospect-date-urgency ${urg.cls}">${urg.text}</span>` : formatDate(r.date)}
             </span>
-            <span class="prospect-status s${idx}"><span class="prospect-status-dot"></span>${r.statut}</span>
+            <span class="prospect-status s${idx}"><span class="prospect-status-dot"></span>${escapeHtml(r.statut)}</span>
             <div class="prospects-list-pipeline">
               ${stages.map((s, i) => `<div class="prospect-pipeline-step ${i < idx ? 'done' : i === idx ? 'current' : ''}"></div>`).join('')}
             </div>

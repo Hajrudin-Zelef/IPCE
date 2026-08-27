@@ -36,7 +36,7 @@ async function loadHistory() {
         + '<td>' + (c.visites || 0) + '</td>'
         + '<td>' + (c.contacts || 0) + '</td>'
         + '<td>' + (c.zone || '—') + '</td>'
-        + '<td><span class="status status-' + c.statut + '">' + c.statut + '</span></td>'
+        + '<td><span class="status status-' + escapeHtml(c.statut) + '">' + escapeHtml(c.statut) + '</span></td>'
         + '<td>' + actions + '</td>'
         + '</tr>';
     }).join('');
@@ -63,11 +63,11 @@ function viewCollecte(id) {
   html += '<div class="cal-modal-field"><label>BC</label><span>' + c.bc + '</span></div>';
   html += '<div class="cal-modal-field"><label>Visites</label><span>' + (c.visites || 0) + '</span></div>';
   html += '<div class="cal-modal-field"><label>Contacts</label><span>' + (c.contacts || 0) + '</span></div>';
-  html += '<div class="cal-modal-field"><label>Zone</label><span>' + (c.zone || '—') + '</span></div>';
-  html += '<div class="cal-modal-field"><label>Statut</label><span class="cal-day-rdv-statut" style="' + style + '">' + c.statut + '</span></div>';
+  html += '<div class="cal-modal-field"><label>Zone</label><span>' + escapeHtml(c.zone || '—') + '</span></div>';
+  html += '<div class="cal-modal-field"><label>Statut</label><span class="cal-day-rdv-statut" style="' + style + '">' + escapeHtml(c.statut) + '</span></div>';
   html += '</div>';
   if (c.notes) {
-    html += '<div style="margin-bottom:16px;"><div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">Notes</div><div style="font-size:13px;background:var(--bg);padding:10px;border-radius:6px;white-space:pre-wrap;">' + c.notes + '</div></div>';
+    html += '<div style="margin-bottom:16px;"><div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">Notes</div><div style="font-size:13px;background:var(--bg);padding:10px;border-radius:6px;white-space:pre-wrap;">' + escapeHtml(c.notes) + '</div></div>';
   }
 
   if (c.rdvs && c.rdvs.length > 0) {
@@ -75,8 +75,8 @@ function viewCollecte(id) {
     c.rdvs.forEach(r => {
       html += '<div class="cal-day-rdv-item">';
       html += '<div class="cal-day-rdv-left">';
-      html += '<div class="cal-day-rdv-prospect">' + r.prospect + '</div>';
-      html += '<div class="cal-day-rdv-montant">' + r.montant + ' M FCFA &mdash; ' + r.statut + '</div>';
+      html += '<div class="cal-day-rdv-prospect">' + escapeHtml(r.prospect) + '</div>';
+      html += '<div class="cal-day-rdv-montant">' + escapeHtml(r.montant) + ' M FCFA &mdash; ' + escapeHtml(r.statut) + '</div>';
       html += '</div></div>';
     });
   } else {
@@ -109,7 +109,7 @@ function editCollecte(id) {
   });
   html += '</select></div>';
   html += '</div>';
-  html += '<div class="form-group"><label>Notes</label><textarea id="edit-notes" rows="2" style="width:100%;resize:vertical;">' + (c.notes || '') + '</textarea></div>';
+  html += '<div class="form-group"><label>Notes</label><textarea id="edit-notes" rows="2" style="width:100%;resize:vertical;">' + escapeHtml(c.notes || '') + '</textarea></div>';
 
   html += '<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">RDVs</div>';
   html += '<div id="edit-rdv-list"></div>';
@@ -141,8 +141,8 @@ function renderEditRdvs() {
   if (editRdvs.length === 0) { el.innerHTML = '<div class="cal-empty" style="padding:8px;">Aucun RDV</div>'; return; }
   el.innerHTML = editRdvs.map((r, i) => '<div class="cal-day-rdv-item">'
     + '<div class="cal-day-rdv-left">'
-    + '<div class="cal-day-rdv-prospect">' + r.prospect + '</div>'
-    + '<div class="cal-day-rdv-montant">' + r.date + ' | ' + r.montant + 'M | ' + r.statut + '</div>'
+    + '<div class="cal-day-rdv-prospect">' + escapeHtml(r.prospect) + '</div>'
+    + '<div class="cal-day-rdv-montant">' + escapeHtml(r.date) + ' | ' + escapeHtml(r.montant) + 'M | ' + escapeHtml(r.statut) + '</div>'
     + '</div>'
     + '<button type="button" class="action-btn action-btn-delete" onclick="removeRdvFromEdit(' + i + ')">&#10005;</button>'
     + '</div>').join('');

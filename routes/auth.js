@@ -1,34 +1,70 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { authenticate } = require('../middleware/auth');
-const { generateSecret, generateTOTP, verifyTOTP, formatSecret } = require('../lib/totp');
+const crypto = require('crypto');
+const { authenticate, revokeToken } = require('../middleware/auth');
+const { generateSecret, verifyTOTP, formatSecret } = require('../lib/totp');
+
+// Constant-time comparison for secrets (works for unequal lengths via hashing).
+function safeEqual(a, b) {
+  const ha = crypto.createHash('sha256').update(String(a)).digest();
+  const hb = crypto.createHash('sha256').update(String(b)).digest();
+  return crypto.timingSafeEqual(ha, hb);
+}
 
 function createAuthRouter(db) {
   const router = express.Router();
 
-  router.post('/login', (req, res) => {
-    const { nom, password } = req.body;
+  // --- Rate limiting for the unauthenticated admin-secret endpoint ---
+  const secretAttempts = new Map();
+  const SECRET_WINDOW = 15 * 60 * 1000;
+  const SECRET_MAX = 5;
+
+  router.post('/login', async (req, res) => {
+    const { nom, password, totp } = req.body;
     if (!nom || !password) {
       return res.status(400).json({ error: 'Nom et mot de passe requis' });
     }
 
     const user = db.prepare('SELECT * FROM users WHERE nom = ?').get(nom);
-    if (!user || !bcrypt.compareSync(password, user.password)) {
+    if (!user) {
       return res.status(401).json({ error: 'Identifiants incorrects' });
+    }
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.status(401).json({ error: 'Identifiants incorrects' });
+    }
+
+    // --- 2FA: if enabled, require a valid TOTP before issuing the full token ---
+    if (user.two_factor_enabled === 1 && user.two_factor_secret) {
+      if (!totp) {
+        const pendingToken = jwt.sign(
+          { id: user.id, nom: user.nom, role: user.role, twoFaPending: true },
+          process.env.JWT_SECRET,
+          { expiresIn: '5m', jwtid: crypto.randomUUID() }
+        );
+        return res.status(200).json({
+          twoFactorRequired: true,
+          pendingToken,
+          user: { id: user.id, nom: user.nom, role: user.role },
+        });
+      }
+      if (!verifyTOTP(user.two_factor_secret, String(totp))) {
+        return res.status(401).json({ error: 'Identifiants incorrects' });
+      }
     }
 
     const token = jwt.sign(
       { id: user.id, nom: user.nom, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: '8h' }
+      { expiresIn: '8h', jwtid: crypto.randomUUID() }
     );
 
     const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
     res.cookie('token', token, {
       httpOnly: true,
       secure: isSecure,
-      sameSite: isSecure ? 'strict' : 'lax',
+      sameSite: 'strict',
       maxAge: 8 * 60 * 60 * 1000,
       path: '/',
     });
@@ -43,7 +79,57 @@ function createAuthRouter(db) {
     });
   });
 
-  router.post('/change-password', authenticate, (req, res) => {
+  // Second step of 2FA login: exchange the pending token + TOTP for the full token.
+  router.post('/login/2fa', async (req, res) => {
+    const { pendingToken, code } = req.body;
+    if (!pendingToken || !code) {
+      return res.status(400).json({ error: 'Token et code requis' });
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(pendingToken, process.env.JWT_SECRET);
+    } catch {
+      return res.status(401).json({ error: 'Session expirée, reconnectez-vous' });
+    }
+    if (!decoded.twoFaPending || !decoded.id) {
+      return res.status(400).json({ error: 'Token invalide' });
+    }
+
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.id);
+    if (!user || user.two_factor_enabled !== 1 || !user.two_factor_secret) {
+      return res.status(400).json({ error: '2FA non configurée' });
+    }
+    if (!verifyTOTP(user.two_factor_secret, String(code))) {
+      return res.status(401).json({ error: 'Code 2FA incorrect' });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, nom: user.nom, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '8h', jwtid: crypto.randomUUID() }
+    );
+
+    const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: isSecure,
+      sameSite: 'strict',
+      maxAge: 8 * 60 * 60 * 1000,
+      path: '/',
+    });
+
+    res.json({
+      user: {
+        id: user.id,
+        nom: user.nom,
+        role: user.role,
+        must_change_password: user.must_change_password === 1,
+      },
+    });
+  });
+
+  router.post('/change-password', authenticate, async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     if (!currentPassword || !newPassword) {
       return res.status(400).json({ error: 'Ancien et nouveau mot de passe requis' });
@@ -56,17 +142,17 @@ function createAuthRouter(db) {
     }
 
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
-    if (!user || !bcrypt.compareSync(currentPassword, user.password)) {
+    if (!user || !(await bcrypt.compare(currentPassword, user.password))) {
       return res.status(401).json({ error: 'Mot de passe actuel incorrect' });
     }
 
-    const hash = bcrypt.hashSync(newPassword, 12);
+    const hash = await bcrypt.hash(newPassword, 12);
     db.prepare('UPDATE users SET password = ?, must_change_password = 0 WHERE id = ?').run(hash, req.user.id);
 
     res.json({ message: 'Mot de passe change avec succes' });
   });
 
-  router.post('/register', authenticate, (req, res) => {
+  router.post('/register', authenticate, async (req, res) => {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Acces refuse' });
     }
@@ -84,7 +170,7 @@ function createAuthRouter(db) {
       return res.status(409).json({ error: 'Ce nom est deja utilise' });
     }
 
-    const hash = bcrypt.hashSync(password, 12);
+    const hash = await bcrypt.hash(password, 12);
     const userRole = role === 'admin' ? 'admin' : 'commercial';
     const result = db.prepare('INSERT INTO users (nom, password, role, must_change_password) VALUES (?, ?, ?, ?)').run(nom, hash, userRole, 0);
 
@@ -107,15 +193,28 @@ function createAuthRouter(db) {
   });
 
   router.post('/logout', (req, res) => {
+    if (req.token) revokeToken(req.token);
     res.clearCookie('token', { path: '/' });
     res.json({ message: 'Deconnecte' });
   });
 
-  // --- Admin Secret Verification ---
+  // --- Admin Secret Verification (rate-limited, constant-time) ---
   router.post('/verify-admin-secret', (req, res) => {
+    const ip = req.ip || 'unknown';
+    const now = Date.now();
+    const attempts = secretAttempts.get(ip) || [];
+    const recent = attempts.filter(t => now - t < SECRET_WINDOW);
+    if (recent.length >= SECRET_MAX) {
+      return res.status(429).json({ error: 'Trop de tentatives. Réessayez dans 15 minutes.' });
+    }
+
     const { password } = req.body;
     if (!password) return res.status(400).json({ error: 'Mot de passe requis' });
-    if (password === process.env.ADMIN_SECRET) {
+
+    recent.push(now);
+    secretAttempts.set(ip, recent);
+
+    if (process.env.ADMIN_SECRET && safeEqual(password, process.env.ADMIN_SECRET)) {
       return res.json({ success: true });
     }
     return res.status(403).json({ error: 'Mot de passe admin incorrect' });
@@ -194,6 +293,16 @@ function createAuthRouter(db) {
 
     res.json({ message: '2FA désactivée' });
   });
+
+  // Periodically purge stale secret-attempt entries.
+  setInterval(() => {
+    const cutoff = Date.now() - SECRET_WINDOW;
+    for (const [ip, attempts] of secretAttempts) {
+      if (attempts.length === 0 || attempts[attempts.length - 1] < cutoff) {
+        secretAttempts.delete(ip);
+      }
+    }
+  }, 5 * 60 * 1000).unref();
 
   return router;
 }

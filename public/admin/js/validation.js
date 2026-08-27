@@ -1,4 +1,4 @@
-import { apiPatch, fetchJSON } from './api.js';
+import { apiPatch, fetchJSON, escapeHtml } from './api.js';
 
 function getPriorityClass(collecte) {
   const ca = collecte.ca || 0;
@@ -23,10 +23,10 @@ function renderInboxCard(collecte) {
     <div class="inbox-card ${priority} animate-fade-in-up">
       <div class="inbox-header">
         <div>
-          <div class="inbox-commercial">${collecte.commercial}</div>
+          <div class="inbox-commercial">${escapeHtml(collecte.commercial)}</div>
           <div class="inbox-date">${formatDate(collecte.created_at)}</div>
         </div>
-        <span class="inbox-status ${collecte.statut}">${collecte.statut}</span>
+        <span class="inbox-status ${escapeHtml(collecte.statut)}">${escapeHtml(collecte.statut)}</span>
       </div>
       <div class="inbox-metrics">
         <div class="inbox-metric">
@@ -51,8 +51,8 @@ function renderInboxCard(collecte) {
           ${rdvs.map(r => `
             <div class="inbox-rdv-item">
               <div class="inbox-rdv-dot"></div>
-              <span class="inbox-rdv-prospect">${r.prospect}</span>
-              <span class="inbox-rdv-details">${r.date ? formatDate(r.date) : '—'} — ${r.montant != null ? r.montant + 'M' : '—'} — ${r.statut || '—'}</span>
+              <span class="inbox-rdv-prospect">${escapeHtml(r.prospect)}</span>
+              <span class="inbox-rdv-details">${r.date ? formatDate(r.date) : '—'} — ${r.montant != null ? escapeHtml(String(r.montant)) + 'M' : '—'} — ${escapeHtml(r.statut || '—')}</span>
             </div>
           `).join('')}
         </div>

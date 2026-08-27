@@ -87,11 +87,11 @@
           <div class="notif-item-icon" style="background:${cfg.bg}; color:${cfg.color};">${cfg.icon}</div>
           <div class="notif-item-content">
             <div class="notif-item-header">
-              <span class="notif-item-title">${n.title}</span>
+              <span class="notif-item-title">${escapeHtml(n.title)}</span>
               <span class="notif-item-time">${timeAgo(n.created_at)}</span>
             </div>
-            <div class="notif-item-message">${n.message}</div>
-            ${n.link ? `<a class="notif-item-link" href="${n.link}">Voir</a>` : ''}
+            <div class="notif-item-message">${escapeHtml(n.message)}</div>
+            ${n.link ? `<a class="notif-item-link" href="${escapeHtml(n.link)}">Voir</a>` : ''}
           </div>
           <div class="notif-item-actions">
             ${

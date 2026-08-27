@@ -17,12 +17,12 @@ window.__load_users = async function() {
     const initials = getInitials(u.nom);
     const isProtected = u.role === 'admin' && admins.length <= 1;
     return `
-      <div class="user-card" data-nom="${u.nom.toLowerCase()}" data-role="${u.role}">
+      <div class="user-card" data-nom="${escapeHtml(u.nom.toLowerCase())}" data-role="${escapeHtml(u.role)}">
         <div class="user-card-top">
-          <div class="user-avatar ${u.role}">${initials}</div>
+          <div class="user-avatar ${escapeHtml(u.role)}">${escapeHtml(initials)}</div>
           <div class="user-info">
-            <div class="user-name">${u.nom}</div>
-            <span class="user-role-badge ${u.role}"><span class="user-role-dot"></span>${u.role === 'admin' ? 'Administrateur' : 'Commercial'}</span>
+            <div class="user-name">${escapeHtml(u.nom)}</div>
+            <span class="user-role-badge ${escapeHtml(u.role)}"><span class="user-role-dot"></span>${u.role === 'admin' ? 'Administrateur' : 'Commercial'}</span>
           </div>
         </div>
         <div class="user-card-body">
@@ -36,16 +36,16 @@ window.__load_users = async function() {
           </div>
           <div class="user-status-row">
             <span class="user-status-label">Identifiant</span>
-            <span class="user-status-value">${u.nom}</span>
+            <span class="user-status-value">${escapeHtml(u.nom)}</span>
           </div>
         </div>
         <div class="user-card-actions">
-          <button class="user-action-btn" onclick="window.__resetUserPass(${u.id}, '${u.nom.replace(/'/g, "\\'")}')">
+          <button class="user-action-btn" onclick="window.__resetUserPass(${u.id}, '${escapeHtml(u.nom.replace(/'/g, "\\'"))}')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             Réinit. mdp
           </button>
           ${!isProtected ? `
-            <button class="user-action-btn danger" onclick="window.__deleteUser(${u.id}, '${u.nom.replace(/'/g, "\\'")}')">
+            <button class="user-action-btn danger" onclick="window.__deleteUser(${u.id}, '${escapeHtml(u.nom.replace(/'/g, "\\'"))}')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
               Supprimer
             </button>

@@ -61,6 +61,21 @@
       </div>
       <button type="button" class="btn" onclick="doVerifyAdminSecret()">Valider</button>
     </div>
+
+    <!-- 2FA Box (apparaît si l'utilisateur a activé la double authentification) -->
+    <div id="twofa-box" style="display:none; margin-top:20px; border-top:1px solid #eee; padding-top:20px;">
+      <div style="text-align:center; margin-bottom:12px;">
+        <div style="font-size:28px;">🔢</div>
+        <div style="font-size:14px; font-weight:700; color:#1e3c72; margin-top:6px;">Authentification à deux facteurs</div>
+        <div style="font-size:12px; color:#888; margin-top:2px;">Saisissez le code à 6 chiffres de votre application</div>
+      </div>
+      <div class="error" id="twofa-error"></div>
+      <div class="form-group">
+        <label>Code 2FA</label>
+        <input type="text" id="twofa-code" required inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="123456">
+      </div>
+      <button type="button" class="btn" onclick="doLogin2fa()">Vérifier</button>
+    </div>
   </div>
 
   <div class="modal-overlay" id="change-modal">
@@ -115,6 +130,15 @@
         const data = await res.json();
         if (!res.ok) return showError('error', data.error);
 
+        // 2FA obligatoire → saisie du code
+        if (data.twoFactorRequired && data.pendingToken) {
+          window.__pending2fa = data.pendingToken;
+          document.querySelector('form').style.display = 'none';
+          document.getElementById('twofa-box').style.display = 'block';
+          document.getElementById('twofa-code').focus();
+          return;
+        }
+
         if (data.user.must_change_password) {
           document.getElementById('change-modal').classList.add('active');
           return;
@@ -135,6 +159,31 @@
         redirectUser(data.user.role);
       } catch {
         showError('error', 'Erreur de connexion au serveur');
+      }
+    }
+
+    async function doLogin2fa() {
+      hideError('twofa-error');
+      const code = document.getElementById('twofa-code').value;
+      if (!code || code.length !== 6) return showError('twofa-error', 'Veuillez saisir le code à 6 chiffres');
+
+      try {
+        const res = await fetch('/api/auth/login/2fa', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ pendingToken: window.__pending2fa, code }),
+        });
+        const data = await res.json();
+        if (!res.ok) return showError('twofa-error', data.error);
+
+        if (data.user.must_change_password) {
+          document.getElementById('change-modal').classList.add('active');
+          return;
+        }
+        redirectUser(data.user.role);
+      } catch {
+        showError('twofa-error', 'Erreur de connexion au serveur');
       }
     }
 

@@ -29,3 +29,13 @@ export async function fetchJSON(url) {
   const res = await apiGet(url);
   return res.json();
 }
+
+// HTML-escape user-controlled values before injecting them via innerHTML.
+export function escapeHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}

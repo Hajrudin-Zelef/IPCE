@@ -1,3 +1,5 @@
+import { escapeHtml } from './api.js';
+
 let activeKPI = null;
 
 const KPI_CONFIG = {
@@ -238,7 +240,7 @@ function renderDetailPanel(key, users, totals) {
         </div>
         <div class="detail-metric">
           <div class="detail-metric-label">Top Commercial</div>
-          <div class="detail-metric-value">${leader ? leader.nom : '—'}</div>
+          <div class="detail-metric-value">${leader ? escapeHtml(leader.nom) : '—'}</div>
         </div>
         <div class="detail-metric">
           <div class="detail-metric-label">Contribution</div>
@@ -254,7 +256,7 @@ function renderDetailPanel(key, users, totals) {
         <div class="detail-drilldown">
           ${sorted.map(u => `
             <div class="detail-drilldown-row">
-              <span class="detail-drilldown-name">${u.nom}</span>
+              <span class="detail-drilldown-name">${escapeHtml(u.nom)}</span>
               <span class="detail-drilldown-value">${cfg.format(u[key])}</span>
             </div>
           `).join('')}

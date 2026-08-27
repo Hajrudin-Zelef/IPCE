@@ -95,9 +95,9 @@ window.__loadValTab = async function(tab, btn) {
             <div class="inbox-card" id="inbox-${c.id}">
               <div class="inbox-card-top">
                 <div class="inbox-card-header">
-                  <div class="inbox-avatar">${getInitials(c.commercial)}</div>
+                  <div class="inbox-avatar">${escapeHtml(getInitials(c.commercial))}</div>
                   <div>
-                    <div class="inbox-commercial">${c.commercial}</div>
+                    <div class="inbox-commercial">${escapeHtml(c.commercial)}</div>
                     <div class="inbox-date">
                       Soumis <span class="inbox-date-time">${timeAgo(c.created_at)}</span> — ${formatDate(c.created_at)}
                     </div>
@@ -133,8 +133,8 @@ window.__loadValTab = async function(tab, btn) {
                     <div class="inbox-metric-label">Contacts</div>
                   </div>
                 </div>
-                ${c.zone ? `<div style="font-size:11px;margin-bottom:8px"><span style="background:var(--primary-light);color:var(--primary);padding:2px 8px;border-radius:4px;font-weight:600">${c.zone}</span></div>` : ''}
-                ${c.notes ? `<div style="font-size:11px;color:var(--muted);margin-bottom:12px;background:var(--bg);padding:8px 10px;border-radius:6px;white-space:pre-wrap">${c.notes}</div>` : ''}
+                ${c.zone ? `<div style="font-size:11px;margin-bottom:8px"><span style="background:var(--primary-light);color:var(--primary);padding:2px 8px;border-radius:4px;font-weight:600">${escapeHtml(c.zone)}</span></div>` : ''}
+                ${c.notes ? `<div style="font-size:11px;color:var(--muted);margin-bottom:12px;background:var(--bg);padding:8px 10px;border-radius:6px;white-space:pre-wrap">${escapeHtml(c.notes)}</div>` : ''}
 
                 <!-- RDV List -->
                 ${totalRDV > 0 ? `
@@ -143,7 +143,7 @@ window.__loadValTab = async function(tab, btn) {
                     ${c.rdvs.map(r => `
                       <div class="inbox-rdv-item">
                         <div class="inbox-rdv-dot ${getRdvDotClass(r.statut)}"></div>
-                        <div class="inbox-rdv-prospect">${r.prospect}</div>
+                        <div class="inbox-rdv-prospect">${escapeHtml(r.prospect)}</div>
                         <div class="inbox-rdv-meta">
                           <span>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
@@ -151,7 +151,7 @@ window.__loadValTab = async function(tab, btn) {
                           </span>
                           <span>${formatCA(r.montant)}M</span>
                         </div>
-                        <span class="inbox-rdv-statut ${getRdvDotClass(r.statut)}">${r.statut}</span>
+                        <span class="inbox-rdv-statut ${getRdvDotClass(r.statut)}">${escapeHtml(r.statut)}</span>
                       </div>
                     `).join('')}
                   </div>
@@ -201,10 +201,10 @@ window.__loadValTab = async function(tab, btn) {
         ${history.map(h => `
           <div class="validation-history-row">
             <span class="validation-history-date">${formatDate(h.created_at)}</span>
-            <span class="validation-history-commercial">${h.commercial}</span>
+            <span class="validation-history-commercial">${escapeHtml(h.commercial)}</span>
             <span class="validation-history-ca">${h.ca ? formatCA(h.ca) + ' FCFA' : '—'}</span>
-            <span><span class="log-action-badge ${h.action}">${h.action === 'approve' ? 'Approuvé' : 'Rejeté'}</span></span>
-            <span>${h.user_nom}</span>
+            <span><span class="log-action-badge ${escapeHtml(h.action)}">${h.action === 'approve' ? 'Approuvé' : 'Rejeté'}</span></span>
+            <span>${escapeHtml(h.user_nom)}</span>
           </div>
         `).join('')}
       </div>

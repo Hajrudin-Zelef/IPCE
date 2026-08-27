@@ -42,16 +42,16 @@ window.__load_reminders = async function() {
     const iconClass = r.completed ? 'completed' : r.priority;
 
     return `
-      <div class="reminder-card ${cardClass}" data-id="${r.id}" data-priority="${r.priority}" data-completed="${r.completed}">
-        <div class="reminder-priority-bar ${r.priority}"></div>
-        <div class="reminder-icon ${iconClass}">
+      <div class="reminder-card ${escapeHtml(cardClass)}" data-id="${r.id}" data-priority="${escapeHtml(r.priority)}" data-completed="${r.completed}">
+        <div class="reminder-priority-bar ${escapeHtml(r.priority)}"></div>
+        <div class="reminder-icon ${escapeHtml(iconClass)}">
           ${r.completed ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>' : priorityIcon(r.priority)}
         </div>
         <div class="reminder-body">
-          <div class="reminder-title">${r.title}</div>
-          ${r.description ? `<div class="reminder-desc">${r.description}</div>` : ''}
+          <div class="reminder-title">${escapeHtml(r.title)}</div>
+          ${r.description ? `<div class="reminder-desc">${escapeHtml(r.description)}</div>` : ''}
           <div class="reminder-meta">
-            <span class="reminder-priority-badge ${r.priority}"><span class="reminder-priority-dot"></span>${r.priority === 'high' ? 'Urgent' : r.priority === 'medium' ? 'Moyen' : 'Faible'}</span>
+            <span class="reminder-priority-badge ${escapeHtml(r.priority)}"><span class="reminder-priority-dot"></span>${r.priority === 'high' ? 'Urgent' : r.priority === 'medium' ? 'Moyen' : 'Faible'}</span>
             <span class="reminder-meta-item">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
               ${r.due_date ? `<span class="reminder-date-urgency ${urg.cls}">${urg.text}</span>` : 'Pas de date'}

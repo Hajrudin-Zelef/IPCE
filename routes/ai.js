@@ -9,6 +9,15 @@ const GODMODE_DURATION = 30 * 60 * 1000;
 const aiRateLimits = new Map();
 const AI_RATE_WINDOW = 60 * 1000;
 
+setInterval(() => {
+  const cutoff = Date.now() - AI_RATE_WINDOW;
+  for (const [key, hits] of aiRateLimits) {
+    const active = hits.filter(t => t >= cutoff);
+    if (active.length === 0) aiRateLimits.delete(key);
+    else aiRateLimits.set(key, active);
+  }
+}, 5 * 60 * 1000).unref();
+
 function aiRateLimit(maxPerMinute) {
   return (req, res, next) => {
     const key = `${req.user.id}`;

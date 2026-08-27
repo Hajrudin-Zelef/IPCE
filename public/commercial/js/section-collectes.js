@@ -65,10 +65,10 @@ function renderRdvs() {
     var dotColor = statusColors[r.statut] || '#94a3b8';
     return '<div class="rdv-item">'
       + '<div class="info">'
-      + '<b>' + r.prospect + '</b>'
-      + ' <span style="color:var(--muted)">&middot;</span> ' + r.date
-      + ' <span style="color:var(--muted)">&middot;</span> ' + r.montant + 'M'
-      + ' <span style="color:' + dotColor + ';font-weight:600;margin-left:4px;">' + r.statut + '</span>'
+      + '<b>' + escapeHtml(r.prospect) + '</b>'
+      + ' <span style="color:var(--muted)">&middot;</span> ' + escapeHtml(r.date)
+      + ' <span style="color:var(--muted)">&middot;</span> ' + escapeHtml(r.montant) + 'M'
+      + ' <span style="color:' + dotColor + ';font-weight:600;margin-left:4px;">' + escapeHtml(r.statut) + '</span>'
       + '</div>'
       + '<button class="btn btn-danger btn-sm" onclick="removeRdv(' + i + ')">✕</button>'
       + '</div>';

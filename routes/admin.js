@@ -1,6 +1,26 @@
 const express = require('express');
 const ExcelJS = require('exceljs');
+const crypto = require('crypto');
 const { authenticate, requireRole } = require('../middleware/auth');
+
+// Constant-time comparison for secrets (works for unequal lengths via hashing).
+function safeEqual(a, b) {
+  const ha = crypto.createHash('sha256').update(String(a)).digest();
+  const hb = crypto.createHash('sha256').update(String(b)).digest();
+  return crypto.timingSafeEqual(ha, hb);
+}
+
+// CSV cell escaping to prevent CSV/formula injection.
+function escCsv(value) {
+  let s = String(value === undefined || value === null ? '' : value);
+  if (/^[=+\-@]/.test(s) || /^[\t\r\n]/.test(s)) {
+    s = "'" + s;
+  }
+  if (/[",\n\r]/.test(s)) {
+    s = '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
 
 function createAdminRouter(db) {
   const router = express.Router();
@@ -349,10 +369,10 @@ function createAdminRouter(db) {
     let csv = 'RAPPORT PILOTAGE COMMERCIAL IPCE\n';
     csv += new Date().toLocaleDateString('fr-FR') + '\n\n';
     csv += 'RESUME EXECUTIF\n';
-    csv += 'CA TOTAL,' + totals.ca + ',Objectif 100M\n';
-    csv += 'OFFRES EMISES,' + totals.offres + ',Objectif 6\n';
-    csv += 'BC SIGNES,' + totals.bc + ',Objectif 6\n';
-    csv += 'RDV,' + rdvTotal + ',Objectif 6\n\n';
+    csv += 'CA TOTAL,' + escCsv(totals.ca) + ',Objectif 100M\n';
+    csv += 'OFFRES EMISES,' + escCsv(totals.offres) + ',Objectif 6\n';
+    csv += 'BC SIGNES,' + escCsv(totals.bc) + ',Objectif 6\n';
+    csv += 'RDV,' + escCsv(rdvTotal) + ',Objectif 6\n\n';
     csv += 'DETAIL PAR COMMERCIALE\n';
     csv += 'Commerciale,CA,Offres,BC,RDV,Conv%\n';
     users.forEach(u => {
@@ -362,7 +382,7 @@ function createAdminRouter(db) {
       const bc = uc.reduce((s, c) => s + c.bc, 0);
       const rdv = db.prepare('SELECT COUNT(*) as count FROM rdvs r JOIN collectes c ON c.id = r.collecte_id WHERE c.user_id = ? AND c.statut IN (?, ?)').get(u.id, 'validee', 'approuvee').count;
       const conv = rdv > 0 ? ((offres / rdv) * 100).toFixed(0) : 0;
-      csv += u.nom + ',' + ca + ',' + offres + ',' + bc + ',' + rdv + ',' + conv + '%\n';
+      csv += escCsv(u.nom) + ',' + escCsv(ca) + ',' + escCsv(offres) + ',' + escCsv(bc) + ',' + escCsv(rdv) + ',' + escCsv(conv) + '%\n';
     });
     csv += '\nDETAIL RDV\n';
     csv += 'Commerciale,Prospect,Date,Montant,Statut\n';
@@ -374,7 +394,7 @@ function createAdminRouter(db) {
       ORDER BY r.date DESC
     `).all();
     allRdvs.forEach(r => {
-      csv += r.commercial + ',' + r.prospect + ',' + r.date + ',' + r.montant + ',' + r.statut + '\n';
+      csv += escCsv(r.commercial) + ',' + escCsv(r.prospect) + ',' + escCsv(r.date) + ',' + escCsv(r.montant) + ',' + escCsv(r.statut) + '\n';
     });
 
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
@@ -451,8 +471,7 @@ function createAdminRouter(db) {
   });
 
   router.get('/reminders', authenticate, requireRole('admin'), (req, res) => {
-    const reminders = db.prepare('SELECT * FROM reminders WHERE user_id = ? ORDER BY due_date ASC').get(req.user.id) || [];
-    res.json(db.prepare('SELECT * FROM reminders ORDER BY due_date ASC').all());
+    res.json(db.prepare('SELECT * FROM reminders WHERE user_id = ? ORDER BY due_date ASC').all(req.user.id));
   });
 
   router.post('/reminders', authenticate, requireRole('admin'), (req, res) => {
@@ -551,7 +570,7 @@ function createAdminRouter(db) {
   // --- Admin Delete Collecte (override user scope) ---
   router.delete('/collectes/:id', authenticate, requireRole('admin'), (req, res) => {
     const { password } = req.body;
-    if (!password || password !== process.env.ADMIN_SECRET) {
+    if (!password || !process.env.ADMIN_SECRET || !safeEqual(password, process.env.ADMIN_SECRET)) {
       return res.status(403).json({ error: 'Mot de passe admin incorrect' });
     }
     const collecte = db.prepare('SELECT * FROM collectes WHERE id = ?').get(req.params.id);

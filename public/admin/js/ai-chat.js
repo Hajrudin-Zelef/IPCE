@@ -65,9 +65,40 @@
     `;
   }
 
+  // Sanitize HTML produced by the LLM / markdown rendering before injecting it.
+  // LLM output is untrusted (prompt injection), and `marked` passes raw HTML through.
+  function sanitizeHtml(html) {
+    if (typeof DOMParser === 'undefined') {
+      return html
+        .replace(/<script[\s\S]*?<\/script>/gi, '')
+        .replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
+        .replace(/\s+on\w+(\s*=\s*["'][^"']*["'])?/gi, '')
+        .replace(/(href|src|xlink:href)\s*=\s*(["'])javascript:[^"']*\2/gi, '');
+    }
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const disallowed = ['script', 'iframe', 'object', 'embed', 'link', 'meta', 'base', 'form', 'style'];
+    doc.body.querySelectorAll(disallowed.join(',')).forEach(el => el.remove());
+    doc.body.querySelectorAll('*').forEach(el => {
+      Array.from(el.attributes).forEach(attr => {
+        const name = attr.name.toLowerCase();
+        const val = (attr.value || '').trim().toLowerCase();
+        if (name.startsWith('on')) {
+          el.removeAttribute(attr.name);
+        } else if ((name === 'href' || name === 'src' || name === 'xlink:href') && /^\s*(javascript|data:text\/html):/.test(val)) {
+          el.removeAttribute(attr.name);
+        } else if (name === 'srcdoc') {
+          el.removeAttribute(attr.name);
+        }
+      });
+    });
+    return doc.body.innerHTML;
+  }
+
   function renderMarkdown(text) {
-    if (typeof marked !== 'undefined') return marked.parse(text, { gfm: true, breaks: true });
-    return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>').replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+    if (typeof marked !== 'undefined') {
+      return sanitizeHtml(marked.parse(text, { gfm: true, breaks: true }));
+    }
+    return sanitizeHtml(text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>').replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>'));
   }
 
   function escapeHtml(text) { const d = document.createElement('div'); d.textContent = text; return d.innerHTML; }

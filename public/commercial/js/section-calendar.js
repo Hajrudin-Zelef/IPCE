@@ -105,7 +105,7 @@ function calRenderMonth() {
       html += `<span class="cal-dot ${sClass}" title="Collecte ${c.statut} — ${(c.ca/1e6).toFixed(1)}M"></span>`;
     });
     dayRdvs.slice(0, 4).forEach(r => {
-      html += `<span class="cal-dot ${r.statut.replace(/ /g, ' ')}" title="${r.prospect} — ${r.statut}"></span>`;
+      html += `<span class="cal-dot ${r.statut.replace(/ /g, ' ')}" title="${escapeHtml(r.prospect)} — ${escapeHtml(r.statut)}"></span>`;
     });
     html += '</div></div>';
   }
@@ -128,9 +128,9 @@ function calRenderTimeline() {
       html += `<div class="cal-timeline-item ${r.statut.replace(/ /g, ' ')}" onclick="calOpenModal(${JSON.stringify(r).replace(/"/g, '&quot;')})">`;
       html += `<div class="cal-timeline-date">${dateLabel}</div>`;
       html += '<div class="cal-timeline-info">';
-      html += `<div class="cal-timeline-prospect">${r.prospect}</div>`;
-      html += `<div class="cal-timeline-montant">${r.montant} M FCFA</div>`;
-      html += `<span class="cal-timeline-statut ${r.statut.replace(/ /g, ' ')}">${r.statut}</span>`;
+      html += `<div class="cal-timeline-prospect">${escapeHtml(r.prospect)}</div>`;
+      html += `<div class="cal-timeline-montant">${escapeHtml(r.montant)} M FCFA</div>`;
+      html += `<span class="cal-timeline-statut ${r.statut.replace(/ /g, ' ')}">${escapeHtml(r.statut)}</span>`;
       html += '</div></div>';
     });
     document.getElementById('cal-timeline-view').innerHTML = html;
@@ -187,7 +187,7 @@ function showDayModal(dateStr, dayRdvs, dayCollectes) {
       html += '<div class="cal-day-rdv-prospect">' + (c.ca / 1e6).toFixed(1) + 'M FCFA &mdash; ' + c.offres + ' offres &mdash; ' + c.bc + ' BC &mdash; ' + rdvCount + ' RDV</div>';
       html += '<div class="cal-day-rdv-montant">' + (locked ? 'Valid&eacute;e &mdash; lecture seule' : 'Brouillon &mdash; cliquer pour voir') + '</div>';
       html += '</div>';
-      html += '<span class="cal-day-rdv-statut" style="' + style + '">' + c.statut + '</span>';
+      html += '<span class="cal-day-rdv-statut" style="' + style + '">' + escapeHtml(c.statut) + '</span>';
       html += '</div>';
     });
   }
@@ -201,10 +201,10 @@ function showDayModal(dateStr, dayRdvs, dayCollectes) {
       const rdvJson = JSON.stringify(r).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
       html += '<div class="cal-day-rdv-item" onclick="calCloseDayModal();calOpenModal(JSON.parse(\'' + rdvJson + '\'))">';
       html += '<div class="cal-day-rdv-left">';
-      html += '<div class="cal-day-rdv-prospect">' + r.prospect + '</div>';
-      html += '<div class="cal-day-rdv-montant">' + r.montant + ' M FCFA</div>';
+      html += '<div class="cal-day-rdv-prospect">' + escapeHtml(r.prospect) + '</div>';
+      html += '<div class="cal-day-rdv-montant">' + escapeHtml(r.montant) + ' M FCFA</div>';
       html += '</div>';
-      html += '<span class="cal-day-rdv-statut" style="' + style + '">' + r.statut + '</span>';
+      html += '<span class="cal-day-rdv-statut" style="' + style + '">' + escapeHtml(r.statut) + '</span>';
       html += '</div>';
     });
   }
@@ -236,7 +236,7 @@ function showCollecteDetail(c) {
   html += '<div class="cal-modal-field"><label>CA</label><span>' + (c.ca / 1e6).toFixed(1) + ' M FCFA</span></div>';
   html += '<div class="cal-modal-field"><label>Offres</label><span>' + c.offres + '</span></div>';
   html += '<div class="cal-modal-field"><label>BC</label><span>' + c.bc + '</span></div>';
-  html += '<div class="cal-modal-field"><label>Statut</label><span class="cal-day-rdv-statut" style="' + style + '">' + c.statut + '</span></div>';
+  html += '<div class="cal-modal-field"><label>Statut</label><span class="cal-day-rdv-statut" style="' + style + '">' + escapeHtml(c.statut) + '</span></div>';
   html += '</div>';
 
   if (locked) {
@@ -250,10 +250,10 @@ function showCollecteDetail(c) {
     c.rdvs.forEach(r => {
       html += '<div class="cal-day-rdv-item" style="cursor:pointer;" onclick="document.getElementById(\'cal-collecte-modal\').style.display=\'none\';calOpenModal(' + JSON.stringify(r).replace(/"/g, '&quot;') + ')">';
       html += '<div class="cal-day-rdv-left">';
-      html += '<div class="cal-day-rdv-prospect">' + r.prospect + '</div>';
-      html += '<div class="cal-day-rdv-montant">' + r.montant + ' M FCFA</div>';
+      html += '<div class="cal-day-rdv-prospect">' + escapeHtml(r.prospect) + '</div>';
+      html += '<div class="cal-day-rdv-montant">' + escapeHtml(r.montant) + ' M FCFA</div>';
       html += '</div>';
-      html += '<span class="cal-day-rdv-statut">' + r.statut + '</span>';
+      html += '<span class="cal-day-rdv-statut">' + escapeHtml(r.statut) + '</span>';
       html += '</div>';
     });
   } else {
