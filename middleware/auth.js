@@ -56,10 +56,10 @@ function getTokenFromRequest(req) {
 
 // Paths a user is allowed to call before changing their default password.
 const PASSWORD_FREE_PATHS = new Set([
-  '/api/auth/change-password',
-  '/api/auth/logout',
-  '/api/auth/me',
-  '/api/auth/2fa/status',
+  '/change-password',
+  '/logout',
+  '/me',
+  '/2fa/status',
 ]);
 
 function authenticate(req, res, next) {
