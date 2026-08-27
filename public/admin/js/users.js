@@ -40,12 +40,12 @@ window.__load_users = async function() {
           </div>
         </div>
         <div class="user-card-actions">
-          <button class="user-action-btn" onclick="window.__resetUserPass(${u.id}, '${escapeHtml(u.nom.replace(/'/g, "\\'"))}')">
+          <button class="user-action-btn" data-action="reset" data-id="${u.id}" data-nom="${escapeHtml(u.nom)}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             Réinit. mdp
           </button>
           ${!isProtected ? `
-            <button class="user-action-btn danger" onclick="window.__deleteUser(${u.id}, '${escapeHtml(u.nom.replace(/'/g, "\\'"))}')">
+            <button class="user-action-btn danger" data-action="delete" data-id="${u.id}" data-nom="${escapeHtml(u.nom)}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
               Supprimer
             </button>
@@ -299,3 +299,14 @@ window.UsersView = {
     window.__load_users();
   }
 };
+
+// Event delegation for data-action buttons
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const action = btn.dataset.action;
+  const id = parseInt(btn.dataset.id);
+  const nom = btn.dataset.nom;
+  if (action === 'reset') window.__resetUserPass(id, nom);
+  if (action === 'delete') window.__deleteUser(id, nom);
+});

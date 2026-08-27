@@ -94,6 +94,62 @@ app.use('/api/auth/login', (req, res, next) => {
   next();
 });
 
+// --- Rate-limit: change-password (5/15 min) ---
+const changePasswordAttempts = new Map();
+const CHANGE_PW_WINDOW = 15 * 60 * 1000;
+const CHANGE_PW_MAX = 5;
+
+setInterval(() => {
+  const cutoff = Date.now() - CHANGE_PW_WINDOW;
+  for (const [ip, attempts] of changePasswordAttempts) {
+    if (attempts.length === 0 || attempts[attempts.length - 1] < cutoff) {
+      changePasswordAttempts.delete(ip);
+    }
+  }
+}, 5 * 60 * 1000).unref();
+
+app.use('/api/auth/change-password', (req, res, next) => {
+  if (req.method !== 'POST') return next();
+  const ip = req.ip;
+  const now = Date.now();
+  const attempts = changePasswordAttempts.get(ip) || [];
+  const recent = attempts.filter(t => now - t < CHANGE_PW_WINDOW);
+  if (recent.length >= CHANGE_PW_MAX) {
+    return res.status(429).json({ error: 'Trop de tentatives. Réessayez dans 15 minutes.' });
+  }
+  recent.push(now);
+  changePasswordAttempts.set(ip, recent);
+  next();
+});
+
+// --- Rate-limit: register (10/15 min) ---
+const registerAttempts = new Map();
+const REGISTER_WINDOW = 15 * 60 * 1000;
+const REGISTER_MAX = 10;
+
+setInterval(() => {
+  const cutoff = Date.now() - REGISTER_WINDOW;
+  for (const [ip, attempts] of registerAttempts) {
+    if (attempts.length === 0 || attempts[attempts.length - 1] < cutoff) {
+      registerAttempts.delete(ip);
+    }
+  }
+}, 5 * 60 * 1000).unref();
+
+app.use('/api/auth/register', (req, res, next) => {
+  if (req.method !== 'POST') return next();
+  const ip = req.ip;
+  const now = Date.now();
+  const attempts = registerAttempts.get(ip) || [];
+  const recent = attempts.filter(t => now - t < REGISTER_WINDOW);
+  if (recent.length >= REGISTER_MAX) {
+    return res.status(429).json({ error: 'Trop de créations. Réessayez dans 15 minutes.' });
+  }
+  recent.push(now);
+  registerAttempts.set(ip, recent);
+  next();
+});
+
 app.get('/admin.html', (req, res) => res.redirect(301, '/admin/index.html'));
 
 app.use(express.static(path.join(__dirname, 'public'), {

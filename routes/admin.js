@@ -507,9 +507,11 @@ function createAdminRouter(db) {
   router.post('/reminders', authenticate, requireRole('admin'), (req, res) => {
     const { title, description, due_date, priority } = req.body;
     if (!title) return res.status(400).json({ error: 'Titre requis' });
+    const allowedPriorities = ['low', 'medium', 'high'];
+    const safePriority = allowedPriorities.includes(priority) ? priority : 'medium';
     const result = db.prepare(
       'INSERT INTO reminders (user_id, title, description, due_date, priority) VALUES (?, ?, ?, ?, ?)'
-    ).run(req.user.id, title, description || null, due_date || null, priority || 'medium');
+    ).run(req.user.id, title, description || null, due_date || null, safePriority);
 
     // Create notification for the reminder
     if (due_date) {
@@ -532,7 +534,13 @@ function createAdminRouter(db) {
     if (title !== undefined) db.prepare('UPDATE reminders SET title = ? WHERE id = ?').run(title, req.params.id);
     if (description !== undefined) db.prepare('UPDATE reminders SET description = ? WHERE id = ?').run(description, req.params.id);
     if (due_date !== undefined) db.prepare('UPDATE reminders SET due_date = ? WHERE id = ?').run(due_date, req.params.id);
-    if (priority !== undefined) db.prepare('UPDATE reminders SET priority = ? WHERE id = ?').run(priority, req.params.id);
+    if (priority !== undefined) {
+      const allowedPriorities = ['low', 'medium', 'high'];
+      if (!allowedPriorities.includes(priority)) {
+        return res.status(400).json({ error: 'Priorité invalide' });
+      }
+      db.prepare('UPDATE reminders SET priority = ? WHERE id = ?').run(priority, req.params.id);
+    }
     if (completed !== undefined) db.prepare('UPDATE reminders SET completed = ? WHERE id = ?').run(completed ? 1 : 0, req.params.id);
     res.json({ message: 'Rappel mis à jour' });
   });
@@ -567,10 +575,21 @@ function createAdminRouter(db) {
 
   router.patch('/settings', authenticate, requireRole('admin'), (req, res) => {
     const updates = req.body;
+    const ALLOWED_SETTINGS = new Set([
+      'ca_objectif', 'offres_objectif', 'bc_objectif', 'rdv_objectif',
+      'theme', 'notifications_enabled',
+    ]);
+    const allowed = {};
+    for (const [key, value] of Object.entries(updates)) {
+      if (ALLOWED_SETTINGS.has(key)) allowed[key] = String(value);
+    }
+    if (Object.keys(allowed).length === 0) {
+      return res.status(400).json({ error: 'Aucun paramètre valide' });
+    }
     const upsert = db.prepare('INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)');
     const tx = db.transaction(() => {
-      for (const [key, value] of Object.entries(updates)) {
-        upsert.run(key, String(value));
+      for (const [key, value] of Object.entries(allowed)) {
+        upsert.run(key, value);
       }
     });
     tx();

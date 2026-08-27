@@ -181,7 +181,7 @@ function renderLogs(logs) {
                     <span class="logs-timeline-action">${getActionLabel(l.action)}</span>
                     <span class="logs-timeline-badge ${cat}">${l.action.replace(/_/g, ' ')}</span>
                   </div>
-                  ${l.details ? `<div class="logs-timeline-detail">${l.details}</div>` : ''}
+                  ${l.details ? `<div class="logs-timeline-detail">${escapeHtml(l.details)}</div>` : ''}
                   <div class="logs-timeline-meta">
                     <span>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>

@@ -1,4 +1,5 @@
 const express = require('express');
+const crypto = require('crypto');
 const { authenticate } = require('../middleware/auth');
 const { chat, generateInsights, generatePredictions, generateReport, getAIErrorStats } = require('../lib/ai');
 
@@ -96,7 +97,9 @@ function createAIRouter(db, broadcast) {
       const pwd = message.trim().substring(8).trim();
       const gp = process.env.GODMODE_PASSWORD;
       if (!gp) return res.json({ content: 'God Mode non configure.', godmode: false });
-      if (pwd === gp) {
+      const ha = crypto.createHash('sha256').update(String(pwd)).digest();
+      const hb = crypto.createHash('sha256').update(String(gp)).digest();
+      if (crypto.timingSafeEqual(ha, hb)) {
         clearGodmodeFailures(req.user.id);
         godmodeSessions.set(req.user.id, { active: true, expiresAt: Date.now() + GODMODE_DURATION });
         db.prepare("INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)").run(req.user.id, 'godmode_enable', 'system', 'God Mode active');
@@ -154,19 +157,19 @@ function createAIRouter(db, broadcast) {
       for (const i of insights) insert.run(i.type, i.title, i.message, i.priority || 0);
       if (broadcast && insights.length > 0) broadcast({ type: 'new_insights', count: insights.length, insights });
       res.json(insights);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (err) { console.error('Insights error:', err.message); res.status(500).json({ error: 'Erreur du service IA' }); }
   });
 
   router.get('/predictions', authenticate, async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     try { res.json(await generatePredictions(db, isGodMode(req.user.id))); }
-    catch (err) { res.status(500).json({ error: err.message }); }
+    catch (err) { console.error('Predictions error:', err.message); res.status(500).json({ error: 'Erreur du service IA' }); }
   });
 
   router.post('/report', authenticate, aiRateLimit(5), async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     try { res.json(await generateReport(db, isGodMode(req.user.id))); }
-    catch (err) { res.status(500).json({ error: err.message }); }
+    catch (err) { console.error('Report error:', err.message); res.status(500).json({ error: 'Erreur du service IA' }); }
   });
 
   router.get('/stored-insights', authenticate, (req, res) => {
