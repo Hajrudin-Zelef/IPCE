@@ -458,7 +458,10 @@ function createAdminRouter(db) {
   router.delete('/users/:id', authenticate, requireRole('admin'), (req, res) => {
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
     if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
-    if (user.role === 'admin') return res.status(400).json({ error: 'Impossible de supprimer un admin' });
+    if (user.role === 'admin') {
+      const adminCount = db.prepare('SELECT COUNT(*) as count FROM users WHERE role = ?').get('admin').count;
+      if (adminCount <= 1) return res.status(400).json({ error: 'Impossible de supprimer le dernier admin' });
+    }
     db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id);
     db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'delete_user', 'user:' + req.params.id, `Utilisateur "${user.nom}" supprimé`);
     res.json({ message: 'Utilisateur supprimé' });

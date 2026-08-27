@@ -203,6 +203,9 @@ window.__createUser = async function() {
   if (!nom || !password) return alert('Nom et mot de passe requis');
   if (password.length < 8) return alert('Le mot de passe doit contenir au moins 8 caractères');
 
+  const btn = document.querySelector('.users-create-btn[onclick="window.__createUser()"]');
+  if (btn) { btn.disabled = true; btn.textContent = 'Création...'; }
+
   try {
     const res = await fetch('/api/auth/register', {
       method: 'POST',
@@ -217,6 +220,7 @@ window.__createUser = async function() {
     document.getElementById('users-create-form').style.display = 'none';
     window.__load_users();
   } catch { alert('Erreur serveur'); }
+  finally { if (btn) { btn.disabled = false; btn.textContent = 'Créer'; } }
 };
 
 // --- Search ---

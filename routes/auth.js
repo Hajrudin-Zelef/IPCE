@@ -184,25 +184,26 @@ function createAuthRouter(db) {
     }
 
     const { nom, password, role } = req.body;
-    if (!nom || !password) {
+    const trimmedNom = (nom || '').trim();
+    if (!trimmedNom || !password) {
       return res.status(400).json({ error: 'Nom et mot de passe requis' });
     }
     if (password.length < 8) {
       return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caracteres' });
     }
 
-    const existing = db.prepare('SELECT id FROM users WHERE nom = ?').get(nom);
+    const existing = db.prepare('SELECT id FROM users WHERE nom = ?').get(trimmedNom);
     if (existing) {
       return res.status(409).json({ error: 'Ce nom est deja utilise' });
     }
 
     const hash = await bcrypt.hash(password, 12);
     const userRole = role === 'admin' ? 'admin' : 'commercial';
-    const result = db.prepare('INSERT INTO users (nom, password, role, must_change_password) VALUES (?, ?, ?, ?)').run(nom, hash, userRole, 0);
+    const result = db.prepare('INSERT INTO users (nom, password, role, must_change_password) VALUES (?, ?, ?, ?)').run(trimmedNom, hash, userRole, 0);
 
-    db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'create_user', 'user:' + result.lastInsertRowid, `Utilisateur "${nom}" créé avec le rôle ${userRole}`);
+    db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'create_user', 'user:' + result.lastInsertRowid, `Utilisateur "${trimmedNom}" créé avec le rôle ${userRole}`);
 
-    res.status(201).json({ id: result.lastInsertRowid, nom, role: userRole });
+    res.status(201).json({ id: result.lastInsertRowid, nom: trimmedNom, role: userRole });
   });
 
   router.get('/me', authenticate, (req, res) => {
