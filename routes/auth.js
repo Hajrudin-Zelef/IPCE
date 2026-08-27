@@ -97,7 +97,6 @@ function createAuthRouter(db) {
     });
   });
 
-  // Second step of 2FA login: exchange the pending token + TOTP for the full token.
   router.post('/login/2fa', async (req, res) => {
     const { pendingToken, code } = req.body;
     if (!pendingToken || !code) {
