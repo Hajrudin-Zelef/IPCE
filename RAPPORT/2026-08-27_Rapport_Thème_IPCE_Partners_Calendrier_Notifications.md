@@ -1,9 +1,10 @@
 # RAPPORT — Thème IPCE Partners + Calendrier Détail + Notifications + Fixes
 
-**Session :** opencode -s ses_fbfd822f2ffenQpJ4xXcqiinT8
+**Agent :** Agent8
+**Session :** opencode -s ses_fbc9c3769ffe3EGtXbhs8N7OMe
 **Date :** 27 Août 2026
 **Branche :** feat/new-logo (base : feat/premium-admin-dashboard)
-**Commits :** ccc5eaf → e458e10 (6 commits)
+**Commits :** ccc5eaf → bf5ae7c (7 commits)
 
 ---
 
