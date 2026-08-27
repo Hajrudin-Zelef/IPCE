@@ -111,6 +111,16 @@ function createAuthRouter(db) {
     res.json({ message: 'Deconnecte' });
   });
 
+  // --- Admin Secret Verification ---
+  router.post('/verify-admin-secret', (req, res) => {
+    const { password } = req.body;
+    if (!password) return res.status(400).json({ error: 'Mot de passe requis' });
+    if (password === process.env.ADMIN_SECRET) {
+      return res.json({ success: true });
+    }
+    return res.status(403).json({ error: 'Mot de passe admin incorrect' });
+  });
+
   // --- 2FA Endpoints ---
 
   router.get('/2fa/status', authenticate, (req, res) => {

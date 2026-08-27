@@ -154,6 +154,10 @@ function renderLogs(logs) {
         </button>
       </div>
       <div class="logs-auto-refresh">
+        <div style="display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-right:8px;">
+          <button onclick="LogsView.setView('timeline')" style="padding:3px 8px;border:none;background:${logsView === 'timeline' ? 'var(--primary)' : 'var(--card)'};color:${logsView === 'timeline' ? '#fff' : 'var(--text)'};cursor:pointer;font-size:11px;font-family:inherit;border-right:1px solid var(--border);" title="Chronologie">⏱</button>
+          <button onclick="LogsView.setView('list')" style="padding:3px 8px;border:none;background:${logsView === 'list' ? 'var(--primary)' : 'var(--card)'};color:${logsView === 'list' ? '#fff' : 'var(--text)'};cursor:pointer;font-size:11px;font-family:inherit;" title="Liste">☰</button>
+        </div>
         <input type="checkbox" id="logs-auto-refresh" onchange="window.__toggleAutoRefresh()">
         <label for="logs-auto-refresh">Auto-refresh</label>
         <button class="logs-refresh-btn" onclick="window.__load_logs()" title="Rafraîchir">
@@ -207,6 +211,7 @@ function renderLogs(logs) {
 // --- State ---
 let currentLogFilter = 'all';
 let autoRefreshInterval = null;
+let logsView = localStorage.getItem('logs_view') || 'timeline';
 
 // --- Filters ---
 window.__setLogFilter = function(filter, btn) {
@@ -244,5 +249,13 @@ window.__toggleAutoRefresh = function() {
   } else {
     clearInterval(autoRefreshInterval);
     autoRefreshInterval = null;
+  }
+};
+
+window.LogsView = {
+  setView(view) {
+    logsView = view;
+    localStorage.setItem('logs_view', view);
+    window.__load_logs();
   }
 };

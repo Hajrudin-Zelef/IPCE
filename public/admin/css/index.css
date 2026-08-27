@@ -1,6 +1,7 @@
 @import url('variables.css');
 @import url('base.css');
 @import url('section-shared.css');
+@import url('daily.css?v=16');
 @import url('sidebar.css');
 @import url('header.css');
 @import url('kpi.css');

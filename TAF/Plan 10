@@ -1,75 +1,72 @@
-# PLAN 10 — Dashboard modulaire style SPA (sidebar + sections)
+# PLAN 10 — Sécurité admin + Actions historique collectes
 
 ## Résumé
 
-Transformation du dashboard commercial en SPA modulaire avec sidebar, navigation par sections, et chargement à la demande — même pattern que l'admin.
+Double authentification admin (mot de passe secret après le login) + actions Export PDF/CSV, Imprimer, Supprimer sur l'historique des collectes admin.
 
 ---
 
-## 1. Structure cible
+## 1. Sécurité d'accès admin
+
+### Architecture
 
 ```
-dashboard.html                     ← HTML avec sidebar + sections
-dashboard.html.back                ← backup ancien
-public/commercial/
-  css/
-    variables.css                  ← inchangé
-    sidebar.css                    ← NOUVEAU styles sidebar
-    dashboard.css                  ← restructuré layout sidebar+content
-  js/
-    app.js                         ← auth, API, dark mode, avatar (renommé)
-    sidebar.js                     ← NOUVEAU navigation sections
-    section-dashboard.js           ← NOUVEAU vue d'ensemble (KPIs)
-    section-collectes.js           ← renommé depuis dashboard-collectes.js
-    section-history.js             ← renommé depuis dashboard-history.js
-    section-charts.js              ← renommé depuis dashboard-charts.js
-    section-calendar.js            ← renommé depuis dashboard-calendar.js
-    section-settings.js            ← NOUVEAU paramètres placeholder
+Login: Nom + MDP → POST /api/auth/login → succès + role=admin ?
+  → Champ "Mot de passe admin" apparaît sur la page de login
+  → POST /api/auth/verify-admin-secret → succès ?
+  → localStorage('admin_verified_<id>') = '1'
+  → redirect /admin/index.html
 ```
 
----
+### Fichiers
 
-## 2. Sidebar
-
-| Groupe | Items |
-|--------|-------|
-| Principal | Tableau de bord |
-| Données | Nouvelle Collecte, Historique |
-| Visualisation | Graphiques, Calendrier |
-| Compte | Paramètres |
-
-- Logo IPCE + nom en haut
-- Déconnexion en bas
-- Collapse/expand sur desktop
-- Hamburger + overlay sur mobile
-- Active section persistée dans localStorage
+| Fichier | Modification |
+|---|---|
+| `.env` | `ADMIN_SECRET=Admin!123+` |
+| `routes/auth.js` | `POST /verify-admin-secret` |
+| `public/index.html` | Champ MDP admin + script verification |
+| `public/admin/js/auth.js` | Guard : vérifie admin_verified, modal si absent |
+| `public/admin/index.html` | Modal plein écran "Accès réservé" |
 
 ---
 
-## 3. Sections
+## 2. Actions historique collectes
 
-| Section | Contenu |
-|---------|---------|
-| Dashboard | KPIs (CA, Offres, BC, RDV) + mini-graphs + dernières collectes |
-| Collecte | Formulaire saisie (existant) |
-| Historique | Tableau historique (existant) |
-| Graphiques | 3 graphiques détaillés (existant) |
-| Calendrier | Month grid + timeline (existant) |
-| Settings | Profil + Dark mode toggle + Notifications (placeholder) |
+| Action | Icône | Comportement |
+|---|---|---|
+| Voir | 👁️ | Modale détails (existant) |
+| PDF | 📥 | jsPDF → téléchargement |
+| CSV | 📄 | Génère CSV → téléchargement |
+| Imprimer | 🖨️ | Fenêtre popup → window.print() |
+| Supprimer | 🗑️ | Modale confirmation + MDP admin → DELETE |
 
----
+### Suppression
 
-## 4. Convention de nommage (identique admin)
+1. Clic 🗑️ → modale avec champ MDP admin
+2. `POST /api/auth/verify-admin-secret` → validation
+3. Si OK → `DELETE /api/admin/collectes/:id` (admin override)
+4. Si KO → erreur
 
-```js
-window.__load_dashboard = function() { ... };
-window.__load_collecte = function() { ... };
-window.__load_history = function() { ... };
-window.__load_charts = function() { ... };
-window.__load_calendar = function() { ... };
-window.__load_settings = function() { ... };
+### Endpoint DELETE admin
+
+```javascript
+router.delete('/collectes/:id', authenticate, requireRole('admin'), (req, res) => {
+  const { password } = req.body;
+  if (password !== process.env.ADMIN_SECRET) return res.status(403).json({ error: 'MDP admin incorrect' });
+  db.prepare('DELETE FROM rdvs WHERE collecte_id = ?').run(req.params.id);
+  db.prepare('DELETE FROM collectes WHERE id = ?').run(req.params.id);
+  res.json({ message: 'Collecte supprimée' });
+});
 ```
 
 ---
 
-*Plan 10 — 26 Août 2026*
+## 3. Tests
+
+- E2E : login admin → champ secret → accès
+- E2E : historique → boutons visibles → supprimer → MDP → suppression
+- Vérification que sans MDP admin, accès bloqué
+
+---
+
+*Plan 10 — 27 Août 2026*

@@ -46,6 +46,21 @@
       </div>
       <button type="submit" class="btn">Se connecter</button>
     </form>
+
+    <!-- Admin Secret Box (apparaît après login admin) -->
+    <div id="admin-secret-box" style="display:none; margin-top:20px; border-top:1px solid #eee; padding-top:20px;">
+      <div style="text-align:center; margin-bottom:12px;">
+        <div style="font-size:28px;">🔐</div>
+        <div style="font-size:14px; font-weight:700; color:#1e3c72; margin-top:6px;">Vérification de sécurité</div>
+        <div style="font-size:12px; color:#888; margin-top:2px;">Renseignez le mot de passe admin pour accéder au panneau</div>
+      </div>
+      <div class="error" id="secret-error"></div>
+      <div class="form-group">
+        <label>Mot de passe admin</label>
+        <input type="password" id="admin-secret-pass" required autocomplete="off" placeholder="Mot de passe admin">
+      </div>
+      <button type="button" class="btn" onclick="doVerifyAdminSecret()">Valider</button>
+    </div>
   </div>
 
   <div class="modal-overlay" id="change-modal">
@@ -105,9 +120,45 @@
           return;
         }
 
+        // Admin → vérification mot de passe admin obligatoire
+        if (data.user.role === 'admin') {
+          // Stocker l'id admin temporairement pour la vérification
+          window.__pendingAdminId = data.user.id;
+          // Cacher le formulaire login, afficher le bloc secret
+          document.querySelector('form').style.display = 'none';
+          document.getElementById('admin-secret-box').style.display = 'block';
+          document.getElementById('admin-secret-pass').focus();
+          return;
+        }
+
+        // Commercial → redirection directe
         redirectUser(data.user.role);
       } catch {
         showError('error', 'Erreur de connexion au serveur');
+      }
+    }
+
+    async function doVerifyAdminSecret() {
+      hideError('secret-error');
+      const password = document.getElementById('admin-secret-pass').value;
+      if (!password) return showError('secret-error', 'Veuillez saisir le mot de passe admin');
+
+      try {
+        const res = await fetch('/api/auth/verify-admin-secret', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ password }),
+        });
+        const data = await res.json();
+        if (!res.ok) return showError('secret-error', data.error);
+
+        // Succès → marquer l'admin comme vérifié
+        const adminId = window.__pendingAdminId || 'admin';
+        localStorage.setItem('admin_verified_' + adminId, '1');
+        window.location.href = '/admin/index.html';
+      } catch {
+        showError('secret-error', 'Erreur de connexion au serveur');
       }
     }
 

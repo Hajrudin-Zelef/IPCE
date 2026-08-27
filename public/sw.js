@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ipce-v4';
+const CACHE_NAME = 'ipce-v16';
 const STATIC_ASSETS = [
   '/',
   '/dashboard.html',
@@ -9,6 +9,9 @@ const STATIC_ASSETS = [
   '/admin/img/logo-ipce-512.png',
   '/admin/css/base.css',
   '/admin/css/variables.css',
+  '/admin/css/daily.css?v=12',
+  '/admin/js/daily.js?v=10',
+  '/admin/js/history-admin.js?v=10',
   '/admin/css/responsive.css',
   '/admin/css/ai-chat.css',
   '/commercial/css/variables.css',

@@ -548,6 +548,19 @@ function createAdminRouter(db) {
     res.json(db.prepare(sql).all(...params));
   });
 
+  // --- Admin Delete Collecte (override user scope) ---
+  router.delete('/collectes/:id', authenticate, requireRole('admin'), (req, res) => {
+    const { password } = req.body;
+    if (!password || password !== process.env.ADMIN_SECRET) {
+      return res.status(403).json({ error: 'Mot de passe admin incorrect' });
+    }
+    const collecte = db.prepare('SELECT * FROM collectes WHERE id = ?').get(req.params.id);
+    if (!collecte) return res.status(404).json({ error: 'Collecte non trouvée' });
+    db.prepare('DELETE FROM rdvs WHERE collecte_id = ?').run(req.params.id);
+    db.prepare('DELETE FROM collectes WHERE id = ?').run(req.params.id);
+    res.json({ message: 'Collecte supprimée' });
+  });
+
   return router;
 }
 

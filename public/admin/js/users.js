@@ -1,3 +1,5 @@
+let usersView = localStorage.getItem('users_view') || 'grid';
+
 window.__load_users = async function() {
   const users = await loadSectionData('/api/admin/users');
   if (!users) return renderEmpty('section-users-content', 'Erreur de chargement');
@@ -89,10 +91,16 @@ window.__load_users = async function() {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" placeholder="Rechercher un utilisateur..." oninput="window.__filterUsers(this.value)">
       </div>
-      <button class="users-create-btn" onclick="window.__toggleCreateForm()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nouvel utilisateur
-      </button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+          <button onclick="UsersView.setView('grid')" style="padding:4px 10px;border:none;background:${usersView === 'grid' ? 'var(--primary)' : 'var(--card)'};color:${usersView === 'grid' ? '#fff' : 'var(--text)'};cursor:pointer;font-size:12px;font-family:inherit;border-right:1px solid var(--border);" title="Grille">⊞</button>
+          <button onclick="UsersView.setView('list')" style="padding:4px 10px;border:none;background:${usersView === 'list' ? 'var(--primary)' : 'var(--card)'};color:${usersView === 'list' ? '#fff' : 'var(--text)'};cursor:pointer;font-size:12px;font-family:inherit;" title="Liste">☰</button>
+        </div>
+        <button class="users-create-btn" onclick="window.__toggleCreateForm()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nouvel utilisateur
+        </button>
+      </div>
     </div>
 
     <!-- Create Form (hidden) -->
@@ -278,4 +286,12 @@ window.__confirmDelete = async function() {
     window.__closeDeleteModal();
     window.__load_users();
   } catch { alert('Erreur serveur'); }
+};
+
+window.UsersView = {
+  setView(view) {
+    usersView = view;
+    localStorage.setItem('users_view', view);
+    window.__load_users();
+  }
 };
