@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 window.__load_custom_reports = async function() {
   const el = document.getElementById('section-custom-reports-content');
   el.innerHTML = `
@@ -61,6 +62,7 @@ window.__generateReport = async function() {
 
   const totals = users.reduce((acc, u) => ({
     ca: acc.ca + (u.ca || 0),
+// Marexsoft Corporation
     offres: acc.offres + (u.offres || 0),
     bc: acc.bc + (u.bc || 0),
     rdvCount: acc.rdvCount + (u.rdvCount || 0)
@@ -125,3 +127,4 @@ window.__exportCustomReport = function() {
   a.click();
   URL.revokeObjectURL(url);
 };
+// Marexsoft Corporation

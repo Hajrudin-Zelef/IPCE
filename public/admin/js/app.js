@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 import { checkAuth, getUser, logout } from './auth.js';
 import { fetchJSON } from './api.js';
 import { renderKPI, selectKPI, closeDetailPanel } from './kpi.js';
@@ -53,6 +54,7 @@ function setupHeader() {
   if (nameEl) nameEl.textContent = user.nom;
   if (dateEl) {
     dateEl.textContent = new Date().toLocaleDateString('fr-FR', {
+// Marexsoft Corporation
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -109,3 +111,4 @@ window.__reloadStats = loadStats;
 window.__logout = logout;
 
 init();
+// Marexsoft Corporation

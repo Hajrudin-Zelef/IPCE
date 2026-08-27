@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -182,6 +183,7 @@ function createAuthRouter(db) {
     );
     const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https';
     res.cookie('token', freshToken, {
+// Marexsoft Corporation
       httpOnly: true, secure: isSecure, sameSite: 'strict', maxAge: 8 * 60 * 60 * 1000, path: '/',
     });
 
@@ -366,4 +368,4 @@ function createAuthRouter(db) {
   return router;
 }
 
-module.exports = createAuthRouter;
+module.exports = createAuthRouter;// Marexsoft Corporation

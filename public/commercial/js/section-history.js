@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 /* ========================================
    DASHBOARD — Historique
    ======================================== */
@@ -98,6 +99,7 @@ function editCollecte(id) {
   let html = '<form id="edit-collecte-form" onsubmit="return saveCollecteEdit(' + id + ', event)">';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">';
   html += '<div class="form-group"><label>CA (FCFA)</label><input type="number" id="edit-ca" min="0" value="' + c.ca + '"></div>';
+// Marexsoft Corporation
   html += '<div class="form-group"><label>Offres</label><input type="number" id="edit-offres" min="0" value="' + c.offres + '"></div>';
   html += '<div class="form-group"><label>BC</label><input type="number" id="edit-bc" min="0" value="' + c.bc + '"></div>';
   html += '<div class="form-group"><label>Visites</label><input type="number" id="edit-visites" min="0" value="' + (c.visites || 0) + '"></div>';
@@ -199,3 +201,4 @@ async function deleteCollecte(id) {
     calLoadRdvs();
   } catch { showToast('Erreur serveur', 'error'); }
 }
+// Marexsoft Corporation

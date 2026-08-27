@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 let currentUser = null;
 
 export function getUser() {
@@ -57,6 +58,7 @@ function showAdminSecretModal(adminId) {
     + '<div id="secret-modal-error" style="background:#fee2e2;color:#dc2626;padding:10px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none;"></div>'
     + '<input type="password" id="secret-modal-pass" placeholder="Mot de passe admin" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:14px;margin-bottom:14px;background:var(--bg);color:var(--text);box-sizing:border-box;">'
     + '<button id="secret-modal-btn" style="width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Valider</button>'
+// Marexsoft Corporation
     + '<button onclick="window.location.href=\'/\'' + '" style="width:100%;padding:10px;background:transparent;color:var(--muted);border:none;font-size:12px;margin-top:8px;cursor:pointer;">Retour à la connexion</button>'
     + '</div>';
 
@@ -117,3 +119,4 @@ export async function logout() {
   await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
   window.location.href = '/';
 }
+// Marexsoft Corporation

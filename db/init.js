@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 const Database = require('better-sqlite3');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
@@ -91,6 +92,7 @@ function initDB() {
       due_date DATETIME,
       priority TEXT DEFAULT 'medium',
       completed INTEGER DEFAULT 0,
+// Marexsoft Corporation
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id)
     );
@@ -184,3 +186,4 @@ function initDB() {
 }
 
 module.exports = { initDB, DB_PATH };
+// Marexsoft Corporation

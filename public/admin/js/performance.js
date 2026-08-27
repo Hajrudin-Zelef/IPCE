@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 window.__load_performance = async function() {
   const data = await loadSectionData('/api/admin/stats');
   if (!data) return renderEmpty('section-performance-content', 'Erreur de chargement');
@@ -50,6 +51,7 @@ window.__load_performance = async function() {
               }).join('')}
             </tbody>
           </table>
+// Marexsoft Corporation
         </div>
       </div>
     </div>
@@ -102,3 +104,4 @@ window.__load_performance = async function() {
     });
   }
 };
+// Marexsoft Corporation

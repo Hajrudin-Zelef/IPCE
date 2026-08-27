@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 /* ========================================
    SECTION — Settings (Paramètres)
    ======================================== */
@@ -26,6 +27,7 @@ window.__load_settings = function() {
   html += '<div class="settings-info"><div class="settings-label">Thème sombre</div><div class="settings-desc">Basculer entre le mode clair et sombre</div></div>';
   html += '<button class="settings-toggle" id="settings-theme-toggle" onclick="toggleDarkMode();updateSettingsTheme()"></button>';
   html += '</div>';
+// Marexsoft Corporation
   html += '</div>';
 
   // Notifications
@@ -55,3 +57,4 @@ function updateSettingsTheme() {
   var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   btn.classList.toggle('active', isDark);
 }
+// Marexsoft Corporation

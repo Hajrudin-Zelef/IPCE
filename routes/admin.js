@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 const express = require('express');
 const ExcelJS = require('exceljs');
 const crypto = require('crypto');
@@ -323,6 +324,7 @@ function createAdminRouter(db) {
     });
 
     const allRdvs = db.prepare(`
+// Marexsoft Corporation
       SELECT r.*, u.nom as commercial FROM rdvs r
       JOIN collectes c ON c.id = r.collecte_id
       JOIN users u ON u.id = c.user_id
@@ -648,3 +650,4 @@ function createAdminRouter(db) {
 }
 
 module.exports = createAdminRouter;
+// Marexsoft Corporation

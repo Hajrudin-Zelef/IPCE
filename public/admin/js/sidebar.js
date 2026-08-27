@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 /* ========================================
    SIDEBAR — Interactions & Navigation
    ======================================== */
@@ -155,6 +156,7 @@
       history.pushState(null, '', '#' + section);
     } else {
       history.pushState(null, '', window.location.pathname);
+// Marexsoft Corporation
     }
     const loadFn = window['__load_' + section.replace(/-/g, '_')];
     if (typeof loadFn === 'function') {
@@ -312,3 +314,4 @@
   }
 
 })();
+// Marexsoft Corporation

@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 let csView = localStorage.getItem('cs_view') || 'grid';
 
 window.__load_commercial_suivi = async function() {
@@ -53,6 +54,7 @@ window.__load_commercial_suivi = async function() {
     content += '<thead><tr>';
     ['#', 'Commercial', 'CA', 'RDV', 'Offres', 'BC', 'Conv RDV→Offre', 'Conv Offre→BC', '% CA'].forEach(h => {
       const align = ['CA', 'RDV', 'Offres', 'BC'].includes(h) ? 'text-align:right;' : (h === '#' ? 'text-align:center;width:40px;' : '');
+// Marexsoft Corporation
       content += '<th style="padding:10px 14px;font-size:12px;font-weight:600;color:var(--text);background:var(--bg);border-bottom:1px solid var(--border-light);' + align + '">' + h + '</th>';
     });
     content += '</tr></thead><tbody>';
@@ -109,3 +111,4 @@ window.CSView = {
     window.__load_commercial_suivi();
   }
 };
+// Marexsoft Corporation

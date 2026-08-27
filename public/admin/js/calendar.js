@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 /* ========================================
    CALENDRIER — Vue admin avec détail jour
    ======================================== */
@@ -126,6 +127,7 @@ function renderDayDetail(dateStr) {
 
   const cumCa = calendarCollectes.filter(c => (c.created_at || '').slice(0, 10) <= dateStr && c.statut !== 'rejetee').reduce((s, c) => s + (c.ca || 0), 0);
   const cumOffres = calendarCollectes.filter(c => (c.created_at || '').slice(0, 10) <= dateStr && c.statut !== 'rejetee').reduce((s, c) => s + (c.offres || 0), 0);
+// Marexsoft Corporation
   const cumBc = calendarCollectes.filter(c => (c.created_at || '').slice(0, 10) <= dateStr && c.statut !== 'rejetee').reduce((s, c) => s + (c.bc || 0), 0);
   const cumRdvs = calendarRdvs.filter(r => r.date <= dateStr).length;
   const cumCollectes = calendarCollectes.filter(c => (c.created_at || '').slice(0, 10) <= dateStr && c.statut !== 'rejetee').length;
@@ -255,3 +257,4 @@ window.__calNext = function() {
   selectedDate = null;
   renderCalendar();
 };
+// Marexsoft Corporation

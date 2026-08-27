@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 /* ========================================
    DASHBOARD — Charts
    ======================================== */
@@ -60,6 +61,7 @@ function renderCharts(collectes) {
       },
       scales: {
         y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { callback: v => v + 'M' } },
+// Marexsoft Corporation
         x: { grid: { display: false } },
       },
     },
@@ -123,3 +125,4 @@ function renderCharts(collectes) {
   if (chartBC) chartBC.destroy();
   chartBC = makeDonut('ch-bc', 'BC signés', totalBC, 'rgba(16,185,129,0.85)', '#10b981', totalBC + ' BC');
 }
+// Marexsoft Corporation

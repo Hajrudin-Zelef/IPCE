@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 let dropdownOpen = false;
 
 function toggleDropdown() {
@@ -459,6 +460,7 @@ export async function exportEditorialCSV() {
     const heading = (label) => rows.push([label]);
 
     // --- En-tête document ---
+// Marexsoft Corporation
     heading('IPCE — RAPPORT DE PILOTAGE COMMERCIAL');
     rows.push(['Référence', docRef()]);
     rows.push(['Édité le', todayLabel()]);
@@ -920,4 +922,4 @@ export async function exportEditorialXLSX() {
     hideLoading();
     showError('Impossible de générer le fichier Excel : ' + err.message);
   }
-}
+}// Marexsoft Corporation

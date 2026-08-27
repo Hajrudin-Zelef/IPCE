@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 let chartCA = null;
 let chartDonut = null;
 let chartBar = null;
@@ -116,6 +117,7 @@ function renderFunnelChart(totals) {
   ];
 
   const maxValue = Math.max(...steps.map(s => s.value), 1);
+// Marexsoft Corporation
 
   wrapper.innerHTML = `
     <div class="chart-funnel">
@@ -234,3 +236,4 @@ window.__load_graphs = function () {
     renderCharts(window.__chartsData.users, window.__chartsData.totals);
   }
 };
+// Marexsoft Corporation

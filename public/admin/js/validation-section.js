@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 window.__load_validation = async function() {
   const el = document.getElementById('section-validation-content');
   el.innerHTML = `
@@ -123,6 +124,7 @@ window.__loadValTab = async function(tab, btn) {
                   <div class="inbox-metric">
                     <div class="inbox-metric-value">${totalRDV}</div>
                     <div class="inbox-metric-label">RDV</div>
+// Marexsoft Corporation
                   </div>
                   <div class="inbox-metric">
                     <div class="inbox-metric-value">${c.visites || 0}</div>
@@ -249,3 +251,4 @@ window.__rejectCollecte = async function(id) {
     window.__loadValTab('pending');
   } catch { alert('Erreur serveur'); window.__loadValTab('pending'); }
 };
+// Marexsoft Corporation

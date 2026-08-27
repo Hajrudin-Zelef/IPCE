@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 async function loadSectionData(url) {
   try {
     const res = await fetch(url, { credentials: 'include' });
@@ -11,6 +12,7 @@ async function loadSectionData(url) {
 
 function renderEmpty(containerId, msg) {
   const el = document.getElementById(containerId);
+// Marexsoft Corporation
   if (el) el.innerHTML = '<div class="section-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><p>' + (msg || 'Aucune donnée disponible') + '</p></div>';
 }
 
@@ -24,3 +26,4 @@ function formatCA(v) {
   if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
   return v.toFixed(0);
 }
+// Marexsoft Corporation

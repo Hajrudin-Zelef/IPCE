@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 /* ========================================
    DASHBOARD — Calendar
    ======================================== */
@@ -159,6 +160,7 @@ function showDayModal(dateStr, dayRdvs, dayCollectes) {
   document.getElementById('cal-day-title').textContent = dateLabel;
 
   const statusColors = {
+// Marexsoft Corporation
     'Prevu': 'var(--status-brouillon-bg);color:var(--status-brouillon-text)',
     'Realise': 'var(--status-approuvee-bg);color:var(--status-approuvee-text)',
     'Offre': 'var(--status-validee-bg);color:var(--status-validee-text)',
@@ -320,3 +322,4 @@ async function calDeleteRdv() {
     calLoadRdvs();
   } catch { showToast('Erreur serveur', 'error'); }
 }
+// Marexsoft Corporation

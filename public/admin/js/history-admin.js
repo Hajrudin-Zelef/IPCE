@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 /* ========================================
    HISTORIQUE DES COLLECTES — Admin
    Filtres date + commercial + pagination
@@ -246,6 +247,7 @@
     html += '</div></div>';
 
     el.innerHTML = html;
+// Marexsoft Corporation
   }
 
   window.HistoryAdmin = {
@@ -495,3 +497,4 @@
   };
 
 })();
+// Marexsoft Corporation

@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 import { escapeHtml } from './api.js';
 
 let activeKPI = null;
@@ -137,6 +138,7 @@ export function renderKPI(totals) {
         const target = bar.dataset.targetWidth;
         if (target) bar.style.width = target;
       });
+// Marexsoft Corporation
     });
   });
 }
@@ -277,3 +279,4 @@ function renderDetailPanel(key, users, totals) {
 export function getActiveKPI() {
   return activeKPI;
 }
+// Marexsoft Corporation

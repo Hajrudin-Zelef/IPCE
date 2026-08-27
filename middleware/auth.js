@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 const jwt = require('jsonwebtoken');
 
 function parseCookies(header) {
@@ -50,6 +51,7 @@ function getTokenFromRequest(req) {
   if (authHeader && authHeader.startsWith('Bearer ')) {
     return authHeader.split(' ')[1];
   }
+// Marexsoft Corporation
   const cookies = parseCookies(req.headers.cookie);
   return cookies.token || null;
 }
@@ -102,4 +104,4 @@ function requireRole(role) {
   };
 }
 
-module.exports = { authenticate, requireRole, revokeToken, isTokenRevoked };
+module.exports = { authenticate, requireRole, revokeToken, isTokenRevoked };// Marexsoft Corporation

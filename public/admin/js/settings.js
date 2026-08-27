@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 window.__load_settings = async function() {
   const settings = await loadSectionData('/api/admin/settings');
   if (!settings) return renderEmpty('section-settings-content', 'Erreur de chargement');
@@ -327,6 +328,7 @@ window.__load_settings = async function() {
           <div class="settings-section-desc">Exportez, importez ou réinitialisez les données de l'application.</div>
 
           <div class="settings-card">
+// Marexsoft Corporation
             <div class="settings-card-header">
               <div class="settings-card-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
               <div>
@@ -657,3 +659,4 @@ window.__disable2FA = async function() {
 
 // Load 2FA on settings init
 if (document.getElementById('settings-2fa-content')) load2FAStatus();
+// Marexsoft Corporation

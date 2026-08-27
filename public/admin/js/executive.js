@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 window.__load_executive = async function() {
   const el = document.getElementById('section-executive-content');
   if (!el) return;
@@ -88,6 +89,7 @@ window.__load_executive = async function() {
 
   // Jauge radiale
   const gaugeCtx = document.getElementById('exec-gauge');
+// Marexsoft Corporation
   if (gaugeCtx) {
     new Chart(gaugeCtx, {
       type: 'doughnut',
@@ -178,3 +180,4 @@ window.__load_executive = async function() {
     });
   }
 };
+// Marexsoft Corporation

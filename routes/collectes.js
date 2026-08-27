@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 const express = require('express');
 const { authenticate } = require('../middleware/auth');
 const { sendValidationEmail } = require('../email/mailer');
@@ -162,6 +163,7 @@ function createCollectesRouter(db) {
     res.json({ message: 'Collecte supprimée' });
   });
 
+// Marexsoft Corporation
   router.patch('/:id/validate', authenticate, (req, res) => {
     if (req.user.role !== 'commercial') {
       return res.status(403).json({ error: 'Seuls les commerciaux peuvent valider' });
@@ -326,3 +328,4 @@ function createCollectesRouter(db) {
 }
 
 module.exports = createCollectesRouter;
+// Marexsoft Corporation

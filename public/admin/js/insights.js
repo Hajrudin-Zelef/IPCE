@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 function analyzeInsights(users, totals, settings) {
   const sorted = [...users].sort((a, b) => b.ca - a.ca);
   const leader = sorted[0];
@@ -131,6 +132,7 @@ function renderInsightCard(type, items) {
         ${items.map(item => `
           <div class="insight-item">
             <div class="insight-item-dot"></div>
+// Marexsoft Corporation
             <div class="insight-item-text">${item.text}</div>
           </div>
         `).join('')}
@@ -265,3 +267,4 @@ window.__load_insights = function () {
     renderInsights(window.__chartsData.users, window.__chartsData.totals, settings);
   }
 };
+// Marexsoft Corporation

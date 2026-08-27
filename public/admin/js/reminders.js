@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 window.__load_reminders = async function() {
   const reminders = await loadSectionData('/api/admin/reminders');
   if (reminders === null) return renderEmpty('section-reminders-content', 'Erreur de chargement');
@@ -104,6 +105,7 @@ window.__load_reminders = async function() {
           <input type="text" id="reminder-title" placeholder="Titre du rappel...">
         </div>
         <div class="reminder-form-group">
+// Marexsoft Corporation
           <label>Date</label>
           <input type="datetime-local" id="reminder-date">
         </div>
@@ -210,3 +212,4 @@ window.__filterReminders = function(filter, btn) {
     title.style.display = filter === 'all' ? '' : 'none';
   });
 };
+// Marexsoft Corporation

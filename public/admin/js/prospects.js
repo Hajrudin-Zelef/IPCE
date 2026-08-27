@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 window.__load_prospects = async function() {
   const rdvs = await loadSectionData('/api/admin/rdvs');
   if (!rdvs) return renderEmpty('section-prospects-content', 'Erreur de chargement');
@@ -87,6 +88,7 @@ window.__load_prospects = async function() {
           Grille
         </button>
         <button class="prospects-view-btn" onclick="window.__toggleProspectsView('list', this)">
+// Marexsoft Corporation
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           Liste
         </button>
@@ -176,3 +178,4 @@ window.__toggleProspectsView = function(view, btn) {
   document.getElementById('prospects-grid').style.display = view === 'grid' ? '' : 'none';
   document.getElementById('prospects-list').style.display = view === 'list' ? '' : 'none';
 };
+// Marexsoft Corporation

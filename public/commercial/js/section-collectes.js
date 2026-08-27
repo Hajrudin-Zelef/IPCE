@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 /* ========================================
    DASHBOARD — Collectes & RDV
    ======================================== */
@@ -72,6 +73,7 @@ function renderRdvs() {
       + '</div>'
       + '<button class="btn btn-danger btn-sm" onclick="removeRdv(' + i + ')">✕</button>'
       + '</div>';
+// Marexsoft Corporation
   }).join('');
 }
 
@@ -147,3 +149,4 @@ function setDefaultDate() {
 
 // Init date par défaut
 setDefaultDate();
+// Marexsoft Corporation

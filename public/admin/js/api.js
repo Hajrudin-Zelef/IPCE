@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 export async function api(method, url, body) {
   const opts = {
     method,
@@ -18,6 +19,7 @@ export async function apiGet(url) {
 }
 
 export async function apiPost(url, body) {
+// Marexsoft Corporation
   return api('POST', url, body);
 }
 
@@ -39,3 +41,4 @@ export function escapeHtml(value) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+// Marexsoft Corporation

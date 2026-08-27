@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 /* ========================================
    VUE JOURNALIÈRE — Donuts animés + Calendrier journalier
    Données : /api/collectes/all (admin) — tout est ramené au JOUR
@@ -239,6 +240,7 @@
       + '</div>';
 
     // Dernières collectes (toutes dates) — liste chronologique
+// Marexsoft Corporation
     const lastCols = dailyData.slice()
       .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
       .slice(0, 10);
@@ -480,3 +482,4 @@
     refresh() { window.__load_daily(); }
   };
 })();
+// Marexsoft Corporation

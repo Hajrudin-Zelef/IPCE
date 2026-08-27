@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 import { apiPatch, fetchJSON, escapeHtml } from './api.js';
 
 function getPriorityClass(collecte) {
@@ -54,6 +55,7 @@ function renderInboxCard(collecte) {
               <span class="inbox-rdv-prospect">${escapeHtml(r.prospect)}</span>
               <span class="inbox-rdv-details">${r.date ? formatDate(r.date) : '—'} — ${r.montant != null ? escapeHtml(String(r.montant)) + 'M' : '—'} — ${escapeHtml(r.statut || '—')}</span>
             </div>
+// Marexsoft Corporation
           `).join('')}
         </div>
       ` : ''}
@@ -110,3 +112,4 @@ export async function rejectCollecte(id) {
     if (window.__reloadStats) window.__reloadStats();
   }
 }
+// Marexsoft Corporation

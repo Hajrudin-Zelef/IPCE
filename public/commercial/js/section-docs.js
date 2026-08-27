@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 /* ========================================
    SECTION — Documentation (Guide Complet)
    Sidebar + Modules structurés
@@ -285,6 +286,7 @@ window.__load_docs = function() {
   html += '<div class="docs-flow-item" style="border-color:#f59e0b;"><div class="docs-flow-label">Offre</div><div class="docs-flow-desc">Offre envoyée au prospect</div></div>';
   html += '<div class="docs-flow-arrow">&#10132;</div>';
   html += '<div class="docs-flow-item" style="border-color:#8b5cf6;"><div class="docs-flow-label">BC Signé</div><div class="docs-flow-desc">Bon de commande signé</div></div>';
+// Marexsoft Corporation
   html += '</div>';
   html += '<div class="docs-callout docs-callout-info">';
   html += '<strong>&#128161;</strong> Vous pouvez changer le statut à tout moment depuis le calendrier, sauf si la collecte associée est déjà validée.';
@@ -573,3 +575,4 @@ function docsToggleGroup(toggleEl) {
   var group = toggleEl.closest('.docs-nav-group');
   if (group) group.classList.toggle('open');
 }
+// Marexsoft Corporation

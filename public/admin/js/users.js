@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 let usersView = localStorage.getItem('users_view') || 'grid';
 
 window.__load_users = async function() {
@@ -154,6 +155,7 @@ window.__load_users = async function() {
         <div class="users-modal-body">
           <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Nouveau mot de passe pour <strong id="reset-user-name"></strong></p>
           <div class="users-form-group">
+// Marexsoft Corporation
             <label>Nouveau mot de passe</label>
             <input type="password" id="reset-new-pass" placeholder="Min. 8 caractères" style="width:100%">
           </div>
@@ -310,3 +312,4 @@ document.addEventListener('click', (e) => {
   if (action === 'reset') window.__resetUserPass(id, nom);
   if (action === 'delete') window.__deleteUser(id, nom);
 });
+// Marexsoft Corporation

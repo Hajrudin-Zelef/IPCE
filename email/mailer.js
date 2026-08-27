@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 const nodemailer = require('nodemailer');
 
 function escapeHtml(value) {
@@ -44,6 +45,7 @@ async function sendValidationEmail({ commercialNom, ca, offres, bc, rdvCount, vi
         <p><strong>${escapeHtml(commercialNom)}</strong> a validé sa collecte :</p>
         <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
           <tr style="background: #f5f5f5;">
+// Marexsoft Corporation
             <td style="padding: 10px; border: 1px solid #ddd;"><strong>CA</strong></td>
             <td style="padding: 10px; border: 1px solid #ddd;">${(ca / 1e6).toFixed(1)}M FCFA</td>
           </tr>
@@ -91,3 +93,4 @@ async function sendValidationEmail({ commercialNom, ca, offres, bc, rdvCount, vi
 }
 
 module.exports = { sendValidationEmail };
+// Marexsoft Corporation

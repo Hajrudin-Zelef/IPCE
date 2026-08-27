@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 (function () {
   let isOpen = false;
   let isLoading = false;
@@ -151,6 +152,7 @@
   }
 
   async function sendMessage(text) {
+// Marexsoft Corporation
     if (isLoading || !text.trim()) return;
     isLoading = true;
     const input = document.getElementById('ai-input');
@@ -305,3 +307,4 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
+// Marexsoft Corporation

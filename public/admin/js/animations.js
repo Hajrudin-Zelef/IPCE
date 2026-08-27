@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 function animateValue(el, start, end, duration, formatter) {
   const startTime = performance.now();
   const step = (timestamp) => {
@@ -26,6 +27,7 @@ export function initFadeIn() {
     (entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
+// Marexsoft Corporation
           entry.target.classList.add('animate-fade-in-up');
           observer.unobserve(entry.target);
         }
@@ -55,3 +57,4 @@ export function setupDetailPanelClose() {
     overlay.classList.remove('visible');
   };
 }
+// Marexsoft Corporation

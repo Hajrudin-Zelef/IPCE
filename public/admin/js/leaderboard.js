@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 import { escapeHtml } from './api.js';
 
 function getInitials(name) {
@@ -31,6 +32,7 @@ function renderLeaderCard(user, index, totalCA) {
         <div class="leader-metric">
           <div class="leader-metric-value">${user.offres}</div>
           <div class="leader-metric-label">Offres</div>
+// Marexsoft Corporation
         </div>
         <div class="leader-metric">
           <div class="leader-metric-value">${user.rdvCount}</div>
@@ -64,3 +66,4 @@ export function renderLeaderboard(users) {
     </div>
   `;
 }
+// Marexsoft Corporation

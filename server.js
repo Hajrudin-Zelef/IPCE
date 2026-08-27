@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 require('dotenv').config();
 
 process.on('uncaughtException', (err) => {
@@ -152,6 +153,7 @@ app.use('/api/auth/register', (req, res, next) => {
 
 app.get('/admin.html', (req, res) => res.redirect(301, '/admin/index.html'));
 
+// Marexsoft Corporation
 app.use(express.static(path.join(__dirname, 'public'), {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.html')) {
@@ -282,3 +284,4 @@ function shutdown(signal) {
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
+// Marexsoft Corporation

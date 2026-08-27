@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 (function () {
   let notifications = [];
   let unreadCount = 0;
@@ -233,6 +234,7 @@
           if (audioEnabled) playNotifSound();
         }
       } catch {}
+// Marexsoft Corporation
     };
 
     ws.onclose = () => {
@@ -468,3 +470,4 @@
     init();
   }
 })();
+// Marexsoft Corporation

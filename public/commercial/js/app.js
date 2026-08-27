@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 /* ========================================
    DASHBOARD — App Core
    Auth, Avatar, API Helper, Dark Mode
@@ -69,6 +70,7 @@ async function checkAuth() {
     var hash = window.location.hash.replace('#', '');
     var validSections = ['dashboard', 'collecte', 'history', 'calendar', 'docs', 'settings'];
 
+// Marexsoft Corporation
     // Only honor hash if it's a valid section (but NEVER default to docs)
     if (hash && validSections.indexOf(hash) !== -1 && hash !== 'docs') {
       localStorage.setItem('commercial_section', hash);
@@ -140,3 +142,4 @@ function updateDarkIcon(theme) {
 // --- Init ---
 initDarkMode();
 checkAuth();
+// Marexsoft Corporation

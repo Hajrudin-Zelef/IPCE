@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 /* ========================================
    SIDEBAR — Navigation
    ======================================== */
@@ -62,6 +63,7 @@
 
   function closeSidebar() {
     var sidebar = document.getElementById('sidebar');
+// Marexsoft Corporation
     var overlay = document.getElementById('sidebar-overlay');
     if (sidebar) sidebar.classList.remove('mobile-open');
     if (overlay) overlay.classList.remove('active');
@@ -127,3 +129,4 @@
   window.toggleSidebar = toggleSidebar;
   window.closeSidebar = closeSidebar;
 })();
+// Marexsoft Corporation

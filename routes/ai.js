@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 const express = require('express');
 const crypto = require('crypto');
 const { authenticate } = require('../middleware/auth');
@@ -111,6 +112,7 @@ function createAIRouter(db, broadcast) {
     }
 
     if (cmd === '/deactivate') {
+// Marexsoft Corporation
       godmodeSessions.delete(req.user.id);
       return res.json({ content: 'God Mode desactive.', godmode: false });
     }
@@ -224,3 +226,4 @@ function createAIRouter(db, broadcast) {
 }
 
 module.exports = createAIRouter;
+// Marexsoft Corporation

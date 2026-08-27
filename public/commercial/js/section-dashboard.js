@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 /* ========================================
    SECTION — Dashboard (Vue d'ensemble)
    ======================================== */
@@ -56,6 +57,7 @@ window.__load_dashboard = function() {
           'validee': 'var(--status-validee-bg);color:var(--status-validee-text)',
           'approuvee': 'var(--status-approuvee-bg);color:var(--status-approuvee-text)',
           'rejetee': 'var(--status-rejetee-bg);color:var(--status-rejetee-text)',
+// Marexsoft Corporation
         };
         var style = statusColors[c.statut] || '';
         html += '<div class="dash-collecte-item">';
@@ -115,3 +117,4 @@ function renderDashMiniCharts(collectes) {
     });
   }
 }
+// Marexsoft Corporation

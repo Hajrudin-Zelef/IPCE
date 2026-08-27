@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 window.__load_docs = async function () {
   const el = document.getElementById('section-docs-content');
 
@@ -69,6 +70,7 @@ window.__load_docs = async function () {
   function syncHighlightTheme() {
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     const lightSheet = document.getElementById('hljs-light');
+// Marexsoft Corporation
     const darkSheet = document.getElementById('hljs-dark');
     if (lightSheet) lightSheet.disabled = isDark;
     if (darkSheet) darkSheet.disabled = !isDark;
@@ -140,3 +142,4 @@ window.__load_docs = async function () {
   const firstBtn = document.querySelector('.docs-sidebar-item');
   if (firstBtn) window.__selectDoc('Architecture.md', firstBtn);
 };
+// Marexsoft Corporation
