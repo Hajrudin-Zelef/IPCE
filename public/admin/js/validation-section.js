@@ -124,7 +124,17 @@ window.__loadValTab = async function(tab, btn) {
                     <div class="inbox-metric-value">${totalRDV}</div>
                     <div class="inbox-metric-label">RDV</div>
                   </div>
+                  <div class="inbox-metric">
+                    <div class="inbox-metric-value">${c.visites || 0}</div>
+                    <div class="inbox-metric-label">Visites</div>
+                  </div>
+                  <div class="inbox-metric">
+                    <div class="inbox-metric-value">${c.contacts || 0}</div>
+                    <div class="inbox-metric-label">Contacts</div>
+                  </div>
                 </div>
+                ${c.zone ? `<div style="font-size:11px;margin-bottom:8px"><span style="background:var(--primary-light);color:var(--primary);padding:2px 8px;border-radius:4px;font-weight:600">${c.zone}</span></div>` : ''}
+                ${c.notes ? `<div style="font-size:11px;color:var(--muted);margin-bottom:12px;background:var(--bg);padding:8px 10px;border-radius:6px;white-space:pre-wrap">${c.notes}</div>` : ''}
 
                 <!-- RDV List -->
                 ${totalRDV > 0 ? `

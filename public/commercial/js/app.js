@@ -41,31 +41,42 @@ async function checkAuth() {
     var dateEl = document.getElementById('header-date');
     if (dateEl) dateEl.textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    // Move notification bell into content header (desktop only)
+    // Move notification bell into content header (all viewports)
     setTimeout(function() {
-      if (window.innerWidth > 768) {
-        var notifWrapper = document.querySelector('.notif-fixed-wrapper');
-        var headerRight = document.querySelector('.content-header-right');
-        if (notifWrapper && headerRight) {
-          headerRight.appendChild(notifWrapper);
-          notifWrapper.style.position = 'static';
-          notifWrapper.style.zIndex = 'auto';
-          notifWrapper.style.top = 'auto';
-          notifWrapper.style.right = 'auto';
-        }
+      var notifWrapper = document.querySelector('.notif-fixed-wrapper');
+      var headerRight = document.querySelector('.content-header-right');
+      if (notifWrapper && headerRight) {
+        headerRight.appendChild(notifWrapper);
+        notifWrapper.style.position = 'static';
+        notifWrapper.style.zIndex = 'auto';
+        notifWrapper.style.top = 'auto';
+        notifWrapper.style.right = 'auto';
       }
     }, 300);
 
-    // Force dashboard as default section
+    // Always force dashboard as default section
+    // Clear any hash from URL to prevent docs persistence
     var hash = window.location.hash.replace('#', '');
-    if (!hash || !document.getElementById('section-' + hash)) {
+    var validSections = ['dashboard', 'collecte', 'history', 'calendar', 'docs', 'settings'];
+
+    // Only honor hash if it's a valid section (but NEVER default to docs)
+    if (hash && validSections.indexOf(hash) !== -1 && hash !== 'docs') {
+      localStorage.setItem('commercial_section', hash);
+    } else {
       localStorage.setItem('commercial_section', 'dashboard');
     }
 
-    // Init sidebar navigation (loads default section)
+    // Clear the hash from URL to prevent persistence on reload
+    if (window.location.hash) {
+      history.replaceState(null, '', window.location.pathname);
+    }
+
+    // Init sidebar navigation (loads the section)
     if (typeof switchSection === 'function') {
-      var hash = window.location.hash.replace('#', '') || 'dashboard';
-      switchSection(hash);
+      var targetSection = localStorage.getItem('commercial_section') || 'dashboard';
+      // Safety: never show docs as default
+      if (targetSection === 'docs') targetSection = 'dashboard';
+      switchSection(targetSection);
     }
   } catch {
     window.location.href = '/';

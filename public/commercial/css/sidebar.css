@@ -129,7 +129,7 @@
   position: relative;
 }
 
-/* --- Notification in header (desktop only) --- */
+/* --- Notification in header --- */
 .content-header-right .notif-fixed-wrapper {
   position: static !important;
   z-index: auto !important;
@@ -149,7 +149,8 @@
 }
 
 /* --- Section --- */
-.dashboard-section { padding: 20px; animation: sectionFadeIn 0.3s ease; }
+.dashboard-section { padding: 20px; }
+.section-animate-in { animation: sectionFadeIn 0.3s ease; }
 @keyframes sectionFadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -190,7 +191,7 @@
 }
 
 @media (max-width: 480px) {
-  .sidebar { width: 100%; }
+  .sidebar { width: 280px; max-width: 85vw; }
   .content-header { padding: 6px 10px; gap: 4px; }
   .content-header-left { gap: 6px; }
   .content-header-right { gap: 4px; }

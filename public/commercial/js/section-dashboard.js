@@ -16,6 +16,8 @@ window.__load_dashboard = function() {
     var totalOffres = collectes.reduce(function(s, c) { return s + (c.offres || 0); }, 0);
     var totalBC = collectes.reduce(function(s, c) { return s + (c.bc || 0); }, 0);
     var totalRDV = collectes.reduce(function(s, c) { return s + (c.rdvs ? c.rdvs.length : 0); }, 0);
+    var totalVisites = collectes.reduce(function(s, c) { return s + (c.visites || 0); }, 0);
+    var totalContacts = collectes.reduce(function(s, c) { return s + (c.contacts || 0); }, 0);
     var last3 = collectes.slice(0, 3);
 
     var html = '';
@@ -26,6 +28,8 @@ window.__load_dashboard = function() {
     html += '<div class="dash-kpi"><div class="dash-kpi-value">' + totalOffres + '</div><div class="dash-kpi-label">Offres</div></div>';
     html += '<div class="dash-kpi"><div class="dash-kpi-value">' + totalBC + '</div><div class="dash-kpi-label">BC Signés</div></div>';
     html += '<div class="dash-kpi"><div class="dash-kpi-value">' + totalRDV + '</div><div class="dash-kpi-label">RDV</div></div>';
+    html += '<div class="dash-kpi"><div class="dash-kpi-value">' + totalVisites + '</div><div class="dash-kpi-label">Visites</div></div>';
+    html += '<div class="dash-kpi"><div class="dash-kpi-value">' + totalContacts + '</div><div class="dash-kpi-label">Contacts</div></div>';
     html += '</div>';
 
     // Quick actions
@@ -55,7 +59,7 @@ window.__load_dashboard = function() {
         };
         var style = statusColors[c.statut] || '';
         html += '<div class="dash-collecte-item">';
-        html += '<div><strong>' + (c.ca / 1e6).toFixed(1) + 'M FCFA</strong> — ' + c.offres + ' offres — ' + c.bc + ' BC</div>';
+        html += '<div><strong>' + (c.ca / 1e6).toFixed(1) + 'M FCFA</strong> — ' + c.offres + ' offres — ' + c.bc + ' BC — ' + (c.visites || 0) + ' vis. — ' + (c.contacts || 0) + ' contacts</div>';
         html += '<span class="cal-day-rdv-statut" style="' + style + '">' + c.statut + '</span>';
         html += '</div>';
       });

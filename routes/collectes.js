@@ -57,10 +57,10 @@ function createCollectesRouter(db) {
       return res.status(403).json({ error: 'Seuls les commerciaux peuvent créer des collectes' });
     }
 
-    const { ca, offres, bc, rdvs } = req.body;
+    const { ca, offres, bc, visites, contacts, zone, notes, rdvs } = req.body;
     const result = db.prepare(
-      'INSERT INTO collectes (user_id, ca, offres, bc) VALUES (?, ?, ?, ?)'
-    ).run(req.user.id, ca || 0, offres || 0, bc || 0);
+      'INSERT INTO collectes (user_id, ca, offres, bc, visites, contacts, zone, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+    ).run(req.user.id, ca || 0, offres || 0, bc || 0, visites || 0, contacts || 0, zone || null, notes || null);
 
     const collecteId = result.lastInsertRowid;
 
@@ -85,9 +85,9 @@ function createCollectesRouter(db) {
       return res.status(400).json({ error: 'Impossible de modifier une collecte déjà validée' });
     }
 
-    const { ca, offres, bc, rdvs } = req.body;
-    db.prepare('UPDATE collectes SET ca = ?, offres = ?, bc = ? WHERE id = ?')
-      .run(ca || 0, offres || 0, bc || 0, req.params.id);
+    const { ca, offres, bc, visites, contacts, zone, notes, rdvs } = req.body;
+    db.prepare('UPDATE collectes SET ca = ?, offres = ?, bc = ?, visites = ?, contacts = ?, zone = ?, notes = ? WHERE id = ?')
+      .run(ca || 0, offres || 0, bc || 0, visites || 0, contacts || 0, zone || null, notes || null, req.params.id);
 
     if (Array.isArray(rdvs)) {
       db.prepare('DELETE FROM rdvs WHERE collecte_id = ?').run(req.params.id);
@@ -140,6 +140,10 @@ function createCollectesRouter(db) {
       offres: collecte.offres,
       bc: collecte.bc,
       rdvCount,
+      visites: collecte.visites,
+      contacts: collecte.contacts,
+      zone: collecte.zone,
+      notes: collecte.notes,
     });
 
     // Notify all admins

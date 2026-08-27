@@ -24,6 +24,12 @@ function initDB() {
   try { db.exec("ALTER TABLE users ADD COLUMN two_factor_secret TEXT"); } catch {}
   try { db.exec("ALTER TABLE users ADD COLUMN two_factor_enabled INTEGER DEFAULT 0"); } catch {}
 
+  // Add collecte detail columns if they don't exist
+  try { db.exec("ALTER TABLE collectes ADD COLUMN visites INTEGER DEFAULT 0"); } catch {}
+  try { db.exec("ALTER TABLE collectes ADD COLUMN contacts INTEGER DEFAULT 0"); } catch {}
+  try { db.exec("ALTER TABLE collectes ADD COLUMN zone TEXT"); } catch {}
+  try { db.exec("ALTER TABLE collectes ADD COLUMN notes TEXT"); } catch {}
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS collectes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

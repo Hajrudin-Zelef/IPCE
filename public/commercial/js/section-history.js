@@ -33,6 +33,9 @@ async function loadHistory() {
         + '<td>' + c.offres + '</td>'
         + '<td>' + c.bc + '</td>'
         + '<td>' + (c.rdvs ? c.rdvs.length : 0) + '</td>'
+        + '<td>' + (c.visites || 0) + '</td>'
+        + '<td>' + (c.contacts || 0) + '</td>'
+        + '<td>' + (c.zone || '—') + '</td>'
         + '<td><span class="status status-' + c.statut + '">' + c.statut + '</span></td>'
         + '<td>' + actions + '</td>'
         + '</tr>';
@@ -58,8 +61,14 @@ function viewCollecte(id) {
   html += '<div class="cal-modal-field"><label>CA</label><span>' + (c.ca / 1e6).toFixed(1) + ' M FCFA</span></div>';
   html += '<div class="cal-modal-field"><label>Offres</label><span>' + c.offres + '</span></div>';
   html += '<div class="cal-modal-field"><label>BC</label><span>' + c.bc + '</span></div>';
+  html += '<div class="cal-modal-field"><label>Visites</label><span>' + (c.visites || 0) + '</span></div>';
+  html += '<div class="cal-modal-field"><label>Contacts</label><span>' + (c.contacts || 0) + '</span></div>';
+  html += '<div class="cal-modal-field"><label>Zone</label><span>' + (c.zone || '—') + '</span></div>';
   html += '<div class="cal-modal-field"><label>Statut</label><span class="cal-day-rdv-statut" style="' + style + '">' + c.statut + '</span></div>';
   html += '</div>';
+  if (c.notes) {
+    html += '<div style="margin-bottom:16px;"><div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:4px;">Notes</div><div style="font-size:13px;background:var(--bg);padding:10px;border-radius:6px;white-space:pre-wrap;">' + c.notes + '</div></div>';
+  }
 
   if (c.rdvs && c.rdvs.length > 0) {
     html += '<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">RDVs (' + c.rdvs.length + ')</div>';
@@ -91,7 +100,16 @@ function editCollecte(id) {
   html += '<div class="form-group"><label>CA (FCFA)</label><input type="number" id="edit-ca" min="0" value="' + c.ca + '"></div>';
   html += '<div class="form-group"><label>Offres</label><input type="number" id="edit-offres" min="0" value="' + c.offres + '"></div>';
   html += '<div class="form-group"><label>BC</label><input type="number" id="edit-bc" min="0" value="' + c.bc + '"></div>';
+  html += '<div class="form-group"><label>Visites</label><input type="number" id="edit-visites" min="0" value="' + (c.visites || 0) + '"></div>';
+  html += '<div class="form-group"><label>Contacts</label><input type="number" id="edit-contacts" min="0" value="' + (c.contacts || 0) + '"></div>';
+  html += '<div class="form-group"><label>Zone</label>';
+  html += '<select id="edit-zone"><option value="">— Sélectionner —</option>';
+  ['Centre','Nord','Sud','Est','Ouest'].forEach(function(z) {
+    html += '<option value="' + z + '"' + (c.zone === z ? ' selected' : '') + '>' + z + '</option>';
+  });
+  html += '</select></div>';
   html += '</div>';
+  html += '<div class="form-group"><label>Notes</label><textarea id="edit-notes" rows="2" style="width:100%;resize:vertical;">' + (c.notes || '') + '</textarea></div>';
 
   html += '<div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">RDVs</div>';
   html += '<div id="edit-rdv-list"></div>';
@@ -153,8 +171,12 @@ async function saveCollecteEdit(id, e) {
   const ca = parseFloat(document.getElementById('edit-ca').value) || 0;
   const offres = parseInt(document.getElementById('edit-offres').value) || 0;
   const bc = parseInt(document.getElementById('edit-bc').value) || 0;
+  const visites = parseInt(document.getElementById('edit-visites').value) || 0;
+  const contacts = parseInt(document.getElementById('edit-contacts').value) || 0;
+  const zone = document.getElementById('edit-zone').value || null;
+  const notes = document.getElementById('edit-notes').value.trim() || null;
   try {
-    const res = await api('PUT', '/api/collectes/' + id, { ca, offres, bc, rdvs: editRdvs });
+    const res = await api('PUT', '/api/collectes/' + id, { ca, offres, bc, visites, contacts, zone, notes, rdvs: editRdvs });
     if (res.status === 401) { window.location.href = '/'; return; }
     const data = await res.json();
     if (!res.ok) { showToast(data.error, 'error'); return; }

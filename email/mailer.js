@@ -18,7 +18,7 @@ function getTransporter() {
   return transporter;
 }
 
-async function sendValidationEmail({ commercialNom, ca, offres, bc, rdvCount }) {
+async function sendValidationEmail({ commercialNom, ca, offres, bc, rdvCount, visites, contacts, zone, notes }) {
   if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'votre.email@gmail.com') {
     console.log('[EMAIL] Configuration non définie — email non envoyé');
     return false;
@@ -50,7 +50,17 @@ async function sendValidationEmail({ commercialNom, ca, offres, bc, rdvCount }) 
             <td style="padding: 10px; border: 1px solid #ddd;"><strong>RDV</strong></td>
             <td style="padding: 10px; border: 1px solid #ddd;">${rdvCount}</td>
           </tr>
+          <tr style="background: #f5f5f5;">
+            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Visites</strong></td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${visites || 0}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Contacts</strong></td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${contacts || 0}</td>
+          </tr>
+          ${zone ? `<tr style="background: #f5f5f5;"><td style="padding: 10px; border: 1px solid #ddd;"><strong>Zone</strong></td><td style="padding: 10px; border: 1px solid #ddd;">${zone}</td></tr>` : ''}
         </table>
+        ${notes ? `<div style="background:#f9f9f9;padding:12px;border-radius:6px;margin:12px 0;"><div style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;margin-bottom:4px;">Notes</div><div style="font-size:13px;white-space:pre-wrap;">${notes}</div></div>` : ''}
         <p style="color: #666; font-size: 12px;">Connectez-vous au panel admin pour approuver ou rejeter cette collecte.</p>
       </div>
     </div>

@@ -80,11 +80,15 @@ async function saveCollecte() {
   var ca = parseFloat(document.getElementById('inp-ca').value) || 0;
   var offres = parseInt(document.getElementById('inp-offres').value) || 0;
   var bc = parseInt(document.getElementById('inp-bc').value) || 0;
-  if (ca === 0 && offres === 0 && bc === 0 && currentRdvs.length === 0) {
+  var visites = parseInt(document.getElementById('inp-visites').value) || 0;
+  var contacts = parseInt(document.getElementById('inp-contacts').value) || 0;
+  var zone = document.getElementById('inp-zone').value || null;
+  var notes = document.getElementById('inp-notes').value.trim() || null;
+  if (ca === 0 && offres === 0 && bc === 0 && visites === 0 && contacts === 0 && currentRdvs.length === 0) {
     return showToast('Saisissez au moins une donnée', 'warning');
   }
   try {
-    var res = await api('POST', '/api/collectes', { ca: ca, offres: offres, bc: bc, rdvs: currentRdvs });
+    var res = await api('POST', '/api/collectes', { ca: ca, offres: offres, bc: bc, visites: visites, contacts: contacts, zone: zone, notes: notes, rdvs: currentRdvs });
     if (res.status === 401) { window.location.href = '/'; return; }
     var data = await res.json();
     if (!res.ok) return showToast(data.error, 'error');
@@ -99,11 +103,15 @@ async function validateCollecte() {
   var ca = parseFloat(document.getElementById('inp-ca').value) || 0;
   var offres = parseInt(document.getElementById('inp-offres').value) || 0;
   var bc = parseInt(document.getElementById('inp-bc').value) || 0;
-  if (currentRdvs.length === 0 && ca === 0 && offres === 0 && bc === 0) {
+  var visites = parseInt(document.getElementById('inp-visites').value) || 0;
+  var contacts = parseInt(document.getElementById('inp-contacts').value) || 0;
+  var zone = document.getElementById('inp-zone').value || null;
+  var notes = document.getElementById('inp-notes').value.trim() || null;
+  if (currentRdvs.length === 0 && ca === 0 && offres === 0 && bc === 0 && visites === 0 && contacts === 0) {
     return showToast('Saisissez au moins des données', 'warning');
   }
   try {
-    var saveRes = await api('POST', '/api/collectes', { ca: ca, offres: offres, bc: bc, rdvs: currentRdvs });
+    var saveRes = await api('POST', '/api/collectes', { ca: ca, offres: offres, bc: bc, visites: visites, contacts: contacts, zone: zone, notes: notes, rdvs: currentRdvs });
     if (saveRes.status === 401) { window.location.href = '/'; return; }
     var saveData = await saveRes.json();
     if (!saveRes.ok) return showToast(saveData.error, 'error');
@@ -123,6 +131,10 @@ function resetForm() {
   document.getElementById('inp-ca').value = '';
   document.getElementById('inp-offres').value = '';
   document.getElementById('inp-bc').value = '';
+  document.getElementById('inp-visites').value = '';
+  document.getElementById('inp-contacts').value = '';
+  document.getElementById('inp-zone').value = '';
+  document.getElementById('inp-notes').value = '';
   setDefaultDate();
 }
 

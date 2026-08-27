@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ipce-v2';
+const CACHE_NAME = 'ipce-v4';
 const STATIC_ASSETS = [
   '/',
   '/dashboard.html',
@@ -11,6 +11,17 @@ const STATIC_ASSETS = [
   '/admin/css/variables.css',
   '/admin/css/responsive.css',
   '/admin/css/ai-chat.css',
+  '/commercial/css/variables.css',
+  '/commercial/css/sidebar.css',
+  '/commercial/css/dashboard.css',
+  '/commercial/js/app.js',
+  '/commercial/js/sidebar.js',
+  '/commercial/js/section-dashboard.js',
+  '/commercial/js/section-collectes.js',
+  '/commercial/js/section-history.js',
+  '/commercial/js/section-calendar.js',
+  '/commercial/js/section-docs.js',
+  '/commercial/js/section-settings.js',
   'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js',

@@ -74,7 +74,7 @@
     <main class="content-area">
       <div class="content-header">
         <div class="content-header-left">
-          <button class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+          <button class="sidebar-toggle">&#9776;</button>
           <span id="header-date" style="font-size:13px;color:var(--muted);"></span>
         </div>
         <div class="content-header-right">
@@ -127,6 +127,31 @@
                 <input type="number" id="inp-bc" min="0" placeholder="0" class="input-lg">
               </div>
             </div>
+            <div class="form-row-3">
+              <div class="form-group">
+                <label>Visites</label>
+                <input type="number" id="inp-visites" min="0" placeholder="0" class="input-lg">
+              </div>
+              <div class="form-group">
+                <label>Contacts Nouveaux</label>
+                <input type="number" id="inp-contacts" min="0" placeholder="0" class="input-lg">
+              </div>
+              <div class="form-group">
+                <label>Zone</label>
+                <select id="inp-zone" class="input-lg">
+                  <option value="">— Sélectionner —</option>
+                  <option value="Centre">Centre</option>
+                  <option value="Nord">Nord</option>
+                  <option value="Sud">Sud</option>
+                  <option value="Est">Est</option>
+                  <option value="Ouest">Ouest</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Notes</label>
+              <textarea id="inp-notes" placeholder="Remarques, observations..." rows="3" class="input-lg" style="width:100%;resize:vertical;"></textarea>
+            </div>
             <div class="rdv-section">
               <div class="rdv-header">
                 <label class="rdv-label">RDV <span class="rdv-counter" id="rdv-counter">0</span></label>
@@ -172,6 +197,9 @@
                   <th>Offres</th>
                   <th>BC</th>
                   <th>RDV</th>
+                  <th>Visites</th>
+                  <th>Contacts</th>
+                  <th>Zone</th>
                   <th>Statut</th>
                   <th>Actions</th>
                 </tr>
