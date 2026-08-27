@@ -74,6 +74,7 @@ export async function loadPending() {
 
     countEl.textContent = collectes.length + ' en attente';
 
+    // Update sidebar badge
     const sidebarBadge = document.querySelector('.sidebar-nav-badge[data-badge="pending"]');
     if (sidebarBadge) {
       sidebarBadge.textContent = collectes.length;

@@ -32,6 +32,7 @@ function createAdminRouter(db) {
     ).run(userId, type, title, message, link || null);
   }
 
+  // Expose for other routers
   router._createNotification = createNotification;
 
   // --- Notifications API ---
@@ -512,6 +513,7 @@ function createAdminRouter(db) {
       'INSERT INTO reminders (user_id, title, description, due_date, priority) VALUES (?, ?, ?, ?, ?)'
     ).run(req.user.id, title, description || null, due_date || null, safePriority);
 
+    // Create notification for the reminder
     if (due_date) {
       createNotification(
         req.user.id,

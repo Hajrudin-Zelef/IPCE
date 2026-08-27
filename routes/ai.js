@@ -75,6 +75,7 @@ function createAIRouter(db, broadcast) {
     res.json({ godmode: isGodMode(req.user.id) });
   });
 
+  // Chat (simple, via websearch_agent)
   router.post('/chat', authenticate, aiRateLimit(20), async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     const { message } = req.body;
@@ -83,6 +84,7 @@ function createAIRouter(db, broadcast) {
     const gm = isGodMode(req.user.id);
     const cmd = message.trim().toLowerCase();
 
+    // God Mode commands
     if (cmd === '/rahian') {
       if (gm) return res.json({ content: 'God Mode est deja actif.', godmode: true });
       return res.json({ content: 'Entrez le mot de passe God Mode :', godmode_prompt: true });
@@ -125,9 +127,11 @@ function createAIRouter(db, broadcast) {
       return res.json({ content: `God Mode: ${gm ? 'ACTIF (' + remaining + ' min)' : 'INACTIF'}`, godmode: gm });
     }
 
+    // Log user message
     const startTime = Date.now();
     db.prepare("INSERT INTO ai_conversations (user_id, role, message, godmode) VALUES (?, 'user', ?, ?)").run(req.user.id, message, gm ? 1 : 0);
 
+    // Chat via websearch_agent
     try {
       const result = await chat(message, [], db, gm);
       const responseTime = Date.now() - startTime;
@@ -185,6 +189,7 @@ function createAIRouter(db, broadcast) {
     res.json({ ok: true });
   });
 
+  // Conversation history
   router.get('/conversations', authenticate, (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     const limit = Math.min(parseInt(req.query.limit) || 50, 200);
@@ -200,6 +205,7 @@ function createAIRouter(db, broadcast) {
     res.json({ ok: true });
   });
 
+  // AI Status & Error monitoring
   router.get('/status', authenticate, (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     const convCount = db.prepare("SELECT COUNT(*) as count FROM ai_conversations").get().count;

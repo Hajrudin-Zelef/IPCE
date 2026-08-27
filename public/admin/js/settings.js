@@ -612,6 +612,7 @@ window.__setup2FA = async function() {
       </div>
     `;
 
+    // Generate QR code
     if (typeof QRCode !== 'undefined') {
       QRCode.toCanvas(document.getElementById('settings-2fa-qr'), otpauth, {
         width: 180,

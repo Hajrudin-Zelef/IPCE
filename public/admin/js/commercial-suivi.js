@@ -23,6 +23,7 @@ window.__load_commercial_suivi = async function() {
     + '</div>';
 
   if (csView === 'grid') {
+    // Vue grille (par défaut)
     content += '<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:12px;">';
     sorted.forEach((u, i) => {
       const convRdv = u.rdvCount > 0 ? ((u.offres / u.rdvCount) * 100).toFixed(0) : 0;
@@ -46,6 +47,7 @@ window.__load_commercial_suivi = async function() {
     });
     content += '</div>';
   } else {
+    // Vue liste
     content += '<div style="overflow-x:auto;border:1px solid var(--border-light);border-radius:var(--radius-lg);background:var(--card);">';
     content += '<table style="width:100%;border-collapse:collapse;">';
     content += '<thead><tr>';

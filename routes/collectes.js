@@ -191,6 +191,7 @@ function createCollectesRouter(db) {
       notes: collecte.notes,
     });
 
+    // Notify all admins
     const admins = db.prepare('SELECT id FROM users WHERE role = ?').all('admin');
     const insertNotif = db.prepare(
       'INSERT INTO notifications (user_id, type, title, message, link) VALUES (?, ?, ?, ?, ?)'
