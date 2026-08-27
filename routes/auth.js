@@ -199,7 +199,7 @@ function createAuthRouter(db) {
 
     const hash = await bcrypt.hash(password, 12);
     const userRole = role === 'admin' ? 'admin' : 'commercial';
-    const result = db.prepare('INSERT INTO users (nom, password, role, must_change_password) VALUES (?, ?, ?, ?)').run(trimmedNom, hash, userRole, 0);
+    const result = db.prepare('INSERT INTO users (nom, password, role, must_change_password) VALUES (?, ?, ?, ?)').run(trimmedNom, hash, userRole, 1);
 
     db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'create_user', 'user:' + result.lastInsertRowid, `Utilisateur "${trimmedNom}" créé avec le rôle ${userRole}`);
 
