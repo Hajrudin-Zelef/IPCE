@@ -14,3 +14,8 @@ original.1
 TAF/
 playwright.config.js
 test-results/
+*.log
+*.pid
+*.seed
+coverage/
+.nyc_output/
