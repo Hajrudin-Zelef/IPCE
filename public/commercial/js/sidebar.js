@@ -11,7 +11,6 @@
       section = 'dashboard';
     }
 
-    // Validate section exists
     var target = document.getElementById('section-' + section);
     if (!target) {
       section = 'dashboard';
@@ -19,18 +18,15 @@
     }
     if (!target) return;
 
-    // Hide all sections
     document.querySelectorAll('.dashboard-section').forEach(function(el) {
       el.style.display = 'none';
     });
 
-    // Show target
     target.style.display = '';
     target.classList.remove('section-animate-in');
     void target.offsetWidth;
     target.classList.add('section-animate-in');
 
-    // Update sidebar active
     document.querySelectorAll('.nav-item[data-section]').forEach(function(btn) {
       btn.classList.toggle('active', btn.dataset.section === section);
     });
@@ -41,14 +37,12 @@
       history.replaceState(null, '', newHash);
     }
 
-    // Persist
     currentSection = section;
     localStorage.setItem('commercial_section', section);
 
     // Close mobile sidebar
     closeSidebar();
 
-    // Lazy load section data
     var fn = window['__load_' + section];
     if (typeof fn === 'function') {
       setTimeout(fn, 50);

@@ -136,6 +136,7 @@ function createAIRouter(db, broadcast) {
     } catch (err) {
       const responseTime = Date.now() - startTime;
       db.prepare("INSERT INTO ai_conversations (user_id, role, message, godmode, response_time_ms) VALUES (?, 'assistant', 'ERROR', ?, ?)").run(req.user.id, gm ? 1 : 0, responseTime);
+      // Fallback message if websearch_agent is down
       const fallbackMsg = err.message.includes('indisponible') || err.message.includes('Timeout')
         ? 'Le serveur IA est temporairement indisponible. Verifiez que websearch_agent est actif sur le port 4500.'
         : err.message || 'Erreur IA inconnue';

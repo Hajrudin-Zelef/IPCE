@@ -168,7 +168,6 @@
 
   // --- Badges ---
   function updateBadges() {
-    // Example: update notification count
     const badge = sidebar.querySelector('.sidebar-nav-badge[data-badge="notifications"]');
     if (badge) {
       const count = getNotificationCount();
@@ -181,7 +180,6 @@
   }
 
   function getNotificationCount() {
-    // This would integrate with your notification system
     const stored = localStorage.getItem('ipce_notifications_count');
     return stored ? parseInt(stored, 10) : 0;
   }
