@@ -12,3 +12,5 @@ original.1
 *.oor
 *.or
 TAF/
+playwright.config.js
+test-results/
