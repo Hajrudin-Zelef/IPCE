@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* --- Calendar Base --- */
 .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;background:var(--border-light);border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-light)}
 .calendar-header-cell{padding:10px;text-align:center;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;background:var(--bg)}
@@ -45,6 +46,7 @@
 .detail-badge.collect{background:rgba(37,99,235,.1);color:var(--primary)}
 .detail-badge.rdv{background:rgba(139,92,246,.1);color:#7C3AED}
 
+/* Marexsoft Corporation */
 .detail-section{padding:16px 20px;border-bottom:1px solid var(--border-light)}
 .detail-section:last-child{border-bottom:none}
 .detail-section-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.03em;margin-bottom:12px}
@@ -93,3 +95,4 @@
   .calendar-event{font-size:9px;padding:1px 4px}
   .calendar-nav-month{font-size:15px;min-width:auto}
 }
+/* Marexsoft Corporation */

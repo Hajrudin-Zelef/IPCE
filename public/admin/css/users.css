@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* --- KPI Summary Bar --- */
 .users-kpi-bar {
   display: grid;
@@ -165,6 +166,7 @@
 
 .user-card-actions {
   padding: 12px 20px;
+/* Marexsoft Corporation */
   border-top: 1px solid var(--border-light);
   display: flex;
   gap: 8px;
@@ -333,3 +335,4 @@
   .users-search { max-width: 100%; }
   .users-form-row { flex-direction: column; }
 }
+/* Marexsoft Corporation */

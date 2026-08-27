@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* ========================================
    Business Insights — styles complets + animations
    ======================================== */
@@ -351,6 +352,7 @@
 }
 .insight-metric-bar-header {
   display: flex;
+/* Marexsoft Corporation */
   justify-content: space-between;
   font-size: 11px;
   font-weight: 600;
@@ -705,3 +707,4 @@
     transition-duration: .01ms !important;
   }
 }
+/* Marexsoft Corporation */

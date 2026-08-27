@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* --- KPI Summary Bar --- */
 .validation-kpi-bar {
   display: grid;
@@ -179,6 +180,7 @@
   font-weight: 600;
   color: var(--muted);
 }
+/* Marexsoft Corporation */
 .inbox-rdvs {
   margin-bottom: 16px;
 }
@@ -360,3 +362,4 @@
   .validation-history-header,
   .validation-history-row { grid-template-columns: 1fr 1fr; gap: 8px; }
 }
+/* Marexsoft Corporation */

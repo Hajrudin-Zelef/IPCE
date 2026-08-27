@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* ========================================
    AI CHAT — Floating Panel
    ======================================== */
@@ -355,6 +356,7 @@
   0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
   30% { transform: translateY(-6px); opacity: 1; }
 }
+/* Marexsoft Corporation */
 
 /* --- Suggestions --- */
 .ai-suggestions {
@@ -713,3 +715,4 @@
   .ai-chunk { opacity: 1; }
   .ai-cursor { opacity: 1; animation: cursorBlink 0.7s step-end infinite !important; }
 }
+/* Marexsoft Corporation */

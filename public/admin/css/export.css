@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 .export-dropdown {
   position: absolute;
   top: calc(100% + 8px);
@@ -32,6 +33,7 @@
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 500;
+/* Marexsoft Corporation */
   color: var(--text);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -67,3 +69,4 @@
   background: var(--border-light);
   margin: 4px 8px;
 }
+/* Marexsoft Corporation */

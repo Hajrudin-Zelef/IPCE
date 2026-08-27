@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* ========================================
    SIDEBAR — IPCE Partners Premium Design
    ======================================== */
@@ -335,6 +336,7 @@
   right: 8px;
   background: var(--card);
   border: 1px solid var(--border);
+/* Marexsoft Corporation */
   border-radius: var(--radius-md);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   z-index: 1000;
@@ -672,3 +674,4 @@
 .sidebar-nav-badge.pulse {
   animation: badgePulse 2s ease-in-out infinite;
 }
+/* Marexsoft Corporation */

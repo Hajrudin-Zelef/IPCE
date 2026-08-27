@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
@@ -178,6 +179,7 @@ body {
   top: 0; left: 0; right: 0;
   height: 3px;
   background: var(--accent);
+// Marexsoft Corporation
 }
 .kpi.alert::before { background: var(--danger); }
 .kpi.warn::before { background: var(--warn); }
@@ -358,3 +360,4 @@ body {
   size: A4 portrait;
   margin: 0;
 }
+// Marexsoft Corporation

@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 .dashboard-section{padding:0 0 24px 0}
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
 .section-header .section-title{font-size:22px;font-weight:700;color:var(--text);margin:0}
@@ -11,6 +12,7 @@
 @media(max-width:768px){.section-grid-2,.section-grid-3,.section-grid-4{grid-template-columns:1fr}}
 .section-filters{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
 .section-filter{padding:8px 16px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--card);color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer;transition:all var(--transition-fast)}
+/* Marexsoft Corporation */
 .section-filter:hover,.section-filter.active{background:var(--primary);border-color:var(--primary);color:white}
 .section-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--muted);text-align:center}
 .section-empty svg{width:48px;height:48px;margin-bottom:16px;opacity:0.4}
@@ -25,3 +27,4 @@
 .section-badge.info{background:rgba(37,99,235,0.1);color:var(--primary)}
 @keyframes sectionFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .section-animate-in{animation:sectionFadeIn 0.3s ease forwards}
+/* Marexsoft Corporation */

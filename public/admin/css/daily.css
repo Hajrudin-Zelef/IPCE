@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* ========================================
    VUE JOURNALIÈRE — Module admin
    ======================================== */
@@ -168,6 +169,7 @@
   gap: 2px;
   transition: all var(--transition-fast);
   position: relative;
+/* Marexsoft Corporation */
   font-family: inherit;
 }
 .daily-cal-day:hover { background: var(--bg); border-color: var(--border-light); }
@@ -338,3 +340,4 @@
   .daily-collecte-avatar { width: 24px; height: 24px; font-size: 10px; }
   .daily-cal-btn { width: 24px; height: 24px; font-size: 11px; }
 }
+/* Marexsoft Corporation */

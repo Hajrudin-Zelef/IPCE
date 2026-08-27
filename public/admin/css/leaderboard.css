@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 .leaderboard {
   margin-bottom: 32px;
 }
@@ -80,6 +81,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+/* Marexsoft Corporation */
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 10px;
@@ -162,3 +164,4 @@
 .leader-card.top .leader-progress-bar {
   background: linear-gradient(90deg, var(--warning), #FBBF24);
 }
+/* Marexsoft Corporation */

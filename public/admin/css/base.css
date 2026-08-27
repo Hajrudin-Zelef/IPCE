@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -66,6 +67,7 @@ input, select, textarea {
   display: flex;
   align-items: center;
   justify-content: center;
+/* Marexsoft Corporation */
   min-height: 100vh;
   color: var(--muted);
   font-size: 14px;
@@ -134,3 +136,4 @@ input, select, textarea {
   letter-spacing: 0.05em;
   margin-bottom: 16px;
 }
+/* Marexsoft Corporation */

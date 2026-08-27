@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* ========================================
    SIDEBAR — Commercial Dashboard
    ======================================== */
@@ -103,6 +104,7 @@
   top: 0;
   z-index: 100;
 }
+/* Marexsoft Corporation */
 .content-header-left {
   display: flex;
   align-items: center;
@@ -209,3 +211,4 @@
   .dark-toggle { width: 28px; height: 28px; font-size: 13px; }
   .user-avatar { width: 28px; height: 28px; font-size: 11px; }
 }
+/* Marexsoft Corporation */

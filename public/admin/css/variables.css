@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* === LIGHT THEME (default) === */
 :root {
   --bg: #F8FAFC;
@@ -245,6 +246,7 @@
 }
 
 /* Modals */
+/* Marexsoft Corporation */
 [data-theme="dark"] .cal-modal,
 [data-theme="dark"] .settings-modal,
 [data-theme="dark"] .users-modal {
@@ -493,3 +495,4 @@
 [data-theme="dark"] ::selection {
   background: rgba(59, 130, 246, 0.3);
 }
+/* Marexsoft Corporation */

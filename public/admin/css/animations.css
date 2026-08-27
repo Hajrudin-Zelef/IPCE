@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -63,6 +64,7 @@
 
 .delay-1 { animation-delay: 0.05s; }
 .delay-2 { animation-delay: 0.1s; }
+/* Marexsoft Corporation */
 .delay-3 { animation-delay: 0.15s; }
 .delay-4 { animation-delay: 0.2s; }
 .delay-5 { animation-delay: 0.25s; }
@@ -129,3 +131,4 @@
     transition-duration: 0.01ms !important;
   }
 }
+/* Marexsoft Corporation */

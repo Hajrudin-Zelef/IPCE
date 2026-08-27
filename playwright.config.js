@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 const { defineConfig } = require('@playwright/test');
 
 module.exports = defineConfig({
@@ -22,3 +23,4 @@ module.exports = defineConfig({
     },
   ],
 });
+// Marexsoft Corporation

@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 .content-area {
   flex: 1;
   min-width: 0;
@@ -100,6 +101,7 @@
   font-weight: 800;
   color: var(--text);
   letter-spacing: -0.03em;
+/* Marexsoft Corporation */
   line-height: 1;
   margin-bottom: 8px;
 }
@@ -202,3 +204,4 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+/* Marexsoft Corporation */

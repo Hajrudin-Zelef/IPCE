@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 .dashboard-header {
   background: linear-gradient(135deg, rgba(37, 99, 235, 0.03) 0%, rgba(99, 102, 241, 0.05) 100%);
   backdrop-filter: blur(20px);
@@ -53,6 +54,7 @@
   font-weight: 500;
 }
 
+/* Marexsoft Corporation */
 .header-status::before {
   content: '';
   width: 7px;
@@ -109,3 +111,4 @@
   width: 16px;
   height: 16px;
 }
+/* Marexsoft Corporation */

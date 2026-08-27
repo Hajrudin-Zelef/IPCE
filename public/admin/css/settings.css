@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* --- Layout --- */
 .settings-layout {
   display: flex;
@@ -172,6 +173,7 @@
 }
 .settings-field-row {
   display: grid;
+/* Marexsoft Corporation */
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
@@ -346,3 +348,4 @@
   .settings-field-row { grid-template-columns: 1fr; }
   .settings-info-grid { grid-template-columns: 1fr; }
 }
+/* Marexsoft Corporation */

@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* ========================================
    ULTRA RESPONSIVE — IPCE Admin Dashboard
    Breakpoints: 1200px / 1024px / 768px / 640px / 480px / 360px
@@ -393,6 +394,7 @@
   }
 }
 
+/* Marexsoft Corporation */
 /* --- 480px: Mobile portrait → minimal --- */
 @media (max-width: 480px) {
   .container {
@@ -788,3 +790,4 @@
     border-left: 3px solid Highlight;
   }
 }
+/* Marexsoft Corporation */

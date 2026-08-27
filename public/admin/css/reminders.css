@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* --- KPI Summary Bar --- */
 .reminders-kpi-bar {
   display: grid;
@@ -147,6 +148,7 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted);
+/* Marexsoft Corporation */
   margin: 20px 0 10px;
   padding-left: 4px;
   display: flex;
@@ -297,3 +299,4 @@
   .reminder-form-row { flex-direction: column; }
   .reminder-card { flex-direction: column; gap: 10px; }
 }
+/* Marexsoft Corporation */

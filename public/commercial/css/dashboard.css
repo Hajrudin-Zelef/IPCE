@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* ========================================
    DASHBOARD COMMERCIAL — Styles
    ======================================== */
@@ -492,6 +493,7 @@ header p { font-size: 13px; opacity: 0.8; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+/* Marexsoft Corporation */
 
 /* --- Toast --- */
 .toast-container {
@@ -987,3 +989,4 @@ kbd {
   .content-header { padding-top: env(safe-area-inset-top); }
   .sidebar { height: calc(100dvh + env(safe-area-inset-bottom)); }
 }
+/* Marexsoft Corporation */

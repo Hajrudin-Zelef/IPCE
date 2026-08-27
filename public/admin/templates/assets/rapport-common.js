@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 (() => {
   'use strict';
 
@@ -184,6 +185,7 @@
       subject: 'Situation nominale',
       tag: 'OK',
       tagClass: '',
+// Marexsoft Corporation
       detail: 'Aucun point critique détecté sur les indicateurs suivis.'
     }];
   }
@@ -370,4 +372,4 @@
     jpeg: exportJPEG,
     csv: null
   };
-})();
+})();// Marexsoft Corporation

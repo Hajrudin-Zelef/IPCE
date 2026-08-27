@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* --- KPI Summary Bar --- */
 .prospects-kpi-bar {
   display: grid;
@@ -149,6 +150,7 @@
 .prospect-status.s0 { background: rgba(37,99,235,0.1); color: #E31C23; }
 .prospect-status.s1 { background: rgba(139,92,246,0.1); color: #7C3AED; }
 .prospect-status.s2 { background: rgba(245,158,11,0.1); color: #D97706; }
+/* Marexsoft Corporation */
 .prospect-status.s3 { background: rgba(16,185,129,0.1); color: #059669; }
 .prospect-status.s4 { background: rgba(236,72,153,0.1); color: #DB2777; }
 .prospect-status.perdu { background: var(--danger-light); color: var(--danger); }
@@ -300,3 +302,4 @@
   .prospects-list-header,
   .prospects-list-row { grid-template-columns: 1fr 1fr; gap: 8px; }
 }
+/* Marexsoft Corporation */

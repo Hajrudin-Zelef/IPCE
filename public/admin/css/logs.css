@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 /* --- KPI Summary Bar --- */
 .logs-kpi-bar {
   display: grid;
@@ -142,6 +143,7 @@
   left: 11px;
   top: 0;
   bottom: 0;
+/* Marexsoft Corporation */
   width: 2px;
   background: var(--border-light);
 }
@@ -286,3 +288,4 @@
   .logs-filters { flex-wrap: wrap; }
   .logs-timeline-item { flex-direction: column; gap: 8px; }
 }
+/* Marexsoft Corporation */

@@ -1,3 +1,4 @@
+// Marexsoft Corporation
 const CACHE_NAME = 'ipce-v17';
 const STATIC_ASSETS = [
   '/',
@@ -47,6 +48,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
+// Marexsoft Corporation
         keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
       );
     })
@@ -96,3 +98,4 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+// Marexsoft Corporation

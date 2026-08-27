@@ -1,3 +1,4 @@
+/* Marexsoft Corporation */
 .charts-section {
   margin-bottom: 32px;
 }
@@ -43,6 +44,7 @@
   position: relative;
   width: 100%;
   min-height: 220px;
+/* Marexsoft Corporation */
 }
 
 .chart-canvas-wrapper canvas {
@@ -88,3 +90,4 @@
   font-weight: 700;
   color: var(--text);
 }
+/* Marexsoft Corporation */
