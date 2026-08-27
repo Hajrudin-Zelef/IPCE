@@ -60,20 +60,20 @@ export async function exportPDF() {
 
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const canvas = await html2canvas(container, { scale: 2, useCORS: true });
-  const imgData = canvas.toDataURL('image/png');
+  const canvas = await html2canvas(container, { scale: 1.5, useCORS: true });
+  const imgData = canvas.toDataURL('image/jpeg', 0.85);
   const pageWidth = 190;
   const imgHeight = (canvas.height * pageWidth) / canvas.width;
   let heightLeft = imgHeight;
   let position = 10;
 
-  pdf.addImage(imgData, 'PNG', 10, position, pageWidth, imgHeight);
+  pdf.addImage(imgData, 'JPEG', 10, position, pageWidth, imgHeight);
   heightLeft -= 277;
 
   while (heightLeft > 0) {
     position = heightLeft - imgHeight + 10;
     pdf.addPage();
-    pdf.addImage(imgData, 'PNG', 10, position, pageWidth, imgHeight);
+    pdf.addImage(imgData, 'JPEG', 10, position, pageWidth, imgHeight);
     heightLeft -= 277;
   }
 
@@ -366,20 +366,20 @@ export async function exportEditorialPDF() {
 
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const canvas = await html2canvas(container, { scale: 2, useCORS: true, backgroundColor: '#FAFAFA' });
-    const imgData = canvas.toDataURL('image/png');
+    const canvas = await html2canvas(container, { scale: 1.5, useCORS: true, backgroundColor: '#FAFAFA' });
+    const imgData = canvas.toDataURL('image/jpeg', 0.85);
     const pageWidth = 190;
     const imgHeight = (canvas.height * pageWidth) / canvas.width;
     let heightLeft = imgHeight;
     let position = 10;
 
-    pdf.addImage(imgData, 'PNG', 10, position, pageWidth, imgHeight);
+    pdf.addImage(imgData, 'JPEG', 10, position, pageWidth, imgHeight);
     heightLeft -= 277;
 
     while (heightLeft > 0) {
       position = heightLeft - imgHeight + 10;
       pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 10, position, pageWidth, imgHeight);
+      pdf.addImage(imgData, 'JPEG', 10, position, pageWidth, imgHeight);
       heightLeft -= 277;
     }
 
