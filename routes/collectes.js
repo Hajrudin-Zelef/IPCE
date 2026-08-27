@@ -241,7 +241,7 @@ function createCollectesRouter(db) {
     }
 
     const { statut } = req.body;
-    const allowed = ['Prevu', 'Realise', 'Offre', 'BC Signe'];
+    const allowed = ['Prévu', 'Réalisé', 'Offre', 'BC Signé'];
     if (!allowed.includes(statut)) {
       return res.status(400).json({ error: 'Statut invalide' });
     }

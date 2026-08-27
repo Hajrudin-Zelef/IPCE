@@ -1,5 +1,6 @@
 const Database = require('better-sqlite3');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const path = require('path');
 
 const DB_PATH = path.join(__dirname, '..', 'data', 'ipce.db');
@@ -149,12 +150,14 @@ function initDB() {
   }
 
   const commerciaux = ['Bilé', 'Arthème', 'Catherine'];
-  const defaultPass = process.env.DEFAULT_PASSWORD;
-  if (!defaultPass) throw new Error('DEFAULT_PASSWORD manquant dans .env');
-  const defaultHash = bcrypt.hashSync(defaultPass, 12);
   const insertUser = db.prepare('INSERT OR IGNORE INTO users (nom, password, role, must_change_password) VALUES (?, ?, ?, ?)');
   for (const nom of commerciaux) {
-    insertUser.run(nom, defaultHash, 'commercial', 1);
+    const exists = db.prepare('SELECT id FROM users WHERE nom = ?').get(nom);
+    if (exists) continue;
+    const tempPass = crypto.randomBytes(9).toString('base64url');
+    const hash = bcrypt.hashSync(tempPass, 12);
+    insertUser.run(nom, hash, 'commercial', 1);
+    console.log(`[INIT] Mot de passe temporaire pour "${nom}": ${tempPass}`);
   }
 
   return db;

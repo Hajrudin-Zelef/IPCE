@@ -406,15 +406,26 @@ function createAdminRouter(db) {
     const { confirmed } = req.body;
     if (confirmed !== true) return res.status(400).json({ error: 'Confirme avec { confirmed: true }' });
 
+    if (!process.env.ADMIN_PASSWORD) {
+      return res.status(500).json({ error: 'ADMIN_PASSWORD manquant dans .env — reset annulé' });
+    }
+
+    const bcrypt = require('bcryptjs');
+    const crypto = require('crypto');
+
     db.exec('DELETE FROM rdvs');
     db.exec('DELETE FROM collectes');
     db.prepare('UPDATE users SET must_change_password = 1').run();
     db.prepare('UPDATE users SET password = ? WHERE role = ?').run(
-      require('bcryptjs').hashSync(process.env.DEFAULT_PASSWORD || 'change_me', 12), 'commercial'
+      bcrypt.hashSync(process.env.ADMIN_PASSWORD, 12), 'admin'
     );
-    db.prepare('UPDATE users SET password = ? WHERE role = ?').run(
-      require('bcryptjs').hashSync(process.env.ADMIN_PASSWORD || 'change_me', 12), 'admin'
-    );
+
+    const commerciaux = db.prepare('SELECT id, nom FROM users WHERE role = ?').all('commercial');
+    for (const u of commerciaux) {
+      const tempPass = crypto.randomBytes(9).toString('base64url');
+      db.prepare('UPDATE users SET password = ? WHERE id = ?').run(bcrypt.hashSync(tempPass, 12), u.id);
+      console.log(`[RESET] Mot de passe temporaire pour "${u.nom}": ${tempPass}`);
+    }
 
     db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'reset_all', 'system', 'Réinitialisation complète de toutes les données');
 
@@ -458,6 +469,9 @@ function createAdminRouter(db) {
     if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
     const { role, reset_password } = req.body;
     if (role) {
+      if (!['admin', 'commercial'].includes(role)) {
+        return res.status(400).json({ error: 'Rôle invalide' });
+      }
       db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, req.params.id);
       db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'update_user', 'user:' + req.params.id, `Rôle de "${user.nom}" changé en ${role}`);
     }

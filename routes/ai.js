@@ -18,6 +18,33 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000).unref();
 
+// --- Rate Limiting for God Mode /rahian ---
+const godmodeAttempts = new Map();
+const GODMODE_ATTEMPT_WINDOW = 15 * 60 * 1000;
+const GODMODE_ATTEMPT_MAX = 5;
+
+function isGodmodeLocked(userId) {
+  const attempts = godmodeAttempts.get(userId) || [];
+  return attempts.filter(t => Date.now() - t < GODMODE_ATTEMPT_WINDOW).length >= GODMODE_ATTEMPT_MAX;
+}
+function recordGodmodeFailure(userId) {
+  const attempts = godmodeAttempts.get(userId) || [];
+  attempts.push(Date.now());
+  godmodeAttempts.set(userId, attempts);
+}
+function clearGodmodeFailures(userId) {
+  godmodeAttempts.delete(userId);
+}
+
+setInterval(() => {
+  const cutoff = Date.now() - GODMODE_ATTEMPT_WINDOW;
+  for (const [key, attempts] of godmodeAttempts) {
+    const active = attempts.filter(t => t >= cutoff);
+    if (active.length === 0) godmodeAttempts.delete(key);
+    else godmodeAttempts.set(key, active);
+  }
+}, 5 * 60 * 1000).unref();
+
 function aiRateLimit(maxPerMinute) {
   return (req, res, next) => {
     const key = `${req.user.id}`;
@@ -63,14 +90,19 @@ function createAIRouter(db, broadcast) {
     }
 
     if (cmd.startsWith('/rahian ')) {
+      if (isGodmodeLocked(req.user.id)) {
+        return res.status(429).json({ content: 'Trop de tentatives. Réessayez dans 15 minutes.', godmode: false });
+      }
       const pwd = message.trim().substring(8).trim();
       const gp = process.env.GODMODE_PASSWORD;
       if (!gp) return res.json({ content: 'God Mode non configure.', godmode: false });
       if (pwd === gp) {
+        clearGodmodeFailures(req.user.id);
         godmodeSessions.set(req.user.id, { active: true, expiresAt: Date.now() + GODMODE_DURATION });
         db.prepare("INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)").run(req.user.id, 'godmode_enable', 'system', 'God Mode active');
         return res.json({ content: 'God Mode active (30 min). Acces technique complet.', godmode: true });
       }
+      recordGodmodeFailure(req.user.id);
       db.prepare("INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)").run(req.user.id, 'godmode_fail', 'system', 'Mot de passe incorrect');
       return res.json({ content: 'Mot de passe incorrect.', godmode: false });
     }
@@ -143,11 +175,13 @@ function createAIRouter(db, broadcast) {
   });
 
   router.patch('/insights/:id/read', authenticate, (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     db.prepare("UPDATE ai_insights SET is_read = 1 WHERE id = ?").run(req.params.id);
     res.json({ ok: true });
   });
 
   router.delete('/insights/:id', authenticate, (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
     db.prepare("DELETE FROM ai_insights WHERE id = ?").run(req.params.id);
     res.json({ ok: true });
   });

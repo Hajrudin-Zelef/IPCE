@@ -20,6 +20,24 @@ function createAuthRouter(db) {
   const SECRET_WINDOW = 15 * 60 * 1000;
   const SECRET_MAX = 5;
 
+  // --- Rate limiting for 2FA endpoints ---
+  const twoFaAttempts = new Map();
+  const TWOFA_WINDOW = 15 * 60 * 1000;
+  const TWOFA_MAX = 5;
+
+  function isTwoFaLocked(userId) {
+    const attempts = twoFaAttempts.get(userId) || [];
+    return attempts.filter(t => Date.now() - t < TWOFA_WINDOW).length >= TWOFA_MAX;
+  }
+  function recordTwoFaFailure(userId) {
+    const attempts = twoFaAttempts.get(userId) || [];
+    attempts.push(Date.now());
+    twoFaAttempts.set(userId, attempts);
+  }
+  function clearTwoFaFailures(userId) {
+    twoFaAttempts.delete(userId);
+  }
+
   router.post('/login', async (req, res) => {
     const { nom, password, totp } = req.body;
     if (!nom || !password) {
@@ -100,9 +118,17 @@ function createAuthRouter(db) {
     if (!user || user.two_factor_enabled !== 1 || !user.two_factor_secret) {
       return res.status(400).json({ error: '2FA non configurée' });
     }
+
+    if (isTwoFaLocked(decoded.id)) {
+      return res.status(429).json({ error: 'Trop de tentatives. Réessayez dans 15 minutes.' });
+    }
+
     if (!verifyTOTP(user.two_factor_secret, String(code))) {
+      recordTwoFaFailure(decoded.id);
       return res.status(401).json({ error: 'Code 2FA incorrect' });
     }
+
+    clearTwoFaFailures(decoded.id);
 
     const token = jwt.sign(
       { id: user.id, nom: user.nom, role: user.role },
@@ -252,6 +278,10 @@ function createAuthRouter(db) {
       return res.status(400).json({ error: 'Code à 6 chiffres requis' });
     }
 
+    if (isTwoFaLocked(req.user.id)) {
+      return res.status(429).json({ error: 'Trop de tentatives. Réessayez dans 15 minutes.' });
+    }
+
     const user = db.prepare('SELECT two_factor_secret, two_factor_enabled FROM users WHERE id = ?').get(req.user.id);
     if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
     if (!user.two_factor_secret) {
@@ -259,9 +289,11 @@ function createAuthRouter(db) {
     }
 
     if (!verifyTOTP(user.two_factor_secret, code)) {
+      recordTwoFaFailure(req.user.id);
       return res.status(400).json({ error: 'Code incorrect. Réessayez.' });
     }
 
+    clearTwoFaFailures(req.user.id);
     db.prepare('UPDATE users SET two_factor_enabled = 1 WHERE id = ?').run(req.user.id);
     db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(
       req.user.id, 'enable_2fa', 'user:' + req.user.id, 'Authentification à deux facteurs activée'
@@ -276,6 +308,10 @@ function createAuthRouter(db) {
       return res.status(400).json({ error: 'Code à 6 chiffres requis pour désactiver' });
     }
 
+    if (isTwoFaLocked(req.user.id)) {
+      return res.status(429).json({ error: 'Trop de tentatives. Réessayez dans 15 minutes.' });
+    }
+
     const user = db.prepare('SELECT two_factor_secret, two_factor_enabled FROM users WHERE id = ?').get(req.user.id);
     if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
     if (!user.two_factor_enabled) {
@@ -283,9 +319,11 @@ function createAuthRouter(db) {
     }
 
     if (!verifyTOTP(user.two_factor_secret, code)) {
+      recordTwoFaFailure(req.user.id);
       return res.status(400).json({ error: 'Code incorrect. Réessayez.' });
     }
 
+    clearTwoFaFailures(req.user.id);
     db.prepare('UPDATE users SET two_factor_enabled = 0, two_factor_secret = NULL WHERE id = ?').run(req.user.id);
     db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(
       req.user.id, 'disable_2fa', 'user:' + req.user.id, 'Authentification à deux facteurs désactivée'
@@ -301,6 +339,16 @@ function createAuthRouter(db) {
       if (attempts.length === 0 || attempts[attempts.length - 1] < cutoff) {
         secretAttempts.delete(ip);
       }
+    }
+  }, 5 * 60 * 1000).unref();
+
+  // Periodically purge stale 2FA attempt entries.
+  setInterval(() => {
+    const cutoff = Date.now() - TWOFA_WINDOW;
+    for (const [key, attempts] of twoFaAttempts) {
+      const active = attempts.filter(t => t >= cutoff);
+      if (active.length === 0) twoFaAttempts.delete(key);
+      else twoFaAttempts.set(key, active);
     }
   }, 5 * 60 * 1000).unref();
 

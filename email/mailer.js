@@ -1,5 +1,14 @@
 const nodemailer = require('nodemailer');
 
+function escapeHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 let transporter = null;
 
 function getTransporter() {
@@ -32,7 +41,7 @@ async function sendValidationEmail({ commercialNom, ca, offres, bc, rdvCount, vi
         <h2 style="margin: 0;">📊 Collecte Validée — IPCE</h2>
       </div>
       <div style="background: #fff; padding: 20px; border: 1px solid #ddd;">
-        <p><strong>${commercialNom}</strong> a validé sa collecte :</p>
+        <p><strong>${escapeHtml(commercialNom)}</strong> a validé sa collecte :</p>
         <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
           <tr style="background: #f5f5f5;">
             <td style="padding: 10px; border: 1px solid #ddd;"><strong>CA</strong></td>
@@ -58,9 +67,9 @@ async function sendValidationEmail({ commercialNom, ca, offres, bc, rdvCount, vi
             <td style="padding: 10px; border: 1px solid #ddd;"><strong>Contacts</strong></td>
             <td style="padding: 10px; border: 1px solid #ddd;">${contacts || 0}</td>
           </tr>
-          ${zone ? `<tr style="background: #f5f5f5;"><td style="padding: 10px; border: 1px solid #ddd;"><strong>Zone</strong></td><td style="padding: 10px; border: 1px solid #ddd;">${zone}</td></tr>` : ''}
+          ${zone ? `<tr style="background: #f5f5f5;"><td style="padding: 10px; border: 1px solid #ddd;"><strong>Zone</strong></td><td style="padding: 10px; border: 1px solid #ddd;">${escapeHtml(zone)}</td></tr>` : ''}
         </table>
-        ${notes ? `<div style="background:#f9f9f9;padding:12px;border-radius:6px;margin:12px 0;"><div style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;margin-bottom:4px;">Notes</div><div style="font-size:13px;white-space:pre-wrap;">${notes}</div></div>` : ''}
+        ${notes ? `<div style="background:#f9f9f9;padding:12px;border-radius:6px;margin:12px 0;"><div style="font-size:11px;font-weight:600;color:#666;text-transform:uppercase;margin-bottom:4px;">Notes</div><div style="font-size:13px;white-space:pre-wrap;">${escapeHtml(notes)}</div></div>` : ''}
         <p style="color: #666; font-size: 12px;">Connectez-vous au panel admin pour approuver ou rejeter cette collecte.</p>
       </div>
     </div>
