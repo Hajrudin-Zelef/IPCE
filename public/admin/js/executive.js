@@ -45,7 +45,7 @@ window.__load_executive = async function() {
         <div style="position:relative; width:260px; height:260px;">
           <canvas id="exec-gauge"></canvas>
           <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none;">
-            <div style="font-size:42px; font-weight:800; color:${pctObj >= 100 ? '#059669' : '#2563EB'};">${pctRaw}%</div>
+            <div style="font-size:42px; font-weight:800; color:${pctObj >= 100 ? '#059669' : '#E31C23'};">${pctRaw}%</div>
             <div style="font-size:12px; color:#94A3B8;">${formatCA(t.ca)} / ${formatCA(objectif)}</div>
           </div>
         </div>
@@ -95,7 +95,7 @@ window.__load_executive = async function() {
         labels: ['Atteint', 'Restant'],
         datasets: [{
           data: [pctObj, 100 - pctObj],
-          backgroundColor: [pctObj >= 100 ? '#059669' : '#2563EB', '#E2E8F0'],
+          backgroundColor: [pctObj >= 100 ? '#059669' : '#E31C23', '#E2E8F0'],
           borderWidth: 0,
           circumference: 360,
         }],
@@ -124,7 +124,7 @@ window.__load_executive = async function() {
             type: 'bar',
             label: 'CA (M FCFA)',
             data: evolution.map(e => e.ca / 1e6),
-            backgroundColor: '#2563EB',
+            backgroundColor: '#E31C23',
             borderRadius: 6,
             yAxisID: 'y',
           },

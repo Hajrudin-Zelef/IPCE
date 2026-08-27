@@ -125,7 +125,7 @@
   text-transform: uppercase;
 }
 .user-avatar.admin { background: linear-gradient(135deg, #EF4444, #DC2626); }
-.user-avatar.commercial { background: linear-gradient(135deg, #3B82F6, #2563EB); }
+.user-avatar.commercial { background: linear-gradient(135deg, #EF4444, #E31C23); }
 .user-info { flex: 1; min-width: 0; }
 .user-name {
   font-size: 15px;

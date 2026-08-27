@@ -13,7 +13,7 @@
     collecte_rejected: { icon: '❌', color: '#EF4444', bg: '#FEF2F2' },
     reminder: { icon: '🔔', color: '#7C3AED', bg: '#F5F3FF' },
     system: { icon: '⚙️', color: '#64748B', bg: '#F8FAFC' },
-    info: { icon: 'ℹ️', color: '#2563EB', bg: '#EFF6FF' },
+    info: { icon: 'ℹ️', color: '#E31C23', bg: '#EFF6FF' },
   };
 
   function timeAgo(dateStr) {
@@ -393,8 +393,8 @@
         background: var(--card, #fff); color: var(--muted, #64748B); font-size: 10px; font-weight: 500;
         cursor: pointer; white-space: nowrap; transition: all 0.2s;
       }
-      .notif-filter:hover { border-color: #2563EB; color: #2563EB; }
-      .notif-filter.active { background: #2563EB; color: #fff; border-color: #2563EB; }
+      .notif-filter:hover { border-color: #E31C23; color: #E31C23; }
+      .notif-filter.active { background: #E31C23; color: #fff; border-color: #E31C23; }
       .notif-list { overflow-y: auto; max-height: 50vh; }
       .notif-empty { padding: 30px; text-align: center; color: var(--muted, #94A3B8); font-size: 12px; }
       .notif-item {
@@ -414,7 +414,7 @@
       .notif-item-time { font-size: 10px; color: var(--muted, #94A3B8); white-space: nowrap; }
       .notif-item-message { font-size: 11px; color: var(--text-secondary, #64748B); margin-top: 2px; line-height: 1.4; }
       .notif-item-link {
-        display: inline-block; margin-top: 4px; font-size: 10px; color: #2563EB;
+        display: inline-block; margin-top: 4px; font-size: 10px; color: #E31C23;
         font-weight: 600; text-decoration: none;
       }
       .notif-item-link:hover { text-decoration: underline; }

@@ -6,7 +6,7 @@ window.__load_commercial_suivi = async function() {
 
   const el = document.getElementById('section-commercial-suivi-content');
   const sorted = [...data.users].sort((a, b) => b.ca - a.ca);
-  const colors = ['#2563EB', '#7C3AED', '#059669', '#F59E0B', '#EF4444', '#EC4899'];
+  const colors = ['#E31C23', '#7C3AED', '#059669', '#F59E0B', '#EF4444', '#EC4899'];
 
   // Barre d'outils
   let toolbar = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">';
@@ -86,7 +86,7 @@ window.__load_commercial_suivi = async function() {
         labels: sorted.map(u => u.nom),
         datasets: [
           { label: 'RDV', data: sorted.map(u => u.rdvCount), backgroundColor: '#7C3AED', borderRadius: 4 },
-          { label: 'Offres', data: sorted.map(u => u.offres), backgroundColor: '#2563EB', borderRadius: 4 },
+          { label: 'Offres', data: sorted.map(u => u.offres), backgroundColor: '#E31C23', borderRadius: 4 },
           { label: 'BC', data: sorted.map(u => u.bc), backgroundColor: '#059669', borderRadius: 4 },
         ],
       },

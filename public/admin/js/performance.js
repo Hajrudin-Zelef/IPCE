@@ -5,7 +5,7 @@ window.__load_performance = async function() {
   const el = document.getElementById('section-performance-content');
   const sorted = [...data.users].sort((a, b) => b.ca - a.ca);
   const maxCA = Math.max(...sorted.map(u => u.ca), 1);
-  const colors = ['#2563EB', '#7C3AED', '#059669', '#F59E0B', '#EF4444', '#EC4899'];
+  const colors = ['#E31C23', '#7C3AED', '#059669', '#F59E0B', '#EF4444', '#EC4899'];
 
   el.innerHTML = `
     <div class="section-card" style="margin-bottom:24px;">
@@ -87,7 +87,7 @@ window.__load_performance = async function() {
       data: {
         labels: sorted.map(u => u.nom),
         datasets: [
-          { label: 'Conv RDV→Offre %', data: sorted.map(u => u.rdvCount > 0 ? ((u.offres / u.rdvCount) * 100) : 0), backgroundColor: '#2563EB', borderRadius: 4 },
+          { label: 'Conv RDV→Offre %', data: sorted.map(u => u.rdvCount > 0 ? ((u.offres / u.rdvCount) * 100) : 0), backgroundColor: '#E31C23', borderRadius: 4 },
           { label: 'Conv Offre→BC %', data: sorted.map(u => u.offres > 0 ? ((u.bc / u.offres) * 100) : 0), backgroundColor: '#059669', borderRadius: 4 },
         ],
       },

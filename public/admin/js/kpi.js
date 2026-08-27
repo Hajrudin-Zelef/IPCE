@@ -4,7 +4,7 @@ const KPI_CONFIG = {
   ca: {
     label: 'CA Equipe',
     icon: '💰',
-    color: '#2563EB',
+    color: '#E31C23',
     bg: 'rgba(37, 99, 235, 0.08)',
     format: (v) => (v / 1e6).toFixed(1) + 'M',
     objectif: 1e8,

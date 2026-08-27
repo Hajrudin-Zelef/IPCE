@@ -3,7 +3,7 @@ let chartDonut = null;
 let chartBar = null;
 
 const CHART_COLORS = {
-  primary: '#2563EB',
+  primary: '#E31C23',
   primaryLight: 'rgba(37, 99, 235, 0.1)',
   purple: '#7C3AED',
   purpleLight: 'rgba(124, 58, 237, 0.1)',

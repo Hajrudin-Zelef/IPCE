@@ -76,7 +76,7 @@
 .detail-rdv-name{font-size:13px;font-weight:600;color:var(--text)}
 .detail-rdv-meta{font-size:11px;color:var(--muted)}
 .detail-rdv-status{font-weight:600;font-size:10px;padding:1px 6px;border-radius:4px}
-.detail-rdv-status.prévu,.detail-rdv-status.prevu{background:rgba(59,130,246,.1);color:#3B82F6}
+.detail-rdv-status.prévu,.detail-rdv-status.prevu{background:rgba(59,130,246,.1);color:#EF4444}
 .detail-rdv-status.confirmé,.detail-rdv-status.confirme{background:rgba(139,92,246,.1);color:#7C3AED}
 .detail-rdv-status.terminé,.detail-rdv-status.termine{background:rgba(245,158,11,.1);color:#D97706}
 .detail-rdv-status.offre{background:rgba(16,185,129,.1);color:#059669}

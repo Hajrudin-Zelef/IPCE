@@ -112,7 +112,7 @@
   flex-shrink: 0;
   text-transform: uppercase;
 }
-.prospect-avatar.s0 { background: linear-gradient(135deg, #3B82F6, #2563EB); }
+.prospect-avatar.s0 { background: linear-gradient(135deg, #EF4444, #E31C23); }
 .prospect-avatar.s1 { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
 .prospect-avatar.s2 { background: linear-gradient(135deg, #F59E0B, #D97706); }
 .prospect-avatar.s3 { background: linear-gradient(135deg, #10B981, #059669); }
@@ -146,7 +146,7 @@
   letter-spacing: 0.02em;
   white-space: nowrap;
 }
-.prospect-status.s0 { background: rgba(37,99,235,0.1); color: #2563EB; }
+.prospect-status.s0 { background: rgba(37,99,235,0.1); color: #E31C23; }
 .prospect-status.s1 { background: rgba(139,92,246,0.1); color: #7C3AED; }
 .prospect-status.s2 { background: rgba(245,158,11,0.1); color: #D97706; }
 .prospect-status.s3 { background: rgba(16,185,129,0.1); color: #059669; }
