@@ -22,7 +22,7 @@ Login: Nom + MDP → POST /api/auth/login → succès + role=admin ?
 
 | Fichier | Modification |
 |---|---|
-| `.env` | `ADMIN_SECRET=Admin!123+` |
+| `.env` | `ADMIN_SECRET=***REDACTED***` |
 | `routes/auth.js` | `POST /verify-admin-secret` |
 | `public/index.html` | Champ MDP admin + script verification |
 | `public/admin/js/auth.js` | Guard : vérifie admin_verified, modal si absent |

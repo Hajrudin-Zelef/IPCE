@@ -11,7 +11,7 @@ const RESULTS = { success: 0, error: 0, timeouts: 0, latencies: [] };
 
 function login() {
   return new Promise((resolve, reject) => {
-    const body = JSON.stringify({ nom: 'admin', password: process.env.ADMIN_PASSWORD || 'admin123' });
+    const body = JSON.stringify({ nom: 'admin', password: process.env.ADMIN_PASSWORD });
     const req = http.request(`${BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) },
