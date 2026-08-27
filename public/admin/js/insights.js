@@ -145,7 +145,9 @@ function renderGauge(pct, cls) {
   const offset = circumference - (Math.min(pct, 100) / 100) * circumference;
   return `
     <div class="insights-gauge">
+      <div class="insights-gauge-glow ${cls}"></div>
       <svg viewBox="0 0 100 100">
+        <circle class="insights-gauge-ring ${cls}" cx="50" cy="50" r="${radius}"/>
         <circle class="insights-gauge-bg" cx="50" cy="50" r="${radius}"/>
         <circle class="insights-gauge-fill ${cls}" cx="50" cy="50" r="${radius}"
           stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>

@@ -91,22 +91,22 @@
 
     // --- Filtres ---
     html += '<div style="background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:18px;box-shadow:var(--shadow-sm);">';
-    html += '<div style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;">';
+    html += '<div style="display:flex;flex-wrap:nowrap;gap:14px;align-items:flex-end;">';
 
     // Du
-    html += '<div style="display:flex;flex-direction:column;gap:4px;">';
+    html += '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">';
     html += '<label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;">Du</label>';
     html += '<input type="date" id="hist-admin-from" value="' + esc(fromDate) + '" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);background:var(--bg);font-family:inherit;width:160px;">';
     html += '</div>';
 
     // Au
-    html += '<div style="display:flex;flex-direction:column;gap:4px;">';
+    html += '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">';
     html += '<label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;">Au</label>';
     html += '<input type="date" id="hist-admin-to" value="' + esc(toDate) + '" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);background:var(--bg);font-family:inherit;width:160px;">';
     html += '</div>';
 
     // Commercial
-    html += '<div style="display:flex;flex-direction:column;gap:4px;">';
+    html += '<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">';
     html += '<label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;">Commercial</label>';
     html += '<select id="hist-admin-comm" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);background:var(--bg);font-family:inherit;min-width:160px;">';
     html += '<option value="all"' + (commFilter === 'all' ? ' selected' : '') + '>Tous</option>';
@@ -116,10 +116,10 @@
     html += '</select></div>';
 
     // Bouton Générer
-    html += '<button onclick="HistoryAdmin.search()" style="padding:8px 20px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;font-family:inherit;white-space:nowrap;">Générer</button>';
+    html += '<button onclick="HistoryAdmin.search()" style="padding:8px 20px;background:var(--primary);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;font-family:inherit;white-space:nowrap;flex-shrink:0;">Générer</button>';
 
     // Compteur + toggle vue
-    html += '<div style="margin-left:auto;display:flex;align-items:center;gap:10px;">';
+    html += '<div style="margin-left:auto;display:flex;align-items:center;gap:10px;flex-shrink:0;">';
     html += '<div style="font-size:12px;color:var(--muted);font-weight:600;">' + filteredHistory.length + ' résultat' + (filteredHistory.length !== 1 ? 's' : '') + '</div>';
     html += '<div style="display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;">';
     html += '<button onclick="HistoryAdmin.setView(\'list\')" style="padding:4px 10px;border:none;background:' + (currentView === 'list' ? 'var(--primary)' : 'var(--card)') + ';color:' + (currentView === 'list' ? '#fff' : 'var(--text)') + ';cursor:pointer;font-size:12px;font-family:inherit;border-right:1px solid var(--border);" title="Liste">☰</button>';
@@ -195,7 +195,7 @@
           html += '<td style="padding:10px 14px;font-size:13px;text-align:right;color:var(--text);font-variant-numeric:tabular-nums;">' + (c.contacts || 0) + '</td>';
           html += '<td style="padding:10px 14px;font-size:13px;">' + (c.zone ? '<span style="background:var(--primary-light);color:var(--primary);padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700;">' + esc(c.zone) + '</span>' : '—') + '</td>';
           html += '<td style="padding:10px 14px;text-align:center;"><span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px;text-transform:lowercase;' + badgeStyle + '">' + esc(c.statut) + '</span></td>';
-          html += '<td style="padding:10px 14px;text-align:center;display:flex;gap:2px;justify-content:center;flex-wrap:wrap;">';
+          html += '<td style="padding:10px 14px;text-align:center;display:flex;gap:2px;justify-content:center;flex-wrap:nowrap;">';
           html += '<button onclick="HistoryAdmin.view(' + c.id + ')" style="border:none;background:none;cursor:pointer;font-size:14px;color:var(--primary);padding:3px 6px;border-radius:5px;transition:background 0.15s;" onmouseenter="this.style.background=\'var(--primary-light)\'" onmouseleave="this.style.background=\'\'" title="Voir">&#128065;</button>';
           html += '<button onclick="HistoryAdmin.exportPDF(' + c.id + ')" style="border:none;background:none;cursor:pointer;font-size:14px;color:#dc2626;padding:3px 6px;border-radius:5px;transition:background 0.15s;" onmouseenter="this.style.background=\'#fee2e2\'" onmouseleave="this.style.background=\'\'" title="PDF">📥</button>';
           html += '<button onclick="HistoryAdmin.exportCSV(' + c.id + ')" style="border:none;background:none;cursor:pointer;font-size:14px;color:#059669;padding:3px 6px;border-radius:5px;transition:background 0.15s;" onmouseenter="this.style.background=\'#d1fae5\'" onmouseleave="this.style.background=\'\'" title="CSV">📄</button>';

@@ -74,6 +74,13 @@ export async function loadPending() {
 
     countEl.textContent = collectes.length + ' en attente';
 
+    // Update sidebar badge
+    const sidebarBadge = document.querySelector('.sidebar-nav-badge[data-badge="pending"]');
+    if (sidebarBadge) {
+      sidebarBadge.textContent = collectes.length;
+      sidebarBadge.style.display = collectes.length > 0 ? 'flex' : 'none';
+    }
+
     if (collectes.length === 0) {
       listEl.innerHTML = '<div class="empty">Aucune collecte en attente</div>';
       return;

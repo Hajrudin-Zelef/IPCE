@@ -9,7 +9,7 @@ window.__load_performance = async function() {
 
   el.innerHTML = `
     <div class="section-card" style="margin-bottom:24px;">
-      <div class="section-card-title">Classement detaille</div>
+      <div class="section-card-title">Classement détaillé</div>
       <div style="display:grid; grid-template-columns:240px 1fr; gap:24px; align-items:start;">
         <div style="position:relative; height:240px; display:flex; align-items:center; justify-content:center;">
           <canvas id="perf-conv-donut"></canvas>

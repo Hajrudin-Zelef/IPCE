@@ -121,6 +121,12 @@
     if (countEl) {
       countEl.textContent = unreadCount > 0 ? `${unreadCount} non lue${unreadCount > 1 ? 's' : ''}` : '';
     }
+    // Update sidebar badge
+    const sidebarBadge = document.querySelector('.sidebar-nav-badge[data-badge="notifications"]');
+    if (sidebarBadge) {
+      sidebarBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+      sidebarBadge.style.display = unreadCount > 0 ? 'flex' : 'none';
+    }
   }
 
   async function fetchNotifications() {
@@ -333,9 +339,10 @@
     style.id = 'notif-styles';
     style.textContent = `
       .notif-fixed-wrapper {
-        position: static; z-index: auto;
-        display: flex; align-items: center; flex-shrink: 0;
+        position: fixed; top: 14px; right: 18px; z-index: 9998;
+        display: flex; align-items: center;
       }
+      .dashboard-header .header-right { margin-right: 56px; }
       .notif-bell {
         position: relative; cursor: pointer; width: 34px; height: 34px;
         display: flex; align-items: center; justify-content: center;
