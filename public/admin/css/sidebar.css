@@ -9,31 +9,31 @@
   --sidebar-collapsed-width: 72px;
   --sidebar-bg: #F0F3F7;
   --sidebar-border: #E2E5EA;
-  --sidebar-hover: rgba(227, 28, 35, 0.06);
-  --sidebar-active: rgba(227, 28, 35, 0.1);
-  --sidebar-active-bar: #E31C23;
+  --sidebar-hover: rgba(var(--color-primary-rgb), 0.06);
+  --sidebar-active: rgba(var(--color-primary-rgb), 0.1);
+  --sidebar-active-bar: var(--primary);
   --sidebar-text: #111827;
   --sidebar-text-muted: #6B7280;
   --sidebar-icon-size: 20px;
   --sidebar-item-height: 44px;
   --sidebar-section-gap: 8px;
   --sidebar-group-gap: 24px;
-  --sidebar-gradient-strong: rgba(227, 28, 35, 0.07);
-  --sidebar-gradient-mid: rgba(227, 28, 35, 0.03);
-  --sidebar-gradient-faint: rgba(227, 28, 35, 0.01);
+  --sidebar-gradient-strong: rgba(var(--color-primary-rgb), 0.07);
+  --sidebar-gradient-mid: rgba(var(--color-primary-rgb), 0.03);
+  --sidebar-gradient-faint: rgba(var(--color-primary-rgb), 0.01);
 }
 
 /* --- Dark Mode Variables --- */
 [data-theme="dark"] {
   --sidebar-bg: #152036;
   --sidebar-border: #1E293B;
-  --sidebar-hover: rgba(227, 28, 35, 0.15);
-  --sidebar-active: rgba(227, 28, 35, 0.2);
+  --sidebar-hover: rgba(var(--color-primary-rgb), 0.15);
+  --sidebar-active: rgba(var(--color-primary-rgb), 0.2);
   --sidebar-text: #F8FAFC;
   --sidebar-text-muted: #CBD5E1;
-  --sidebar-gradient-strong: rgba(227, 28, 35, 0.08);
-  --sidebar-gradient-mid: rgba(227, 28, 35, 0.04);
-  --sidebar-gradient-faint: rgba(227, 28, 35, 0.01);
+  --sidebar-gradient-strong: rgba(var(--color-primary-rgb), 0.08);
+  --sidebar-gradient-mid: rgba(var(--color-primary-rgb), 0.04);
+  --sidebar-gradient-faint: rgba(var(--color-primary-rgb), 0.01);
 }
 
 /* --- Sidebar Container --- */
@@ -113,7 +113,7 @@
   width: 40px;
   height: 40px;
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, #E31C23, #B91C1C);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -121,7 +121,7 @@
   font-weight: 700;
   font-size: 16px;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(227, 28, 35, 0.25);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.25);
   overflow: hidden;
 }
 
@@ -313,7 +313,7 @@
 .sidebar-footer {
   border-top: 1px solid var(--sidebar-border);
   padding: 12px 8px;
-  background: linear-gradient(135deg, rgba(227, 28, 35, 0.02) 0%, rgba(227, 28, 35, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.02) 0%, rgba(var(--color-primary-rgb), 0.05) 100%);
 }
 
 /* --- User Card --- */
@@ -335,7 +335,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #E31C23, #B91C1C);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -344,7 +344,7 @@
   font-size: 14px;
   flex-shrink: 0;
   position: relative;
-  box-shadow: 0 2px 8px rgba(227, 28, 35, 0.25);
+  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.25);
 }
 
 .sidebar-user-avatar .status-dot {

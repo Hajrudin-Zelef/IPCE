@@ -70,7 +70,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 18px 20px;
-  background: linear-gradient(135deg, rgba(227,28,35,0.03), rgba(239,68,68,0.03));
+  background: linear-gradient(135deg, rgba(var(--color-primary-rgb),0.03), rgba(var(--color-primary-light-rgb),0.03));
   border-bottom: 1px solid var(--border-light);
 }
 .inbox-card-header {
@@ -201,7 +201,7 @@
   border-radius: 50%;
   flex-shrink: 0;
 }
-.inbox-rdv-dot.Prevu { background: #E31C23; }
+.inbox-rdv-dot.Prevu { background: var(--primary); }
 .inbox-rdv-dot.Confirmé { background: #8B5CF6; }
 .inbox-rdv-dot.Terminé { background: #F59E0B; }
 .inbox-rdv-dot.Offre { background: #10B981; }
@@ -231,8 +231,8 @@
   font-weight: 600;
   text-transform: uppercase;
 }
-.inbox-rdv-statut.Prevu { background: rgba(227,28,35,0.1); color: #E31C23; }
-.inbox-rdv-statut.Confirmé { background: rgba(239,68,68,0.1); color: #7C3AED; }
+.inbox-rdv-statut.Prevu { background: rgba(var(--color-primary-rgb),0.1); color: var(--primary); }
+.inbox-rdv-statut.Confirmé { background: rgba(var(--color-primary-light-rgb),0.1); color: var(--primary); }
 .inbox-rdv-statut.Terminé { background: rgba(245,158,11,0.1); color: #D97706; }
 .inbox-rdv-statut.Offre { background: rgba(16,185,129,0.1); color: #059669; }
 .inbox-rdv-statut.BC\ Signé { background: rgba(236,72,153,0.1); color: #DB2777; }
@@ -319,7 +319,7 @@
   font-size: 13px;
   transition: background var(--transition-fast);
 }
-.validation-history-row:hover { background: rgba(227,28,35,0.03); }
+.validation-history-row:hover { background: rgba(var(--color-primary-rgb),0.03); }
 .validation-history-row:last-child { border-bottom: none; }
 .validation-history-date { color: var(--muted); font-size: 12px; }
 .validation-history-commercial { font-weight: 600; color: var(--text); }

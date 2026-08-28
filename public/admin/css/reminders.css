@@ -107,7 +107,7 @@
 .reminder-form-group textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(227,28,35,0.1);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb),0.1);
 }
 .reminder-form-group textarea {
   min-height: 60px;

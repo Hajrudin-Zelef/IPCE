@@ -7,8 +7,11 @@
   --surface: #FFFFFF;
   --surface-raised: #FFFFFF;
   --primary: #E31C23;
+  --color-primary-rgb: 227, 28, 35;
   --primary-light: #EF4444;
+  --color-primary-light-rgb: 239, 68, 68;
   --primary-dark: #B91C1C;
+  --color-primary-dark-rgb: 185, 28, 28;
   --success: #10B981;
   --success-light: #D1FAE5;
   --warning: #F59E0B;
@@ -52,8 +55,11 @@
   --surface: #161F30;
   --surface-raised: #1A2540;
   --primary: #E31C23;
+  --color-primary-rgb: 227, 28, 35;
   --primary-light: #F87171;
+  --color-primary-light-rgb: 248, 113, 113;
   --primary-dark: #B91C1C;
+  --color-primary-dark-rgb: 185, 28, 28;
   --success: #34D399;
   --success-light: rgba(52, 211, 153, 0.15);
   --warning: #FBBF24;

@@ -212,7 +212,7 @@
 
 .detail-insight {
   padding: 14px;
-  background: rgba(227, 28, 35, 0.04);
+  background: rgba(var(--color-primary-rgb), 0.04);
   border-left: 3px solid var(--primary);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   font-size: 12px;

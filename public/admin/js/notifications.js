@@ -45,13 +45,40 @@
     try { return localStorage.getItem('ipce_palette') || 'rouge'; } catch (e) { return 'rouge'; }
   }
 
+  function hexToRgb(hex) {
+    const h = hex.replace('#', '');
+    return [parseInt(h.substring(0, 2), 16), parseInt(h.substring(2, 4), 16), parseInt(h.substring(4, 6), 16)];
+  }
+
+  function rgbToHex(r, g, b) {
+    return '#' + [r, g, b].map(c => Math.max(0, Math.min(255, Math.round(c))).toString(16).padStart(2, '0')).join('');
+  }
+
+  function adjustBrightness(hex, factor) {
+    const [r, g, b] = hexToRgb(hex);
+    return rgbToHex(r + (255 - r) * factor, g + (255 - g) * factor, b + (255 - b) * factor);
+  }
+
+  function darkenColor(hex, factor) {
+    const [r, g, b] = hexToRgb(hex);
+    return rgbToHex(r * (1 - factor), g * (1 - factor), b * (1 - factor));
+  }
+
   function applyPalette(name) {
     const p = PALETTES[name];
     if (!p) return;
     const r = document.documentElement;
+    const light = adjustBrightness(p.primary, 0.35);
+    const dark = darkenColor(p.primary, 0.2);
+    const [pr, pg, pb] = hexToRgb(p.primary);
+    const [lr, lg, lb] = hexToRgb(light);
+    const [dr, dg, db] = hexToRgb(dark);
     r.style.setProperty('--primary', p.primary);
-    r.style.setProperty('--primary-light', p.light);
-    r.style.setProperty('--primary-dark', p.dark);
+    r.style.setProperty('--color-primary-rgb', `${pr}, ${pg}, ${pb}`);
+    r.style.setProperty('--primary-light', light);
+    r.style.setProperty('--color-primary-light-rgb', `${lr}, ${lg}, ${lb}`);
+    r.style.setProperty('--primary-dark', dark);
+    r.style.setProperty('--color-primary-dark-rgb', `${dr}, ${dg}, ${db}`);
     r.style.setProperty('--header-bg', `linear-gradient(135deg, ${p.primary}0a 0%, ${p.primary}06 100%)`);
     r.style.setProperty('--shadow-glow', `0 0 20px ${p.primary}40`);
     try { localStorage.setItem('ipce_palette', name); } catch (e) {}

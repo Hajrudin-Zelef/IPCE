@@ -89,7 +89,7 @@
   top: -40%; right: -10%;
   width: 180px; height: 180px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(227,28,35,.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--color-primary-rgb),.08) 0%, transparent 70%);
   filter: blur(30px);
   pointer-events: none;
   animation: insightsGlowPulse 6s ease-in-out infinite;
@@ -247,9 +247,9 @@
 .insight-icon svg { width: 20px; height: 20px; }
 .insight-card.opportunity .insight-icon { background: var(--success-light); color: var(--success); filter: drop-shadow(0 0 6px rgba(52,211,153,.25)); }
 .insight-card.attention  .insight-icon { background: var(--warning-light); color: var(--warning); filter: drop-shadow(0 0 6px rgba(251,191,36,.25)); }
-.insight-card.forecast   .insight-icon { background: rgba(227,28,35,0.08); color: var(--primary); filter: drop-shadow(0 0 6px rgba(227,28,35,.25)); }
+.insight-card.forecast   .insight-icon { background: rgba(var(--color-primary-rgb),0.08); color: var(--primary); filter: drop-shadow(0 0 6px rgba(var(--color-primary-rgb),.25)); }
 .insight-card.risk       .insight-icon { background: var(--danger-light); color: var(--danger); }
-.insight-card.metric     .insight-icon { background: rgba(239,68,68,0.1); color: #8B5CF6; }
+.insight-card.metric     .insight-icon { background: rgba(var(--color-primary-light-rgb),0.1); color: #8B5CF6; }
 
 /* Card shine sweep on hover */
 .insight-card-shine {
@@ -413,7 +413,7 @@
   animation: insightsOrbFloat 3.5s ease-in-out infinite;
 }
 .insights-actions.ai-generated .insights-actions-header {
-  background: linear-gradient(135deg, rgba(227,28,35,.04), rgba(239,68,68,.04));
+  background: linear-gradient(135deg, rgba(var(--color-primary-rgb),.04), rgba(var(--color-primary-light-rgb),.04));
 }
 .insights-actions-list {
   padding: 0 20px;
@@ -490,7 +490,7 @@
   white-space: nowrap;
 }
 .insights-ai-badge {
-  background: linear-gradient(135deg, rgba(227,28,35,.12), rgba(239,68,68,.12));
+  background: linear-gradient(135deg, rgba(var(--color-primary-rgb),.12), rgba(var(--color-primary-light-rgb),.12));
   color: var(--primary);
 }
 .insights-ai-badge svg {
@@ -583,7 +583,7 @@
   margin: 0 auto 16px;
   display: flex; align-items: center; justify-content: center;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(227,28,35,.15), rgba(239,68,68,.15));
+  background: linear-gradient(135deg, rgba(var(--color-primary-rgb),.15), rgba(var(--color-primary-light-rgb),.15));
   color: var(--primary);
   animation: insightsOrbFloat 2.5s ease-in-out infinite;
 }

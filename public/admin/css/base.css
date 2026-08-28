@@ -114,7 +114,7 @@ input, select, textarea {
 }
 
 .badge-primary {
-  background: rgba(227, 28, 35, 0.1);
+  background: rgba(var(--color-primary-rgb), 0.1);
   color: var(--primary);
 }
 

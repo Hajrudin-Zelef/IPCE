@@ -60,10 +60,10 @@
   flex-shrink: 0;
 }
 
-.leader-avatar.color-0 { background: linear-gradient(135deg, #E31C23, #EF4444); }
-.leader-avatar.color-1 { background: linear-gradient(135deg, #7C3AED, #8B5CF6); }
+.leader-avatar.color-0 { background: linear-gradient(135deg, var(--primary), var(--primary-light)); }
+.leader-avatar.color-1 { background: linear-gradient(135deg, var(--primary), #8B5CF6); }
 .leader-avatar.color-2 { background: linear-gradient(135deg, #059669, #10B981); }
-.leader-avatar.color-3 { background: linear-gradient(135deg, #DC2626, #EF4444); }
+.leader-avatar.color-3 { background: linear-gradient(135deg, #DC2626, var(--primary-light)); }
 
 .leader-info {
   flex: 1;
