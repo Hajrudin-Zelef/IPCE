@@ -39,8 +39,16 @@ window.__load_users = async function() {
             <span class="user-status-label">Identifiant</span>
             <span class="user-status-value">${escapeHtml(u.nom)}</span>
           </div>
+          <div class="user-status-row">
+            <span class="user-status-label">Email</span>
+            <span class="user-status-value ${u.email ? 'ok' : 'warning'}">${u.email ? escapeHtml(u.email) : 'Non renseigné'}</span>
+          </div>
         </div>
         <div class="user-card-actions">
+          <button class="user-action-btn" data-action="edit-email" data-id="${u.id}" data-nom="${escapeHtml(u.nom)}" data-email="${escapeHtml(u.email || '')}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Email
+          </button>
           <button class="user-action-btn" data-action="reset" data-id="${u.id}" data-nom="${escapeHtml(u.nom)}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             Réinit. mdp
@@ -219,6 +227,27 @@ window.__load_users = async function() {
         </div>
       </div>
     </div>
+
+    <!-- Edit Email Modal (hidden) -->
+    <div class="users-modal-overlay" id="users-email-modal" style="display:none">
+      <div class="users-modal">
+        <div class="users-modal-header">
+          <div class="users-modal-title">Modifier l'email</div>
+          <button class="users-modal-close" onclick="window.__closeEmailModal()">&times;</button>
+        </div>
+        <div class="users-modal-body">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Email pour <strong id="email-user-name"></strong></p>
+          <div class="users-form-group">
+            <label>Adresse email</label>
+            <input type="email" id="edit-email-value" placeholder="exemple@domaine.com" style="width:100%">
+          </div>
+        </div>
+        <div class="users-modal-actions">
+          <button class="user-action-btn" onclick="window.__closeEmailModal()">Annuler</button>
+          <button class="users-create-btn" onclick="window.__confirmEditEmail()">Enregistrer</button>
+        </div>
+      </div>
+    </div>
   `;
 };
 
@@ -270,6 +299,41 @@ window.__copySuccessPassword = function() {
     btn.classList.add('copied');
     setTimeout(() => btn.classList.remove('copied'), 1500);
   });
+};
+
+// --- Edit Email Modal ---
+let editEmailTargetId = null;
+
+window.__editUserEmail = function(id, name, currentEmail) {
+  editEmailTargetId = id;
+  document.getElementById('email-user-name').textContent = name;
+  document.getElementById('edit-email-value').value = currentEmail || '';
+  document.getElementById('users-email-modal').style.display = 'flex';
+};
+
+window.__closeEmailModal = function() {
+  document.getElementById('users-email-modal').style.display = 'none';
+  editEmailTargetId = null;
+};
+
+window.__confirmEditEmail = async function() {
+  const email = document.getElementById('edit-email-value').value.trim();
+  if (!editEmailTargetId) return;
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return alert('Format d\'email invalide');
+  }
+  try {
+    const res = await fetch('/api/admin/users/' + editEmailTargetId, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email || null })
+    });
+    const data = await res.json();
+    if (!res.ok) { alert(data.error); return; }
+    window.__closeEmailModal();
+    window.__load_users();
+  } catch { alert('Erreur serveur'); }
 };
 
 // --- Toggle Create Form ---
@@ -400,5 +464,6 @@ document.addEventListener('click', (e) => {
   const nom = btn.dataset.nom;
   if (action === 'reset') window.__resetUserPass(id, nom);
   if (action === 'delete') window.__deleteUser(id, nom);
+  if (action === 'edit-email') window.__editUserEmail(id, nom, btn.dataset.email);
 });
 // Marexsoft Corporation

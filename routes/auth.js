@@ -350,15 +350,19 @@ function createAuthRouter(db) {
     const { nom } = req.body;
     if (!nom) return res.status(400).json({ error: 'Nom requis' });
 
-    const user = db.prepare('SELECT id, nom FROM users WHERE nom = ?').get(nom);
+    const user = db.prepare('SELECT id, nom, email FROM users WHERE nom = ?').get(nom);
     if (!user) return res.json({ message: 'Si ce compte existe, un lien de réinitialisation a été envoyé.' });
 
     const token = crypto.randomBytes(32).toString('hex');
     const expires = Date.now() + 60 * 60 * 1000; // 1 heure
     db.prepare('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?').run(token, expires, user.id);
 
-    const { sendResetPasswordEmail } = require('../email/mailer');
-    await sendResetPasswordEmail({ userName: user.nom, resetToken: token });
+    if (user.email) {
+      const { sendResetPasswordEmail } = require('../email/mailer');
+      await sendResetPasswordEmail({ toEmail: user.email, userName: user.nom, resetToken: token });
+    } else {
+      console.log(`[AUTH] Utilisateur "${user.nom}" n'a pas d'email — lien non envoyé`);
+    }
 
     res.json({ message: 'Si ce compte existe, un lien de réinitialisation a été envoyé.' });
   });

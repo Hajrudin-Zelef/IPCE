@@ -92,7 +92,7 @@ async function sendValidationEmail({ commercialNom, ca, offres, bc, rdvCount, vi
   }
 }
 
-async function sendResetPasswordEmail({ userName, resetToken }) {
+async function sendResetPasswordEmail({ toEmail, userName, resetToken }) {
   if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'votre.email@gmail.com') {
     console.log('[EMAIL] Configuration non définie — email de reset non envoyé');
     return false;
@@ -121,11 +121,11 @@ async function sendResetPasswordEmail({ userName, resetToken }) {
   try {
     await mail.sendMail({
       from: `"IPCE Dashboard" <${process.env.EMAIL_USER}>`,
-      to: process.env.ADMIN_EMAIL || 'admin@ipce.com',
+      to: toEmail,
       subject: `🔑 Réinitialisation de mot de passe — ${userName}`,
       html,
     });
-    console.log(`[EMAIL] Email de reset envoyé pour ${userName}`);
+    console.log(`[EMAIL] Email de reset envoyé à ${toEmail} pour ${userName}`);
     return true;
   } catch (err) {
     console.error('[EMAIL] Erreur envoi reset:', err.message);

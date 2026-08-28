@@ -40,6 +40,9 @@ function initDB() {
   try { db.exec("ALTER TABLE users ADD COLUMN reset_token TEXT"); } catch {}
   try { db.exec("ALTER TABLE users ADD COLUMN reset_token_expires INTEGER"); } catch {}
 
+  // Add email column for password reset delivery
+  try { db.exec("ALTER TABLE users ADD COLUMN email TEXT"); } catch {}
+
   // Add collecte detail columns if they don't exist
   try { db.exec("ALTER TABLE collectes ADD COLUMN visites INTEGER DEFAULT 0"); } catch {}
   try { db.exec("ALTER TABLE collectes ADD COLUMN contacts INTEGER DEFAULT 0"); } catch {}

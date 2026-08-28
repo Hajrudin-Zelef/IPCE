@@ -482,7 +482,7 @@ function createAdminRouter(db) {
   router.patch('/users/:id', authenticate, requireRole('admin'), (req, res) => {
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
     if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
-    const { role, reset_password } = req.body;
+    const { role, reset_password, email } = req.body;
     if (role) {
       if (!['admin', 'commercial'].includes(role)) {
         return res.status(400).json({ error: 'Rôle invalide' });
@@ -490,10 +490,15 @@ function createAdminRouter(db) {
       db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, req.params.id);
       db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'update_user', 'user:' + req.params.id, `Rôle de "${user.nom}" changé en ${role}`);
     }
+    if (email !== undefined) {
+      const trimmed = (email || '').trim();
+      if (trimmed && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+        return res.status(400).json({ error: 'Format d\'email invalide' });
+      }
+      db.prepare('UPDATE users SET email = ? WHERE id = ?').run(trimmed || null, req.params.id);
+      db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'update_user', 'user:' + req.params.id, `Email de "${user.nom}" mis à jour`);
+    }
     if (reset_password) {
-      // Note: un JWT déjà émis pour cet utilisateur ne verra le nouveau
-      // must_change_password qu'à sa prochaine connexion (expiration 8h max),
-      // car le flag est porté par le token et non revérifié en DB à chaque requête.
       const bcrypt = require('bcryptjs');
       const hash = bcrypt.hashSync(reset_password, 12);
       db.prepare('UPDATE users SET password = ?, must_change_password = 1 WHERE id = ?').run(hash, req.params.id);
