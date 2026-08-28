@@ -195,13 +195,17 @@ function createAuthRouter(db) {
       return res.status(403).json({ error: 'Acces refuse' });
     }
 
-    const { nom, password, role } = req.body;
+    const { nom, password, role, email } = req.body;
     const trimmedNom = (nom || '').trim();
+    const trimmedEmail = (email || '').trim() || null;
     if (!trimmedNom || !password) {
       return res.status(400).json({ error: 'Nom et mot de passe requis' });
     }
     if (password.length < 8) {
       return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caracteres' });
+    }
+    if (trimmedEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      return res.status(400).json({ error: 'Format d\'email invalide' });
     }
 
     const existing = db.prepare('SELECT id FROM users WHERE nom = ?').get(trimmedNom);
@@ -211,7 +215,7 @@ function createAuthRouter(db) {
 
     const hash = await bcrypt.hash(password, 12);
     const userRole = role === 'admin' ? 'admin' : 'commercial';
-    const result = db.prepare('INSERT INTO users (nom, password, role, must_change_password) VALUES (?, ?, ?, ?)').run(trimmedNom, hash, userRole, 1);
+    const result = db.prepare('INSERT INTO users (nom, password, role, must_change_password, email) VALUES (?, ?, ?, ?, ?)').run(trimmedNom, hash, userRole, 1, trimmedEmail);
 
     db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'create_user', 'user:' + result.lastInsertRowid, `Création du compte "${trimmedNom}" (${userRole}) par admin — changement mdp requis`);
 

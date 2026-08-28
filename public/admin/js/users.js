@@ -146,6 +146,10 @@ window.__load_users = async function() {
               <option value="admin">Administrateur</option>
             </select>
           </div>
+          <div class="users-form-group">
+            <label>Email (optionnel)</label>
+            <input type="email" id="new-user-email" placeholder="exemple@domaine.com">
+          </div>
         </div>
         <div class="users-form-actions">
           <button class="user-action-btn" onclick="window.__toggleCreateForm()">Annuler</button>
@@ -345,6 +349,7 @@ window.__toggleCreateForm = function() {
     document.getElementById('new-user-nom').value = '';
     document.getElementById('new-user-pass').value = '';
     document.getElementById('new-user-pass').type = 'text';
+    document.getElementById('new-user-email').value = '';
   }
 };
 
@@ -353,8 +358,10 @@ window.__createUser = async function() {
   const nom = document.getElementById('new-user-nom').value.trim();
   const password = document.getElementById('new-user-pass').value;
   const role = document.getElementById('new-user-role').value;
+  const email = document.getElementById('new-user-email').value.trim();
   if (!nom || !password) return alert('Nom et mot de passe requis');
   if (password.length < 8) return alert('Le mot de passe doit contenir au moins 8 caractères');
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return alert('Format d\'email invalide');
 
   const btn = document.querySelector('.users-create-btn[onclick="window.__createUser()"]');
   if (btn) { btn.disabled = true; btn.textContent = 'Création...'; }
@@ -364,13 +371,14 @@ window.__createUser = async function() {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nom, password, role })
+      body: JSON.stringify({ nom, password, role, email: email || null })
     });
     const data = await res.json();
     if (!res.ok) { alert(data.error); return; }
     document.getElementById('new-user-nom').value = '';
     document.getElementById('new-user-pass').value = '';
     document.getElementById('new-user-pass').type = 'text';
+    document.getElementById('new-user-email').value = '';
     document.getElementById('users-create-form').style.display = 'none';
     window.__showSuccessModal(nom, role, data.tempPassword || password);
     window.__load_users();
