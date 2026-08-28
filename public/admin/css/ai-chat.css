@@ -715,4 +715,193 @@
   .ai-chunk { opacity: 1; }
   .ai-cursor { opacity: 1; animation: cursorBlink 0.7s step-end infinite !important; }
 }
+
+/* ========================================
+   PLUS BUTTON & MENU
+   ======================================== */
+
+.ai-plus-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ai-plus-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border, #E2E8F0);
+  border-radius: 10px;
+  background: var(--bg, #F8FAFC);
+  color: var(--muted, #CBD5E1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.ai-plus-btn:hover {
+  border-color: var(--primary, #1E3C72);
+  color: var(--primary, #1E3C72);
+  background: rgba(var(--color-primary-rgb), 0.04);
+}
+.ai-plus-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+[data-theme="dark"] .ai-plus-btn {
+  background: #1E293B;
+  border-color: #334155;
+  color: #94A3B8;
+}
+[data-theme="dark"] .ai-plus-btn:hover {
+  border-color: var(--primary-light);
+  color: var(--primary-light);
+}
+
+/* --- Plus Menu Dropdown --- */
+.ai-plus-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  min-width: 200px;
+  background: var(--card, #fff);
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  z-index: 10001;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px) scale(0.95);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+.ai-plus-menu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+[data-theme="dark"] .ai-plus-menu {
+  background: #0F172A;
+  border-color: #1E293B;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.ai-plus-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  color: var(--text, #0F172A);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.1s;
+  text-align: left;
+}
+.ai-plus-item:hover {
+  background: var(--bg, #F1F5F9);
+}
+[data-theme="dark"] .ai-plus-item:hover {
+  background: #1E293B;
+}
+.ai-plus-item svg {
+  width: 16px;
+  height: 16px;
+  color: var(--muted, #CBD5E1);
+  flex-shrink: 0;
+}
+.ai-plus-item-file {
+  cursor: pointer;
+}
+
+/* --- Plus Badge --- */
+.ai-plus-badge {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.ai-plus-badge.off {
+  background: var(--bg, #F1F5F9);
+  color: var(--muted, #CBD5E1);
+}
+.ai-plus-badge.on {
+  background: #DCFCE7;
+  color: #16A34A;
+}
+[data-theme="dark"] .ai-plus-badge.off {
+  background: #1E293B;
+  color: #64748B;
+}
+[data-theme="dark"] .ai-plus-badge.on {
+  background: rgba(22, 163, 74, 0.15);
+  color: #4ADE80;
+}
+
+/* --- Attached File Zone --- */
+.ai-attached-file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: var(--bg, #F8FAFC);
+  border-top: 1px solid var(--border-light, #E2E8F0);
+  font-size: 12px;
+  color: var(--text, #0F172A);
+}
+[data-theme="dark"] .ai-attached-file {
+  background: #0F172A;
+  border-color: #1E293B;
+  color: #E2E8F0;
+}
+.ai-attached-icon {
+  font-size: 14px;
+}
+.ai-attached-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+.ai-attached-remove {
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: none;
+  color: var(--muted, #CBD5E1);
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.15s;
+}
+.ai-attached-remove:hover {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+[data-theme="dark"] .ai-attached-remove:hover {
+  background: rgba(220, 38, 38, 0.15);
+  color: #F87171;
+}
+
+/* --- Input area with plus button --- */
+.ai-input-area {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-light, #E2E8F0);
+  flex-shrink: 0;
+  align-items: flex-end;
+}
 /* Marexsoft Corporation */

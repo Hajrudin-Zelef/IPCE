@@ -1,8 +1,15 @@
 // Marexsoft Corporation
 const express = require('express');
 const crypto = require('crypto');
+const multer = require('multer');
 const { authenticate } = require('../middleware/auth');
-const { chat, generateInsights, generatePredictions, generateReport, getAIErrorStats } = require('../lib/ai');
+const { chat, generateInsights, generatePredictions, generateReport, getAIErrorStats, extractFileContent } = require('../lib/ai');
+
+// Multer — memoryStorage, 5MB max
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
 
 const godmodeSessions = new Map();
 const GODMODE_DURATION = 30 * 60 * 1000;
@@ -77,9 +84,9 @@ function createAIRouter(db, broadcast) {
   });
 
   // Chat (simple, via websearch_agent)
-  router.post('/chat', authenticate, aiRateLimit(20), async (req, res) => {
+  router.post('/chat', authenticate, aiRateLimit(20), upload.single('file'), async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ error: 'Acces refuse' });
-    const { message } = req.body;
+    const { message, thinking, websearch } = req.body;
     if (!message) return res.status(400).json({ error: 'Message requis' });
 
     const gm = isGodMode(req.user.id);
@@ -133,9 +140,23 @@ function createAIRouter(db, broadcast) {
     const startTime = Date.now();
     db.prepare("INSERT INTO ai_conversations (user_id, role, message, godmode) VALUES (?, 'user', ?, ?)").run(req.user.id, message, gm ? 1 : 0);
 
+    // Extract file content if attached
+    let fileContent = null;
+    if (req.file) {
+      try {
+        fileContent = await extractFileContent(req.file);
+      } catch (e) {
+        fileContent = `[Erreur lecture fichier: ${e.message}]`;
+      }
+    }
+
     // Chat via websearch_agent
     try {
-      const result = await chat(message, [], db, gm);
+      const result = await chat(message, [], db, gm, {
+        thinking: thinking === 'true',
+        websearch: websearch === 'true',
+        fileContent,
+      });
       const responseTime = Date.now() - startTime;
       db.prepare("INSERT INTO ai_conversations (user_id, role, message, model, godmode, response_time_ms) VALUES (?, 'assistant', ?, ?, ?, ?)").run(req.user.id, result.content, result.model, gm ? 1 : 0, responseTime);
       res.json({ content: result.content, godmode: gm, model: result.model, provider: result.provider });

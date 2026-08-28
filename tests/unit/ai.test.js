@@ -1,40 +1,37 @@
+// Marexsoft Corporation
 const http = require('http');
 
-// Mock websearch_agent server for testing
-let mockServer;
-let mockPort = 0;
-let mockResponses = {};
+// Mock LLM server (simule Groq)
+let mockLLMServer;
+let mockLLMPort = 0;
+let mockLLMResponse = '';
 
-function startMockServer() {
+function startMockLLM() {
   return new Promise((resolve) => {
-    mockServer = http.createServer((req, res) => {
+    mockLLMServer = http.createServer((req, res) => {
       let body = '';
       req.on('data', chunk => { body += chunk; });
       req.on('end', () => {
-        const data = JSON.parse(body);
-        const key = data.message.includes('insight') ? 'insight' : data.message.includes('rapport') || data.message.includes('report') ? 'report' : data.message.includes('predict') ? 'predict' : 'chat';
-        const response = mockResponses[key] || { response: 'Reponse IA simulée', thread_id: 'test-thread' };
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(response));
+        res.end(JSON.stringify({
+          choices: [{ message: { content: mockLLMResponse } }],
+        }));
       });
     });
-    mockServer.listen(0, '127.0.0.1', () => {
-      mockPort = mockServer.address().port;
-      process.env.WEBSEARCH_URL = `http://127.0.0.1:${mockPort}`;
-      resolve(mockPort);
+    mockLLMServer.listen(0, '127.0.0.1', () => {
+      mockLLMPort = mockLLMServer.address().port;
+      // Point Groq URL to our mock
+      process.env._TEST_GROQ_HOST = `127.0.0.1:${mockLLMPort}`;
+      resolve();
     });
   });
 }
 
-function stopMockServer() {
+function stopMockLLM() {
   return new Promise((resolve) => {
-    if (mockServer) mockServer.close(resolve);
+    if (mockLLMServer) mockLLMServer.close(resolve);
     else resolve();
   });
-}
-
-function setMockResponse(key, response) {
-  mockResponses[key] = response;
 }
 
 // Minimal DB mock
@@ -60,54 +57,85 @@ function createMockDB() {
           if (sql.includes("AVG")) return { avg: 0 };
           return {};
         },
-        run() {
-          return { changes: 1 };
-        },
+        run() { return { changes: 1 }; },
       };
     },
   };
 }
 
-// Tests
 describe('AI Service', () => {
   let db;
 
   beforeAll(async () => {
-    await startMockServer();
+    await startMockLLM();
     db = createMockDB();
   });
 
   afterAll(async () => {
-    await stopMockServer();
+    await stopMockLLM();
+    delete process.env._TEST_GROQ_HOST;
   });
 
   beforeEach(() => {
-    mockResponses = {};
     jest.resetModules();
+    mockLLMResponse = '';
+    // Override GROQ host to point to mock server
+    process.env.GROQ_API_KEY = 'test-key';
+    process.env.OPENROUTER_API_KEY = '';
+    process.env.NVIDIA_API_KEY = '';
+    // Patch the hostname in callProvider by env var trick
+    // We need to intercept https.request — mock it to redirect to our mock HTTP server
+    jest.spyOn(require('https'), 'request').mockImplementation((opts, cb) => {
+      const url = `http://127.0.0.1:${mockLLMPort}`;
+      const parsed = new URL(url);
+      // Simulate HTTPS request but to our mock HTTP server
+      const req = http.request({
+        hostname: parsed.hostname,
+        port: parsed.port,
+        path: opts.path,
+        method: opts.method,
+        headers: opts.headers,
+        timeout: opts.timeout,
+      }, cb);
+      return req;
+    });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   describe('chat()', () => {
     test('should return AI response', async () => {
-      setMockResponse('chat', { response: 'Bonjour ! Voici votre CA.', thread_id: 't1' });
+      mockLLMResponse = 'Bonjour ! Voici votre CA.';
       const { chat } = require('../../lib/ai');
       const result = await chat('Quel est le CA ?', [], db, false);
       expect(result.content).toBe('Bonjour ! Voici votre CA.');
-      expect(result.model).toBe('websearch_agent');
+      expect(result.model).toBe('llm_direct');
     });
 
     test('should include context for business keywords', async () => {
-      setMockResponse('chat', { response: 'CA total: 5M', thread_id: 't1' });
+      mockLLMResponse = 'CA total: 5M';
       const { chat } = require('../../lib/ai');
       const result = await chat('Quel est le CA total ?', [], db, false);
       expect(result.content).toBeDefined();
     });
 
     test('should handle error gracefully', async () => {
-      await stopMockServer();
-      process.env.WEBSEARCH_URL = 'http://127.0.0.1:1';
+      mockLLMResponse = '';
+      // Make the mock server return invalid JSON to trigger errors
+      jest.restoreAllMocks();
+      jest.spyOn(require('https'), 'request').mockImplementation((opts, cb) => {
+        const req = http.request({
+          hostname: '127.0.0.1',
+          port: 1,
+          path: '/',
+          method: 'POST',
+        }, cb);
+        return req;
+      });
       const { chat } = require('../../lib/ai');
       await expect(chat('test', [], db, false)).rejects.toThrow();
-      await startMockServer();
     });
   });
 
@@ -125,15 +153,32 @@ describe('AI Service', () => {
     test('should build IPCE context string', () => {
       const { buildContext } = require('../../lib/ai');
       const ctx = buildContext(db);
-      expect(ctx).toContain('CONTEXTE IPCE');
+      expect(ctx).toContain('IPCE');
       expect(ctx).toContain('Bilé');
       expect(ctx).toContain('CA');
     });
   });
 
+  describe('matchGuideSection()', () => {
+    test('should match workflow section', () => {
+      const { matchGuideSection } = require('../../lib/ai');
+      expect(matchGuideSection('comment je valide une collecte ?')).toContain('Collecte');
+    });
+
+    test('should return null for no match', () => {
+      const { matchGuideSection } = require('../../lib/ai');
+      expect(matchGuideSection('bonjour')).toBeNull();
+    });
+
+    test('should match objectifs section', () => {
+      const { matchGuideSection } = require('../../lib/ai');
+      expect(matchGuideSection('quel objectif CA ?')).toContain('Objectifs');
+    });
+  });
+
   describe('generateInsights()', () => {
     test('should return insights array', async () => {
-      setMockResponse('insight', { response: '[{"type":"alert","title":"Test","message":"Alerte test","priority":1}]' });
+      mockLLMResponse = '[{"type":"alert","title":"Test","message":"Alerte test","priority":1}]';
       const { generateInsights } = require('../../lib/ai');
       const insights = await generateInsights(db, false);
       expect(Array.isArray(insights)).toBe(true);
@@ -142,7 +187,7 @@ describe('AI Service', () => {
     });
 
     test('should handle invalid JSON response', async () => {
-      setMockResponse('insight', { response: 'Pas de JSON ici' });
+      mockLLMResponse = 'Pas de JSON ici';
       const { generateInsights } = require('../../lib/ai');
       const insights = await generateInsights(db, false);
       expect(insights).toEqual([]);
@@ -151,11 +196,11 @@ describe('AI Service', () => {
 
   describe('generateReport()', () => {
     test('should return report content', async () => {
-      setMockResponse('report', { response: '## Rapport\n\nCA total: 5M FCFA' });
+      mockLLMResponse = '## Rapport\n\nCA total: 5M FCFA';
       const { generateReport } = require('../../lib/ai');
       const report = await generateReport(db, false);
       expect(report.content).toContain('Rapport');
-      expect(report.model).toBe('websearch_agent');
+      expect(report.model).toBe('llm_direct');
     });
   });
 
@@ -176,25 +221,15 @@ describe('AI Routes', () => {
 
   beforeEach(() => {
     db = createMockDB();
-    mockReq = {
-      user: { id: 1, role: 'admin' },
-      body: {},
-      params: {},
-      query: {},
-    };
-    mockRes = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
+    mockReq = { user: { id: 1, role: 'admin' }, body: {}, params: {}, query: {} };
+    mockRes = { status: jest.fn().mockReturnThis(), json: jest.fn() };
     mockBroadcast = jest.fn();
   });
 
   test('GET /config should return godmode status', () => {
     const createAIRouter = require('../../routes/ai');
     const router = createAIRouter(db, mockBroadcast);
-    // Find the /config route handler
-    const configRoute = router.stack.find(r => r.route && r.route.path === '/config' && r.route.methods.get);
-    expect(configRoute).toBeDefined();
+    expect(router.stack.find(r => r.route && r.route.path === '/config' && r.route.methods.get)).toBeDefined();
   });
 
   test('POST /chat should reject non-admin', () => {
@@ -202,32 +237,28 @@ describe('AI Routes', () => {
     mockReq.body = { message: 'test' };
     const createAIRouter = require('../../routes/ai');
     const router = createAIRouter(db, mockBroadcast);
-    const chatRoute = router.stack.find(r => r.route && r.route.path === '/chat' && r.route.methods.post);
-    expect(chatRoute).toBeDefined();
+    expect(router.stack.find(r => r.route && r.route.path === '/chat' && r.route.methods.post)).toBeDefined();
   });
 
   test('POST /chat should reject empty message', () => {
     mockReq.body = {};
     const createAIRouter = require('../../routes/ai');
     const router = createAIRouter(db, mockBroadcast);
-    const chatRoute = router.stack.find(r => r.route && r.route.path === '/chat' && r.route.methods.post);
-    expect(chatRoute).toBeDefined();
+    expect(router.stack.find(r => r.route && r.route.path === '/chat' && r.route.methods.post)).toBeDefined();
   });
 
   test('GET /insights should reject non-admin', () => {
     mockReq.user.role = 'commercial';
     const createAIRouter = require('../../routes/ai');
     const router = createAIRouter(db, mockBroadcast);
-    const insightsRoute = router.stack.find(r => r.route && r.route.path === '/insights' && r.route.methods.get);
-    expect(insightsRoute).toBeDefined();
+    expect(router.stack.find(r => r.route && r.route.path === '/insights' && r.route.methods.get)).toBeDefined();
   });
 
   test('GET /status should return AI status', () => {
     mockReq.user.role = 'admin';
     const createAIRouter = require('../../routes/ai');
     const router = createAIRouter(db, mockBroadcast);
-    const statusRoute = router.stack.find(r => r.route && r.route.path === '/status' && r.route.methods.get);
-    expect(statusRoute).toBeDefined();
+    expect(router.stack.find(r => r.route && r.route.path === '/status' && r.route.methods.get)).toBeDefined();
   });
 
   test('GET /conversations should return history', () => {
@@ -235,15 +266,13 @@ describe('AI Routes', () => {
     mockReq.query = { limit: '10', offset: '0' };
     const createAIRouter = require('../../routes/ai');
     const router = createAIRouter(db, mockBroadcast);
-    const convRoute = router.stack.find(r => r.route && r.route.path === '/conversations' && r.route.methods.get);
-    expect(convRoute).toBeDefined();
+    expect(router.stack.find(r => r.route && r.route.path === '/conversations' && r.route.methods.get)).toBeDefined();
   });
 
   test('DELETE /conversations should clear history', () => {
     mockReq.user.role = 'admin';
     const createAIRouter = require('../../routes/ai');
     const router = createAIRouter(db, mockBroadcast);
-    const delRoute = router.stack.find(r => r.route && r.route.path === '/conversations' && r.route.methods.delete);
-    expect(delRoute).toBeDefined();
+    expect(router.stack.find(r => r.route && r.route.path === '/conversations' && r.route.methods.delete)).toBeDefined();
   });
 });

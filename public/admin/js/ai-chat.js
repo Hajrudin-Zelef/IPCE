@@ -6,6 +6,11 @@
   let godmode = false;
   let currentAbortController = null;
 
+  // Toggle states
+  let toggleThinking = false;
+  let toggleWebsearch = false;
+  let attachedFile = null;
+
   const SUGGESTIONS = [
     'Quel est le CA total ?',
     'Quel commercial est le meilleur ?',
@@ -56,7 +61,34 @@
         <div class="ai-suggestions" id="ai-suggestions">
           ${SUGGESTIONS.map(s => `<button class="ai-suggestion" onclick="window.__aiSendSuggestion('${s}')">${s}</button>`).join('')}
         </div>
+        <div class="ai-attached-file" id="ai-attached-file" style="display:none;">
+          <span class="ai-attached-icon">📎</span>
+          <span class="ai-attached-name" id="ai-attached-name"></span>
+          <button class="ai-attached-remove" id="ai-attached-remove" title="Retirer le fichier">✕</button>
+        </div>
         <div class="ai-input-area">
+          <div class="ai-plus-wrapper">
+            <button class="ai-plus-btn" id="ai-plus-btn" title="Plus d'options">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <div class="ai-plus-menu" id="ai-plus-menu">
+              <label class="ai-plus-item ai-plus-item-file">
+                <input type="file" id="ai-file-input" accept=".txt,.csv,.md,.json,.pdf" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                <span>Joindre un fichier</span>
+              </label>
+              <button class="ai-plus-item" id="ai-toggle-thinking">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                <span>Thinking</span>
+                <span class="ai-plus-badge off" id="ai-thinking-badge">OFF</span>
+              </button>
+              <button class="ai-plus-item" id="ai-toggle-websearch">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <span>Recherche web</span>
+                <span class="ai-plus-badge off" id="ai-websearch-badge">OFF</span>
+              </button>
+            </div>
+          </div>
           <textarea class="ai-input" id="ai-input" placeholder="Posez une question..." rows="1"></textarea>
           <button class="ai-send" id="ai-send" onclick="window.__aiSend()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
@@ -67,7 +99,6 @@
   }
 
   // Sanitize HTML produced by the LLM / markdown rendering before injecting it.
-  // LLM output is untrusted (prompt injection), and `marked` passes raw HTML through.
   function sanitizeHtml(html) {
     if (typeof DOMParser === 'undefined') {
       return html
@@ -121,7 +152,6 @@
     `;
     container.appendChild(msg);
     container.scrollTop = container.scrollHeight;
-    // Apply syntax highlighting to code blocks
     if (typeof hljs !== 'undefined') {
       msg.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
     }
@@ -152,7 +182,6 @@
   }
 
   async function sendMessage(text) {
-// Marexsoft Corporation
     if (isLoading || !text.trim()) return;
     isLoading = true;
     const input = document.getElementById('ai-input');
@@ -160,13 +189,20 @@
     const status = document.getElementById('ai-status');
     input.value = '';
     input.style.height = 'auto';
-    input.type = 'text';
-    input.placeholder = 'Posez une question...';
     sendBtn.disabled = true;
     status.textContent = 'Analyse...';
 
-    addMessage('user', text);
+    addMessage('user', text + (attachedFile ? ` [📎 ${attachedFile.name}]` : ''));
     addTyping();
+
+    // Build FormData
+    const fd = new FormData();
+    fd.append('message', text);
+    fd.append('thinking', String(toggleThinking));
+    fd.append('websearch', String(toggleWebsearch));
+    if (attachedFile) {
+      fd.append('file', attachedFile);
+    }
 
     // AbortController for timeout (60s)
     currentAbortController = new AbortController();
@@ -177,9 +213,8 @@
     try {
       const res = await fetch('/api/ai/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ message: text }),
+        body: fd,
         signal: currentAbortController.signal,
       });
 
@@ -219,6 +254,10 @@
       }
     }
 
+    // Reset file after send
+    attachedFile = null;
+    updateAttachedFileUI();
+
     currentAbortController = null;
     isLoading = false;
     sendBtn.disabled = false;
@@ -240,6 +279,56 @@
     }
   }
 
+  function updateAttachedFileUI() {
+    const zone = document.getElementById('ai-attached-file');
+    const name = document.getElementById('ai-attached-name');
+    if (attachedFile) {
+      zone.style.display = '';
+      name.textContent = `📎 ${attachedFile.name}`;
+    } else {
+      zone.style.display = 'none';
+      name.textContent = '';
+    }
+  }
+
+  function togglePlusMenu() {
+    const menu = document.getElementById('ai-plus-menu');
+    menu.classList.toggle('open');
+  }
+
+  function closePlusMenu() {
+    const menu = document.getElementById('ai-plus-menu');
+    if (menu) menu.classList.remove('open');
+  }
+
+  function toggleThinkingMode() {
+    toggleThinking = !toggleThinking;
+    const badge = document.getElementById('ai-thinking-badge');
+    badge.textContent = toggleThinking ? 'ON' : 'OFF';
+    badge.className = 'ai-plus-badge ' + (toggleThinking ? 'on' : 'off');
+  }
+
+  function toggleWebsearchMode() {
+    toggleWebsearch = !toggleWebsearch;
+    const badge = document.getElementById('ai-websearch-badge');
+    badge.textContent = toggleWebsearch ? 'ON' : 'OFF';
+    badge.className = 'ai-plus-badge ' + (toggleWebsearch ? 'on' : 'off');
+  }
+
+  function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+      attachedFile = file;
+      updateAttachedFileUI();
+      closePlusMenu();
+    }
+  }
+
+  function removeAttachedFile() {
+    attachedFile = null;
+    updateAttachedFileUI();
+  }
+
   function togglePanel() {
     const panel = document.getElementById('ai-panel');
     isOpen = !isOpen;
@@ -253,6 +342,12 @@
     const fab = document.getElementById('ai-fab');
     if (panel && fab && !panel.contains(e.target) && !fab.contains(e.target)) {
       isOpen = false; panel.classList.remove('open'); document.removeEventListener('click', handleOutsideClick, true);
+    }
+    // Close plus menu on outside click
+    const menu = document.getElementById('ai-plus-menu');
+    const plusBtn = document.getElementById('ai-plus-btn');
+    if (menu && plusBtn && !menu.contains(e.target) && !plusBtn.contains(e.target)) {
+      closePlusMenu();
     }
   }
 
@@ -298,6 +393,18 @@
     const input = document.getElementById('ai-input');
     input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(input.value); } });
     input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 80) + 'px'; });
+
+    // Plus button
+    document.getElementById('ai-plus-btn').addEventListener('click', e => { e.stopPropagation(); togglePlusMenu(); });
+    // Thinking toggle
+    document.getElementById('ai-toggle-thinking').addEventListener('click', e => { e.stopPropagation(); toggleThinkingMode(); });
+    // Websearch toggle
+    document.getElementById('ai-toggle-websearch').addEventListener('click', e => { e.stopPropagation(); toggleWebsearchMode(); });
+    // File input
+    document.getElementById('ai-file-input').addEventListener('change', handleFileSelect);
+    // Remove attached file
+    document.getElementById('ai-attached-remove').addEventListener('click', removeAttachedFile);
+
     loadHistory();
   }
 
