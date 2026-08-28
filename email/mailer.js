@@ -1,4 +1,5 @@
 // Marexsoft Corporation
+const sgMail = require('@sendgrid/mail');
 const nodemailer = require('nodemailer');
 
 function escapeHtml(value) {
@@ -10,12 +11,21 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-let transporter = null;
+// --- Transport selection: SendGrid (HTTPS) or Nodemailer (SMTP) ---
+const USE_SENDGRID = process.env.EMAIL_PROVIDER === 'sendgrid' && process.env.SENDGRID_API_KEY;
 
-function getTransporter() {
-  if (transporter) return transporter;
+if (USE_SENDGRID) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  console.log('[EMAIL] Provider: SendGrid (HTTPS)');
+} else {
+  console.log('[EMAIL] Provider: Nodemailer (SMTP)');
+}
 
-  transporter = nodemailer.createTransport({
+let nodemailerTransporter = null;
+
+function getNodemailerTransporter() {
+  if (nodemailerTransporter) return nodemailerTransporter;
+  nodemailerTransporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: parseInt(process.env.EMAIL_PORT || '587'),
     secure: false,
@@ -24,17 +34,43 @@ function getTransporter() {
       pass: process.env.EMAIL_PASS,
     },
   });
-
-  return transporter;
+  return nodemailerTransporter;
 }
 
-async function sendValidationEmail({ commercialNom, ca, offres, bc, rdvCount, visites, contacts, zone, notes }) {
-  if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'votre.email@gmail.com') {
+function isConfigured() {
+  if (USE_SENDGRID) return true;
+  if (process.env.EMAIL_USER && process.env.EMAIL_USER !== 'votre.email@gmail.com') return true;
+  return false;
+}
+
+function getFrom() {
+  const name = process.env.EMAIL_FROM_NAME || 'IPCE Dashboard';
+  const address = process.env.EMAIL_FROM || process.env.EMAIL_USER || 'admin@ipce.com';
+  return `"${name}" <${address}>`;
+}
+
+async function sendEmail({ to, subject, html }) {
+  if (!isConfigured()) {
     console.log('[EMAIL] Configuration non définie — email non envoyé');
     return false;
   }
 
-  const mail = getTransporter();
+  try {
+    if (USE_SENDGRID) {
+      await sgMail.send({ to, from: getFrom(), subject, html });
+    } else {
+      await getNodemailerTransporter().sendMail({ from: getFrom(), to, subject, html });
+    }
+    return true;
+  } catch (err) {
+    console.error('[EMAIL] Erreur envoi:', err.message);
+    return false;
+  }
+}
+
+// --- Validation Email (collecte) ---
+async function sendValidationEmail({ commercialNom, ca, offres, bc, rdvCount, visites, contacts, zone, notes }) {
+  const to = process.env.ADMIN_EMAIL || 'admin@ipce.com';
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -45,7 +81,6 @@ async function sendValidationEmail({ commercialNom, ca, offres, bc, rdvCount, vi
         <p><strong>${escapeHtml(commercialNom)}</strong> a validé sa collecte :</p>
         <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
           <tr style="background: #f5f5f5;">
-// Marexsoft Corporation
             <td style="padding: 10px; border: 1px solid #ddd;"><strong>CA</strong></td>
             <td style="padding: 10px; border: 1px solid #ddd;">${(ca / 1e6).toFixed(1)}M FCFA</td>
           </tr>
@@ -77,28 +112,13 @@ async function sendValidationEmail({ commercialNom, ca, offres, bc, rdvCount, vi
     </div>
   `;
 
-  try {
-    await mail.sendMail({
-      from: `"IPCE Dashboard" <${process.env.EMAIL_USER}>`,
-      to: process.env.ADMIN_EMAIL || 'admin@ipce.com',
-      subject: `📊 Collecte validée par ${commercialNom}`,
-      html,
-    });
-    console.log(`[EMAIL] Envoyé à ${process.env.ADMIN_EMAIL} pour ${commercialNom}`);
-    return true;
-  } catch (err) {
-    console.error('[EMAIL] Erreur envoi:', err.message);
-    return false;
-  }
+  const sent = await sendEmail({ to, subject: `📊 Collecte validée par ${commercialNom}`, html });
+  if (sent) console.log(`[EMAIL] Envoyé à ${to} pour ${commercialNom}`);
+  return sent;
 }
 
+// --- Reset Password Email ---
 async function sendResetPasswordEmail({ toEmail, userName, resetToken }) {
-  if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'votre.email@gmail.com') {
-    console.log('[EMAIL] Configuration non définie — email de reset non envoyé');
-    return false;
-  }
-
-  const mail = getTransporter();
   const resetUrl = `${process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',')[0] : 'http://localhost:4600'}/reset-password.html?token=${resetToken}`;
 
   const html = `
@@ -118,19 +138,9 @@ async function sendResetPasswordEmail({ toEmail, userName, resetToken }) {
     </div>
   `;
 
-  try {
-    await mail.sendMail({
-      from: `"IPCE Dashboard" <${process.env.EMAIL_USER}>`,
-      to: toEmail,
-      subject: `🔑 Réinitialisation de mot de passe — ${userName}`,
-      html,
-    });
-    console.log(`[EMAIL] Email de reset envoyé à ${toEmail} pour ${userName}`);
-    return true;
-  } catch (err) {
-    console.error('[EMAIL] Erreur envoi reset:', err.message);
-    return false;
-  }
+  const sent = await sendEmail({ to: toEmail, subject: `🔑 Réinitialisation de mot de passe — ${userName}`, html });
+  if (sent) console.log(`[EMAIL] Email de reset envoyé à ${toEmail} pour ${userName}`);
+  return sent;
 }
 
 module.exports = { sendValidationEmail, sendResetPasswordEmail };
