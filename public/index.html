@@ -9,28 +9,91 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/admin/img/logo-ipce-192.png">
   <link rel="apple-touch-icon" href="/admin/img/logo-ipce-192.png">
   <style>
+    /* Marexsoft Corporation */
+    :root {
+      --lg-bg: linear-gradient(135deg, #1e3c72, #2a5298);
+      --lg-card: #ffffff;
+      --lg-title: #1e3c72;
+      --lg-sub: #666666;
+      --lg-label: #555555;
+      --lg-input-bg: #ffffff;
+      --lg-input-border: #dddddd;
+      --lg-input-focus: #2a5298;
+      --lg-btn: linear-gradient(135deg, #1e3c72, #2a5298);
+      --lg-btn-text: #ffffff;
+      --lg-link: #2a5298;
+      --lg-divider: #eeeeee;
+      --lg-hint: #888888;
+      --lg-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    [data-theme="dark"] {
+      --lg-bg: linear-gradient(135deg, #0a0f1e, #0f172a);
+      --lg-card: #111827;
+      --lg-title: #f1f5f9;
+      --lg-sub: #94a3b8;
+      --lg-label: #cbd5e1;
+      --lg-input-bg: #0b1120;
+      --lg-input-border: #334155;
+      --lg-input-focus: #3a5fa0;
+      --lg-btn: linear-gradient(135deg, #2a5298, #1e3c72);
+      --lg-btn-text: #ffffff;
+      --lg-link: #7ea6e0;
+      --lg-divider: #1e293b;
+      --lg-hint: #64748b;
+      --lg-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1e3c72, #2a5298); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .box { background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); width: 100%; max-width: 400px; }
-    .box h1 { text-align: center; color: #1e3c72; margin-bottom: 8px; font-size: 22px; }
-    .box p { text-align: center; color: #666; font-size: 13px; margin-bottom: 30px; }
+    body { font-family: 'Segoe UI', sans-serif; background: var(--lg-bg); min-height: 100vh; display: flex; align-items: center; justify-content: center; transition: background 0.3s ease; }
+    .box { background: var(--lg-card); padding: 40px; border-radius: 12px; box-shadow: var(--lg-shadow); width: 100%; max-width: 400px; }
+    .box h1 { text-align: center; color: var(--lg-title); margin-bottom: 8px; font-size: 22px; }
+    .box p { text-align: center; color: var(--lg-sub); font-size: 13px; margin-bottom: 30px; }
     .form-group { margin-bottom: 18px; }
-    .form-group label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 6px; }
-    .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
-    .form-group input:focus { outline: none; border-color: #2a5298; }
-    .btn { width: 100%; padding: 12px; background: linear-gradient(135deg, #1e3c72, #2a5298); color: #fff; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--lg-label); margin-bottom: 6px; }
+    .form-group input { width: 100%; padding: 12px; border: 1px solid var(--lg-input-border); border-radius: 6px; font-size: 14px; background: var(--lg-input-bg); color: var(--lg-title); transition: border-color 0.15s ease; }
+    .form-group input:focus { outline: none; border-color: var(--lg-input-focus); }
+    .btn { width: 100%; padding: 12px; background: var(--lg-btn); color: var(--lg-btn-text); border: none; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: opacity 0.15s ease; }
     .btn:hover { opacity: 0.9; }
     .error { background: #ffebee; color: #c62828; padding: 10px; border-radius: 6px; font-size: 13px; margin-bottom: 15px; display: none; }
     .success { background: #e8f5e9; color: #2e7d32; padding: 10px; border-radius: 6px; font-size: 13px; margin-bottom: 15px; display: none; }
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
     .modal-overlay.active { display: flex; }
-    .modal { background: #fff; padding: 40px; border-radius: 12px; width: 100%; max-width: 420px; }
-    .modal h2 { color: #1e3c72; margin-bottom: 5px; font-size: 18px; }
-    .modal .subtitle { color: #c62828; font-size: 13px; margin-bottom: 25px; }
+    .modal { background: var(--lg-card); padding: 40px; border-radius: 12px; width: 100%; max-width: 420px; box-shadow: var(--lg-shadow); }
+    .modal h2 { color: var(--lg-title); margin-bottom: 5px; font-size: 18px; }
+    .modal .subtitle { color: var(--lg-sub); font-size: 13px; margin-bottom: 25px; }
+    .modal .subtitle.danger { color: #c62828; }
     .warning { background: #fff3e0; color: #e65100; padding: 12px; border-radius: 6px; font-size: 12px; margin-bottom: 20px; line-height: 1.5; }
+    .link { color: var(--lg-link); font-size: 13px; text-decoration: none; }
+    .sec-box { display: none; margin-top: 20px; border-top: 1px solid var(--lg-divider); padding-top: 20px; }
+    .sec-head { text-align: center; margin-bottom: 12px; }
+    .sec-icon { font-size: 28px; }
+    .sec-title { font-size: 14px; font-weight: 700; color: var(--lg-title); margin-top: 6px; }
+    .sec-hint { font-size: 12px; color: var(--lg-hint); margin-top: 2px; }
+    .theme-toggle { position: fixed; top: 16px; right: 16px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.12); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1100; transition: all 0.2s ease; backdrop-filter: blur(6px); }
+    .theme-toggle:hover { background: rgba(255,255,255,0.22); transform: scale(1.08); }
+    .theme-toggle svg { width: 20px; height: 20px; }
+    [data-theme="light"] .icon-sun { display: none; }
+    [data-theme="dark"] .icon-moon { display: none; }
+    [data-theme="dark"] .error { background: rgba(248,113,113,0.12); color: #f87171; }
+    [data-theme="dark"] .success { background: rgba(52,211,153,0.12); color: #34d399; }
+    [data-theme="dark"] .warning { background: rgba(251,191,36,0.1); color: #fbbf24; }
+    [data-theme="dark"] .modal .subtitle.danger { color: #f87171; }
   </style>
+  <script>
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('ipce_theme'); } catch (e) {}
+      if (t !== 'dark' && t !== 'light') {
+        t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
 </head>
 <body>
+  <button type="button" class="theme-toggle" onclick="toggleTheme()" aria-label="Basculer le thème clair/sombre">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+  </button>
   <!-- Marexsoft Corporation -->
   <div class="box">
     <div style="text-align:center; margin-bottom:16px;"><img src="/admin/img/logo-ipce-192.png" alt="IPCE" width="72" height="72" style="border-radius:16px;"></div>
@@ -49,15 +112,15 @@
       <button type="submit" class="btn">Se connecter</button>
     </form>
     <div style="text-align:center; margin-top:16px;">
-      <a href="#" onclick="showForgotPassword()" style="color:#2a5298; font-size:13px; text-decoration:none;">Mot de passe oublié ?</a>
+      <a href="#" onclick="showForgotPassword()" class="link">Mot de passe oublié ?</a>
     </div>
 
     <!-- Admin Secret Box (apparaît après login admin) -->
-    <div id="admin-secret-box" style="display:none; margin-top:20px; border-top:1px solid #eee; padding-top:20px;">
-      <div style="text-align:center; margin-bottom:12px;">
-        <div style="font-size:28px;">🔐</div>
-        <div style="font-size:14px; font-weight:700; color:#1e3c72; margin-top:6px;">Vérification de sécurité</div>
-        <div style="font-size:12px; color:#888; margin-top:2px;">Renseignez le mot de passe admin pour accéder au panneau</div>
+    <div id="admin-secret-box" class="sec-box">
+      <div class="sec-head">
+        <div class="sec-icon">🔐</div>
+        <div class="sec-title">Vérification de sécurité</div>
+        <div class="sec-hint">Renseignez le mot de passe admin pour accéder au panneau</div>
       </div>
       <div class="error" id="secret-error"></div>
       <div class="form-group">
@@ -68,11 +131,11 @@
     </div>
 
     <!-- 2FA Box (apparaît si l'utilisateur a activé la double authentification) -->
-    <div id="twofa-box" style="display:none; margin-top:20px; border-top:1px solid #eee; padding-top:20px;">
-      <div style="text-align:center; margin-bottom:12px;">
-        <div style="font-size:28px;">🔢</div>
-        <div style="font-size:14px; font-weight:700; color:#1e3c72; margin-top:6px;">Authentification à deux facteurs</div>
-        <div style="font-size:12px; color:#888; margin-top:2px;">Saisissez le code à 6 chiffres de votre application</div>
+    <div id="twofa-box" class="sec-box">
+      <div class="sec-head">
+        <div class="sec-icon">🔢</div>
+        <div class="sec-title">Authentification à deux facteurs</div>
+        <div class="sec-hint">Saisissez le code à 6 chiffres de votre application</div>
       </div>
       <div class="error" id="twofa-error"></div>
       <div class="form-group">
@@ -86,7 +149,7 @@
   <div class="modal-overlay" id="change-modal">
     <div class="modal">
       <h2>Changement de mot de passe obligatoire</h2>
-      <p class="subtitle">Vous utilisez le mot de passe par defaut. Changez-le pour continuer.</p>
+      <p class="subtitle danger">Vous utilisez le mot de passe par defaut. Changez-le pour continuer.</p>
       <div class="warning">Votre nouveau mot de passe doit contenir au moins 8 caracteres et etre different de l'ancien.</div>
       <div class="error" id="change-error"></div>
       <div class="success" id="change-success"></div>
@@ -112,7 +175,7 @@
   <div class="modal-overlay" id="forgot-modal">
     <div class="modal">
       <h2>Mot de passe oublié</h2>
-      <p class="subtitle" style="color:#666;">Entrez votre nom d'utilisateur pour recevoir un lien de réinitialisation.</p>
+      <p class="subtitle">Entrez votre nom d'utilisateur pour recevoir un lien de réinitialisation.</p>
       <div class="error" id="forgot-error"></div>
       <div class="success" id="forgot-success"></div>
       <form onsubmit="doForgotPassword(event)">
@@ -123,7 +186,7 @@
         <button type="submit" class="btn">Envoyer le lien</button>
       </form>
       <div style="text-align:center; margin-top:16px;">
-        <a href="#" onclick="closeForgotModal()" style="color:#2a5298; font-size:13px; text-decoration:none;">Retour à la connexion</a>
+        <a href="#" onclick="closeForgotModal()" class="link">Retour à la connexion</a>
       </div>
     </div>
   </div>
@@ -132,7 +195,7 @@
   <div class="modal-overlay" id="reset-modal">
     <div class="modal">
       <h2>Nouveau mot de passe</h2>
-      <p class="subtitle" style="color:#666;">Entrez votre nouveau mot de passe ci-dessous.</p>
+      <p class="subtitle">Entrez votre nouveau mot de passe ci-dessous.</p>
       <div class="error" id="reset-error"></div>
       <div class="success" id="reset-success"></div>
       <form onsubmit="doResetPassword(event)">
@@ -148,12 +211,18 @@
         <button type="submit" class="btn">Réinitialiser</button>
       </form>
       <div style="text-align:center; margin-top:16px;">
-        <a href="#" onclick="closeResetModal()" style="color:#2a5298; font-size:13px; text-decoration:none;">Retour à la connexion</a>
+        <a href="#" onclick="closeResetModal()" class="link">Retour à la connexion</a>
       </div>
     </div>
   </div>
 
   <script>
+    function toggleTheme() {
+      var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('ipce_theme', next); } catch (e) {}
+    }
+
     function showError(id, msg) {
       const el = document.getElementById(id);
       el.textContent = msg;

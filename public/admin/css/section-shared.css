@@ -19,12 +19,12 @@
 .section-table{width:100%;border-collapse:collapse}
 .section-table th,.section-table td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border-light);font-size:13px}
 .section-table th{font-weight:600;color:var(--text);background:var(--bg);position:sticky;top:0}
-.section-table tr:hover td{background:rgba(37,99,235,0.04)}
+.section-table tr:hover td{background:rgba(227,28,35,0.04)}
 .section-badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
 .section-badge.success{background:var(--success-light);color:var(--success)}
 .section-badge.warning{background:var(--warning-light);color:var(--warning)}
 .section-badge.danger{background:var(--danger-light);color:var(--danger)}
-.section-badge.info{background:rgba(37,99,235,0.1);color:var(--primary)}
+.section-badge.info{background:rgba(227,28,35,0.1);color:var(--primary)}
 @keyframes sectionFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .section-animate-in{animation:sectionFadeIn 0.3s ease forwards}
 /* Marexsoft Corporation */

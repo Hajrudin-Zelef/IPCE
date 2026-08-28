@@ -147,8 +147,8 @@
   letter-spacing: 0.02em;
   white-space: nowrap;
 }
-.prospect-status.s0 { background: rgba(37,99,235,0.1); color: #E31C23; }
-.prospect-status.s1 { background: rgba(139,92,246,0.1); color: #7C3AED; }
+.prospect-status.s0 { background: rgba(227,28,35,0.1); color: #E31C23; }
+.prospect-status.s1 { background: rgba(239,68,68,0.1); color: #7C3AED; }
 .prospect-status.s2 { background: rgba(245,158,11,0.1); color: #D97706; }
 /* Marexsoft Corporation */
 .prospect-status.s3 { background: rgba(16,185,129,0.1); color: #059669; }
@@ -274,7 +274,7 @@
   transition: background var(--transition-fast);
   cursor: pointer;
 }
-.prospects-list-row:hover { background: rgba(37,99,235,0.03); }
+.prospects-list-row:hover { background: rgba(227,28,35,0.03); }
 .prospects-list-row:last-child { border-bottom: none; }
 .prospects-list-name { font-weight: 600; color: var(--text); }
 .prospects-list-commercial { color: var(--muted); }

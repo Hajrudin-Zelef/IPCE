@@ -25,7 +25,10 @@
   <script>
     (function() {
       var theme = localStorage.getItem('ipce_theme');
-      if (theme) document.documentElement.setAttribute('data-theme', theme);
+      if (theme !== 'dark' && theme !== 'light') {
+        theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', theme);
     })();
 
     window.escapeHtml = function(value) {

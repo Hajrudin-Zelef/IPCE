@@ -121,8 +121,7 @@ document.addEventListener('click', function(e) {
 
 // --- Dark Mode ---
 function initDarkMode() {
-  const saved = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', saved);
+  const saved = document.documentElement.getAttribute('data-theme') || 'light';
   updateDarkIcon(saved);
 }
 
@@ -130,7 +129,7 @@ function toggleDarkMode() {
   const current = document.documentElement.getAttribute('data-theme');
   const next = current === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('theme', next);
+  localStorage.setItem('ipce_theme', next);
   updateDarkIcon(next);
 }
 

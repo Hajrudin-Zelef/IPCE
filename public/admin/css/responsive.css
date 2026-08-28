@@ -770,12 +770,7 @@
   }
 }
 
-/* --- Prefers dark (auto) --- */
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme="light"]) {
-    /* Auto dark mode if no explicit theme set */
-  }
-}
+/* --- Prefers dark (auto) : géré par le script d'init (data-theme explicite) --- */
 
 /* --- High contrast --- */
 @media (forced-colors: active) {

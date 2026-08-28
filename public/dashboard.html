@@ -11,6 +11,16 @@
   <link rel="stylesheet" href="/commercial/css/variables.css">
   <link rel="stylesheet" href="/commercial/css/sidebar.css">
   <link rel="stylesheet" href="/commercial/css/dashboard.css">
+  <script>
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('ipce_theme'); } catch (e) {}
+      if (t !== 'dark' && t !== 'light') {
+        t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
 </head>
 <body>
   <!-- Marexsoft Corporation -->

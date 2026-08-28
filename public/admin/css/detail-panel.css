@@ -23,10 +23,10 @@
   right: -460px;
   width: 440px;
   height: 100vh;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--card);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-left: 1px solid rgba(255, 255, 255, 0.8);
+  border-left: 1px solid var(--border);
   box-shadow: -8px 0 40px rgba(0, 0, 0, 0.08);
   z-index: 100;
   overflow-y: auto;
@@ -53,7 +53,7 @@
 .detail-panel-head {
   position: sticky;
   top: 0;
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--card);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   z-index: 10;
@@ -212,7 +212,7 @@
 
 .detail-insight {
   padding: 14px;
-  background: rgba(37, 99, 235, 0.04);
+  background: rgba(227, 28, 35, 0.04);
   border-left: 3px solid var(--primary);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   font-size: 12px;

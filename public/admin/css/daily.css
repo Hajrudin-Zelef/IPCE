@@ -37,7 +37,7 @@
 .daily-chip-icon.ca    { background: var(--primary-light); color: var(--primary); }
 .daily-chip-icon.rdv   { background: var(--success-light); color: var(--success); }
 .daily-chip-icon.col   { background: rgba(245,158,11,0.15); color: var(--warning); }
-.daily-chip-icon.vis   { background: rgba(139,92,246,0.15); color: #8b5cf6; }
+.daily-chip-icon.vis   { background: rgba(239,68,68,0.15); color: #8b5cf6; }
 .daily-chip-value {
   font-size: 17px; font-weight: 800; line-height: 1.1;
   color: var(--text);

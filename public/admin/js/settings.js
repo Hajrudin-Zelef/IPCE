@@ -112,7 +112,7 @@ window.__load_settings = async function() {
                 <div class="settings-toggle-label">Mode sombre</div>
                 <div class="settings-toggle-desc">Réduit la luminosité pour les environnements sombres</div>
               </div>
-              <div class="toggle-switch ${settings.theme === 'dark' ? 'active' : ''}" id="set-theme-toggle" onclick="this.classList.toggle('active'); window.__applyTheme()"></div>
+              <div class="toggle-switch ${(settings.theme || document.documentElement.getAttribute('data-theme')) === 'dark' ? 'active' : ''}" id="set-theme-toggle" onclick="this.classList.toggle('active'); window.__applyTheme()"></div>
             </div>
           </div>
 
