@@ -29,6 +29,10 @@
 
   function buildHTML() {
     return `
+      <div class="theme-toggle-btn" id="theme-toggle" title="Changer de thème">
+        <svg class="theme-toggle-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="theme-toggle-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </div>
       <div class="notif-bell" id="notif-bell" title="Notifications">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
@@ -291,6 +295,14 @@
         togglePanel();
         return;
       }
+      const themeBtn = e.target.closest('#theme-toggle');
+      if (themeBtn) {
+        e.stopPropagation();
+        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('ipce_theme', next);
+        return;
+      }
       const filterBtn = e.target.closest('.notif-filter');
       if (filterBtn) {
         document.querySelectorAll('.notif-filter').forEach((b) => b.classList.remove('active'));
@@ -342,9 +354,25 @@
     style.textContent = `
       .notif-fixed-wrapper {
         position: fixed; top: 14px; right: 18px; z-index: 9998;
-        display: flex; align-items: center;
+        display: flex; align-items: center; gap: 6px;
       }
-      .dashboard-header .header-right { margin-right: 56px; }
+      .dashboard-header .header-right { margin-right: 120px; }
+      .theme-toggle-btn {
+        position: relative; cursor: pointer; width: 34px; height: 34px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 8px; transition: all 0.2s;
+        background: var(--card, #fff); border: 1px solid var(--border, #E2E8F0);
+        box-shadow: 0 2px 8px rgba(15,23,42,0.06);
+      }
+      .theme-toggle-btn:hover { background: var(--bg-alt, #F8FAFC); border-color: #CBD5E1; }
+      .theme-toggle-btn svg { width: 18px; height: 18px; color: var(--muted, #64748B); }
+      .theme-toggle-btn:hover svg { color: var(--text, #0F172A); }
+      [data-theme="dark"] .theme-toggle-btn { background: var(--card, #111827); border-color: var(--border, #1E293B); }
+      [data-theme="dark"] .theme-toggle-btn:hover { background: var(--bg-alt, #1E293B); border-color: var(--muted, #CBD5E1); }
+      [data-theme="dark"] .theme-toggle-btn svg { color: var(--muted, #CBD5E1); }
+      [data-theme="dark"] .theme-toggle-btn:hover svg { color: var(--text, #F8FAFC); }
+      [data-theme="light"] .theme-toggle-icon-sun { display: none; }
+      [data-theme="dark"] .theme-toggle-icon-moon { display: none; }
       .notif-bell {
         position: relative; cursor: pointer; width: 34px; height: 34px;
         display: flex; align-items: center; justify-content: center;
@@ -436,11 +464,15 @@
         .notif-panel { width: calc(100vw - 16px); right: 8px; max-height: 70vh; }
         .notif-bell { width: 32px; height: 32px; }
         .notif-bell svg { width: 16px; height: 16px; }
+        .theme-toggle-btn { width: 32px; height: 32px; }
+        .theme-toggle-btn svg { width: 16px; height: 16px; }
       }
       @media (max-width: 480px) {
         .notif-panel { width: calc(100vw - 12px); right: 6px; top: 48px; max-height: 65vh; }
         .notif-bell { width: 30px; height: 30px; }
         .notif-bell svg { width: 14px; height: 14px; }
+        .theme-toggle-btn { width: 30px; height: 30px; }
+        .theme-toggle-btn svg { width: 14px; height: 14px; }
         .notif-item { padding: 10px 12px; gap: 8px; }
       }
     `;
