@@ -119,7 +119,7 @@ window.__load_users = async function() {
           <div class="users-form-group">
             <label>Mot de passe</label>
             <div class="users-pass-field">
-              <input type="text" id="new-user-pass" placeholder="Min. 8 caractères" readonly>
+              <input type="text" id="new-user-pass" placeholder="Min. 8 caractères">
               <button type="button" class="users-pass-generate" onclick="window.__generatePassword()" title="Générer un mot de passe">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
                 Générer
@@ -164,7 +164,6 @@ window.__load_users = async function() {
         <div class="users-modal-body">
           <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Nouveau mot de passe pour <strong id="reset-user-name"></strong></p>
           <div class="users-form-group">
-// Marexsoft Corporation
             <label>Nouveau mot de passe</label>
             <input type="password" id="reset-new-pass" placeholder="Min. 8 caractères" style="width:100%">
           </div>
@@ -246,7 +245,7 @@ window.__copyPassword = function() {
   const input = document.getElementById('new-user-pass');
   if (!input.value) return alert('Générez d\'abord un mot de passe');
   navigator.clipboard.writeText(input.value).then(() => {
-    const btn = document.querySelector('.users-pass-copy');
+    const btn = document.querySelector('.users-pass-field .users-pass-copy');
     btn.classList.add('copied');
     setTimeout(() => btn.classList.remove('copied'), 1500);
   });
@@ -276,7 +275,13 @@ window.__copySuccessPassword = function() {
 // --- Toggle Create Form ---
 window.__toggleCreateForm = function() {
   const form = document.getElementById('users-create-form');
-  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  const isOpen = form.style.display !== 'none';
+  form.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    document.getElementById('new-user-nom').value = '';
+    document.getElementById('new-user-pass').value = '';
+    document.getElementById('new-user-pass').type = 'text';
+  }
 };
 
 // --- Create User ---
