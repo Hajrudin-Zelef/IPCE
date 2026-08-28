@@ -25,7 +25,7 @@
 
 /* --- Dark Mode Variables --- */
 [data-theme="dark"] {
-  --sidebar-bg: #0F172A;
+  --sidebar-bg: #152036;
   --sidebar-border: #1E293B;
   --sidebar-hover: rgba(227, 28, 35, 0.15);
   --sidebar-active: rgba(227, 28, 35, 0.2);
