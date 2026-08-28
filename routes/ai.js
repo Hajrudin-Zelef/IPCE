@@ -235,7 +235,8 @@ function createAIRouter(db, broadcast) {
     const errorStats = getAIErrorStats();
     const avgResponseTime = db.prepare("SELECT AVG(response_time_ms) as avg FROM ai_conversations WHERE role = 'assistant' AND message != 'ERROR'").get();
     res.json({
-      websearch_url: process.env.WEBSEARCH_URL || 'http://127.0.0.1:4500',
+      chat_provider: 'groq>nim>openrouter',
+      search_agent_url: process.env.WEBSEARCH_URL || 'http://127.0.0.1:4500',
       total_conversations: convCount,
       avg_response_time_ms: Math.round(avgResponseTime.avg || 0),
       errors: errorStats,
