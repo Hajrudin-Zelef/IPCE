@@ -24,8 +24,6 @@
   width: 440px;
   height: 100vh;
   background: var(--card);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
   border-left: 1px solid var(--border);
   box-shadow: -8px 0 40px rgba(0, 0, 0, 0.08);
   z-index: 100;
@@ -54,8 +52,6 @@
   position: sticky;
   top: 0;
   background: var(--card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   z-index: 10;
   padding: 20px 24px 16px;
   border-bottom: 1px solid var(--border-light);

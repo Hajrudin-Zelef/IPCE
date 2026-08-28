@@ -1,8 +1,6 @@
 /* Marexsoft Corporation */
 .dashboard-header {
   background: var(--header-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
   padding: 28px 32px;
