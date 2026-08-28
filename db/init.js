@@ -36,6 +36,10 @@ function initDB() {
   try { db.exec("ALTER TABLE users ADD COLUMN two_factor_secret TEXT"); } catch {}
   try { db.exec("ALTER TABLE users ADD COLUMN two_factor_enabled INTEGER DEFAULT 0"); } catch {}
 
+  // Add password reset columns if they don't exist
+  try { db.exec("ALTER TABLE users ADD COLUMN reset_token TEXT"); } catch {}
+  try { db.exec("ALTER TABLE users ADD COLUMN reset_token_expires INTEGER"); } catch {}
+
   // Add collecte detail columns if they don't exist
   try { db.exec("ALTER TABLE collectes ADD COLUMN visites INTEGER DEFAULT 0"); } catch {}
   try { db.exec("ALTER TABLE collectes ADD COLUMN contacts INTEGER DEFAULT 0"); } catch {}
@@ -92,7 +96,6 @@ function initDB() {
       due_date DATETIME,
       priority TEXT DEFAULT 'medium',
       completed INTEGER DEFAULT 0,
-// Marexsoft Corporation
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id)
     );

@@ -48,6 +48,9 @@
       </div>
       <button type="submit" class="btn">Se connecter</button>
     </form>
+    <div style="text-align:center; margin-top:16px;">
+      <a href="#" onclick="showForgotPassword()" style="color:#2a5298; font-size:13px; text-decoration:none;">Mot de passe oublié ?</a>
+    </div>
 
     <!-- Admin Secret Box (apparaît après login admin) -->
     <div id="admin-secret-box" style="display:none; margin-top:20px; border-top:1px solid #eee; padding-top:20px;">
@@ -102,6 +105,51 @@
         </div>
         <button type="submit" class="btn">Changer le mot de passe</button>
       </form>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal-overlay" id="forgot-modal">
+    <div class="modal">
+      <h2>Mot de passe oublié</h2>
+      <p class="subtitle" style="color:#666;">Entrez votre nom d'utilisateur pour recevoir un lien de réinitialisation.</p>
+      <div class="error" id="forgot-error"></div>
+      <div class="success" id="forgot-success"></div>
+      <form onsubmit="doForgotPassword(event)">
+        <div class="form-group">
+          <label>Nom d'utilisateur</label>
+          <input type="text" id="forgot-nom" required autocomplete="username">
+        </div>
+        <button type="submit" class="btn">Envoyer le lien</button>
+      </form>
+      <div style="text-align:center; margin-top:16px;">
+        <a href="#" onclick="closeForgotModal()" style="color:#2a5298; font-size:13px; text-decoration:none;">Retour à la connexion</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset Password Modal -->
+  <div class="modal-overlay" id="reset-modal">
+    <div class="modal">
+      <h2>Nouveau mot de passe</h2>
+      <p class="subtitle" style="color:#666;">Entrez votre nouveau mot de passe ci-dessous.</p>
+      <div class="error" id="reset-error"></div>
+      <div class="success" id="reset-success"></div>
+      <form onsubmit="doResetPassword(event)">
+        <input type="hidden" id="reset-token">
+        <div class="form-group">
+          <label>Nouveau mot de passe</label>
+          <input type="password" id="reset-new-pass" required minlength="8">
+        </div>
+        <div class="form-group">
+          <label>Confirmer le mot de passe</label>
+          <input type="password" id="reset-confirm-pass" required minlength="8">
+        </div>
+        <button type="submit" class="btn">Réinitialiser</button>
+      </form>
+      <div style="text-align:center; margin-top:16px;">
+        <a href="#" onclick="closeResetModal()" style="color:#2a5298; font-size:13px; text-decoration:none;">Retour à la connexion</a>
+      </div>
     </div>
   </div>
 
@@ -254,6 +302,93 @@
     function redirectUser(role) {
       if (role === 'admin') window.location.href = '/admin/index.html';
       else window.location.href = '/dashboard.html';
+    }
+
+    // --- Forgot Password ---
+    function showForgotPassword() {
+      document.querySelector('.box > form').style.display = 'none';
+      document.getElementById('admin-secret-box').style.display = 'none';
+      document.getElementById('twofa-box').style.display = 'none';
+      document.getElementById('forgot-modal').classList.add('active');
+      document.getElementById('forgot-nom').focus();
+    }
+
+    function closeForgotModal() {
+      document.getElementById('forgot-modal').classList.remove('active');
+      document.querySelector('.box > form').style.display = '';
+    }
+
+    async function doForgotPassword(e) {
+      e.preventDefault();
+      hideError('forgot-error');
+      document.getElementById('forgot-success').style.display = 'none';
+      const nom = document.getElementById('forgot-nom').value;
+      if (!nom) return showError('forgot-error', 'Veuillez saisir votre nom');
+
+      try {
+        const res = await fetch('/api/auth/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nom }),
+        });
+        const data = await res.json();
+        if (!res.ok) return showError('forgot-error', data.error);
+
+        // Sauvegarder le token pour l'étape suivante
+        window.__resetToken = data.token;
+        const el = document.getElementById('forgot-success');
+        el.textContent = 'Lien de réinitialisation généré. Vous pouvez créer un nouveau mot de passe.';
+        el.style.display = 'block';
+
+        setTimeout(() => {
+          document.getElementById('forgot-modal').classList.remove('active');
+          document.getElementById('reset-token').value = data.token;
+          document.getElementById('reset-modal').classList.add('active');
+          document.getElementById('reset-new-pass').focus();
+        }, 2000);
+      } catch {
+        showError('forgot-error', 'Erreur de connexion au serveur');
+      }
+    }
+
+    // --- Reset Password ---
+    function closeResetModal() {
+      document.getElementById('reset-modal').classList.remove('active');
+      document.querySelector('.box > form').style.display = '';
+    }
+
+    async function doResetPassword(e) {
+      e.preventDefault();
+      hideError('reset-error');
+      document.getElementById('reset-success').style.display = 'none';
+      const token = document.getElementById('reset-token').value;
+      const newPass = document.getElementById('reset-new-pass').value;
+      const confirm = document.getElementById('reset-confirm-pass').value;
+
+      if (newPass !== confirm) return showError('reset-error', 'Les mots de passe ne correspondent pas');
+      if (newPass.length < 8) return showError('reset-error', 'Le mot de passe doit contenir au moins 8 caractères');
+
+      try {
+        const res = await fetch('/api/auth/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, newPassword: newPass }),
+        });
+        const data = await res.json();
+        if (!res.ok) return showError('reset-error', data.error);
+
+        const el = document.getElementById('reset-success');
+        el.textContent = 'Mot de passe réinitialisé ! Redirection...';
+        el.style.display = 'block';
+
+        setTimeout(() => {
+          document.getElementById('reset-modal').classList.remove('active');
+          document.querySelector('.box > form').style.display = '';
+          document.getElementById('login-pass').value = '';
+        }, 2000);
+      } catch {
+        showError('reset-error', 'Erreur de connexion au serveur');
+      }
     }
 
     async function checkAuth() {

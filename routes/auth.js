@@ -345,6 +345,38 @@ function createAuthRouter(db) {
     res.json({ message: '2FA désactivée' });
   });
 
+  // --- Forgot Password ---
+  router.post('/forgot-password', (req, res) => {
+    const { nom } = req.body;
+    if (!nom) return res.status(400).json({ error: 'Nom requis' });
+
+    const user = db.prepare('SELECT id, nom FROM users WHERE nom = ?').get(nom);
+    if (!user) return res.json({ message: 'Si ce compte existe, un lien de réinitialisation a été envoyé.' });
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires = Date.now() + 60 * 60 * 1000; // 1 heure
+    db.prepare('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?').run(token, expires, user.id);
+
+    res.json({ message: 'Si ce compte existe, un lien de réinitialisation a été envoyé.', token, userId: user.id });
+  });
+
+  // --- Reset Password ---
+  router.post('/reset-password', (req, res) => {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) return res.status(400).json({ error: 'Token et nouveau mot de passe requis' });
+    if (newPassword.length < 8) return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères' });
+
+    const user = db.prepare('SELECT id FROM users WHERE reset_token = ? AND reset_token_expires > ?').get(token, Date.now());
+    if (!user) return res.status(400).json({ error: 'Token invalide ou expiré' });
+
+    const hash = bcrypt.hashSync(newPassword, 12);
+    db.prepare('UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL, must_change_password = 0 WHERE id = ?').run(hash, user.id);
+
+    db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(user.id, 'reset_password', 'user:' + user.id, 'Mot de passe réinitialisé via lien');
+
+    res.json({ message: 'Mot de passe réinitialisé avec succès. Vous pouvez vous connecter.' });
+  });
+
   // Periodically purge stale secret-attempt entries.
   setInterval(() => {
     const cutoff = Date.now() - SECRET_WINDOW;
@@ -368,4 +400,5 @@ function createAuthRouter(db) {
   return router;
 }
 
-module.exports = createAuthRouter;// Marexsoft Corporation
+module.exports = createAuthRouter;
+// Marexsoft Corporation
