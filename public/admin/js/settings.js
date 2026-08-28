@@ -228,24 +228,6 @@ window.__load_settings = async function() {
                 <div class="settings-card-subtitle">Informations sur la session active</div>
               </div>
             </div>
-            <div class="settings-info-grid">
-              <div class="settings-info-item">
-                <span class="settings-info-label">Session</span>
-                <span class="settings-info-value">Active</span>
-              </div>
-              <div class="settings-info-item">
-                <span class="settings-info-label">Expiration</span>
-                <span class="settings-info-value">8 heures</span>
-              </div>
-              <div class="settings-info-item">
-                <span class="settings-info-label">Cookie</span>
-                <span class="settings-info-value">HttpOnly</span>
-              </div>
-              <div class="settings-info-item">
-                <span class="settings-info-label">Rate Limit</span>
-                <span class="settings-info-value">10 req / 15 min</span>
-              </div>
-            </div>
           </div>
 
           <!-- 2FA Section -->
