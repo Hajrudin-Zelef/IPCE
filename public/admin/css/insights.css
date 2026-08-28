@@ -249,7 +249,7 @@
 .insight-card.attention  .insight-icon { background: var(--warning-light); color: var(--warning); filter: drop-shadow(0 0 6px rgba(251,191,36,.25)); }
 .insight-card.forecast   .insight-icon { background: rgba(var(--color-primary-rgb),0.08); color: var(--primary); filter: drop-shadow(0 0 6px rgba(var(--color-primary-rgb),.25)); }
 .insight-card.risk       .insight-icon { background: var(--danger-light); color: var(--danger); }
-.insight-card.metric     .insight-icon { background: rgba(var(--color-primary-light-rgb),0.1); color: #8B5CF6; }
+.insight-card.metric     .insight-icon { background: rgba(var(--color-primary-light-rgb),0.1); color: var(--primary); }
 
 /* Card shine sweep on hover */
 .insight-card-shine {
@@ -285,7 +285,7 @@
 .insight-card.attention  .insight-label { color: var(--warning); }
 .insight-card.forecast   .insight-label { color: var(--primary); }
 .insight-card.risk       .insight-label { color: var(--danger); }
-.insight-card.metric     .insight-label { color: #8B5CF6; }
+.insight-card.metric     .insight-label { color: var(--primary); }
 
 .insight-card-count {
   margin-left: auto;
@@ -324,7 +324,7 @@
 .insight-card.attention  .insight-item-dot { background: var(--warning); }
 .insight-card.forecast   .insight-item-dot { background: var(--primary); }
 .insight-card.risk       .insight-item-dot { background: var(--danger); }
-.insight-card.metric     .insight-item-dot { background: #8B5CF6; }
+.insight-card.metric     .insight-item-dot { background: var(--primary); }
 
 .insight-item-text {
   font-size: 13px;

@@ -23,7 +23,7 @@
 .prospects-kpi.kpi-total::before { background: var(--primary); }
 .prospects-kpi.kpi-val::before { background: var(--success); }
 .prospects-kpi.kpi-avg::before { background: var(--warning); }
-.prospects-kpi.kpi-conv::before { background: #8B5CF6; }
+.prospects-kpi.kpi-conv::before { background: var(--primary); }
 .prospects-kpi-label {
   font-size: 10.5px;
   font-weight: 600;
@@ -114,7 +114,7 @@
   text-transform: uppercase;
 }
 .prospect-avatar.s0 { background: linear-gradient(135deg, var(--primary-light), var(--primary)); }
-.prospect-avatar.s1 { background: linear-gradient(135deg, #8B5CF6, var(--primary)); }
+.prospect-avatar.s1 { background: linear-gradient(135deg, var(--primary), var(--primary)); }
 .prospect-avatar.s2 { background: linear-gradient(135deg, #F59E0B, #D97706); }
 .prospect-avatar.s3 { background: linear-gradient(135deg, #10B981, #059669); }
 .prospect-avatar.s4 { background: linear-gradient(135deg, #EC4899, #DB2777); }

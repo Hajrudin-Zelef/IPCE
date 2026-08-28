@@ -606,7 +606,7 @@
 }
 
 [data-theme="dark"] .ai-cursor {
-  background: linear-gradient(180deg, var(--primary-light), #A78BFA);
+  background: linear-gradient(180deg, var(--primary-light), var(--primary-light));
 }
 
 /* --- Settling effect --- */

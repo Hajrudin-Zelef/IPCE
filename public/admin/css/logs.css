@@ -196,7 +196,7 @@
 .logs-timeline-item.action-create::before { background: var(--primary); }
 .logs-timeline-item.action-delete::before { background: var(--danger); }
 .logs-timeline-item.action-update::before { background: var(--warning); }
-.logs-timeline-item.action-reset::before { background: #8B5CF6; }
+.logs-timeline-item.action-reset::before { background: var(--primary); }
 .logs-timeline-item.action-login::before { background: var(--success); }
 .logs-timeline-item.action-default::before { background: var(--muted); }
 
@@ -212,7 +212,7 @@
 .logs-timeline-icon.create { background: rgba(var(--color-primary-rgb),0.1); color: var(--primary); }
 .logs-timeline-icon.delete { background: var(--danger-light); color: var(--danger); }
 .logs-timeline-icon.update { background: var(--warning-light); color: var(--warning); }
-.logs-timeline-icon.reset { background: rgba(var(--color-primary-light-rgb),0.1); color: #8B5CF6; }
+.logs-timeline-icon.reset { background: rgba(var(--color-primary-light-rgb),0.1); color: var(--primary); }
 .logs-timeline-icon.login { background: var(--success-light); color: var(--success); }
 .logs-timeline-icon.default { background: var(--bg); color: var(--muted); }
 
@@ -242,7 +242,7 @@
 .logs-timeline-badge.create { background: rgba(var(--color-primary-rgb),0.1); color: var(--primary); }
 .logs-timeline-badge.delete { background: var(--danger-light); color: var(--danger); }
 .logs-timeline-badge.update { background: var(--warning-light); color: var(--warning); }
-.logs-timeline-badge.reset { background: rgba(var(--color-primary-light-rgb),0.1); color: #8B5CF6; }
+.logs-timeline-badge.reset { background: rgba(var(--color-primary-light-rgb),0.1); color: var(--primary); }
 .logs-timeline-badge.login { background: var(--success-light); color: var(--success); }
 .logs-timeline-badge.default { background: var(--bg); color: var(--muted); }
 .logs-timeline-detail {

@@ -37,7 +37,7 @@
 .daily-chip-icon.ca    { background: var(--primary-light); color: var(--primary); }
 .daily-chip-icon.rdv   { background: var(--success-light); color: var(--success); }
 .daily-chip-icon.col   { background: rgba(245,158,11,0.15); color: var(--warning); }
-.daily-chip-icon.vis   { background: rgba(var(--color-primary-light-rgb),0.15); color: #8b5cf6; }
+.daily-chip-icon.vis   { background: rgba(var(--color-primary-light-rgb),0.15); color: var(--primary); }
 .daily-chip-value {
   font-size: 17px; font-weight: 800; line-height: 1.1;
   color: var(--text);
@@ -250,7 +250,7 @@
 .daily-collecte-avatar {
   width: 28px; height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
   color: #fff;
   display: flex; align-items: center; justify-content: center;
   font-size: 11px;

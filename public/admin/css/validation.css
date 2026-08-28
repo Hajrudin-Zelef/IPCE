@@ -22,7 +22,7 @@
 }
 .validation-kpi.kpi-pending::before { background: var(--warning); }
 .validation-kpi.kpi-ca::before { background: var(--primary); }
-.validation-kpi.kpi-avg::before { background: #8B5CF6; }
+.validation-kpi.kpi-avg::before { background: var(--primary); }
 .validation-kpi.kpi-old::before { background: var(--danger); }
 .validation-kpi-label {
   font-size: 10.5px;
@@ -81,7 +81,7 @@
 .inbox-avatar {
   width: 40px; height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary), #8B5CF6);
+  background: linear-gradient(135deg, var(--primary), var(--primary));
   display: flex; align-items: center; justify-content: center;
   font-size: 15px; font-weight: 700;
   color: #fff;
@@ -202,7 +202,7 @@
   flex-shrink: 0;
 }
 .inbox-rdv-dot.Prevu { background: var(--primary); }
-.inbox-rdv-dot.Confirmé { background: #8B5CF6; }
+.inbox-rdv-dot.Confirmé { background: var(--primary); }
 .inbox-rdv-dot.Terminé { background: #F59E0B; }
 .inbox-rdv-dot.Offre { background: #10B981; }
 .inbox-rdv-dot.BC\ Signé { background: #EC4899; }
