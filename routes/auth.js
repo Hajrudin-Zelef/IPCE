@@ -107,7 +107,7 @@ function createAuthRouter(db) {
 
     let decoded;
     try {
-      decoded = jwt.verify(pendingToken, process.env.JWT_SECRET);
+      decoded = jwt.verify(pendingToken, process.env.JWT_SECRET, { algorithms: ['HS256'] });
     } catch {
       return res.status(401).json({ error: 'Session expirée, reconnectez-vous' });
     }
@@ -346,7 +346,7 @@ function createAuthRouter(db) {
   });
 
   // --- Forgot Password ---
-  router.post('/forgot-password', (req, res) => {
+  router.post('/forgot-password', async (req, res) => {
     const { nom } = req.body;
     if (!nom) return res.status(400).json({ error: 'Nom requis' });
 
@@ -357,7 +357,10 @@ function createAuthRouter(db) {
     const expires = Date.now() + 60 * 60 * 1000; // 1 heure
     db.prepare('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?').run(token, expires, user.id);
 
-    res.json({ message: 'Si ce compte existe, un lien de réinitialisation a été envoyé.', token, userId: user.id });
+    const { sendResetPasswordEmail } = require('../email/mailer');
+    await sendResetPasswordEmail({ userName: user.nom, resetToken: token });
+
+    res.json({ message: 'Si ce compte existe, un lien de réinitialisation a été envoyé.' });
   });
 
   // --- Reset Password ---

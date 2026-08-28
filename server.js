@@ -202,7 +202,7 @@ wss.on('connection', (ws, req) => {
     return;
   }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
     ws.userId = decoded.id;
     ws.userRole = decoded.role;
     ws.isAlive = true;

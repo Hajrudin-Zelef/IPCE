@@ -92,5 +92,46 @@ async function sendValidationEmail({ commercialNom, ca, offres, bc, rdvCount, vi
   }
 }
 
-module.exports = { sendValidationEmail };
+async function sendResetPasswordEmail({ userName, resetToken }) {
+  if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'votre.email@gmail.com') {
+    console.log('[EMAIL] Configuration non définie — email de reset non envoyé');
+    return false;
+  }
+
+  const mail = getTransporter();
+  const resetUrl = `${process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',')[0] : 'http://localhost:4600'}/reset-password.html?token=${resetToken}`;
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 20px; border-radius: 8px 8px 0 0;">
+        <h2 style="margin: 0;">🔑 Réinitialisation de mot de passe — IPCE</h2>
+      </div>
+      <div style="background: #fff; padding: 20px; border: 1px solid #ddd;">
+        <p>Bonjour <strong>${escapeHtml(userName)}</strong>,</p>
+        <p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
+        <p>Cliquez sur le bouton ci-dessous pour définir un nouveau mot de passe :</p>
+        <div style="text-align: center; margin: 24px 0;">
+          <a href="${escapeHtml(resetUrl)}" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;text-decoration:none;border-radius:6px;font-weight:600;">Réinitialiser mon mot de passe</a>
+        </div>
+        <p style="color: #666; font-size: 12px;">Ce lien expire dans 1 heure. Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
+      </div>
+    </div>
+  `;
+
+  try {
+    await mail.sendMail({
+      from: `"IPCE Dashboard" <${process.env.EMAIL_USER}>`,
+      to: process.env.ADMIN_EMAIL || 'admin@ipce.com',
+      subject: `🔑 Réinitialisation de mot de passe — ${userName}`,
+      html,
+    });
+    console.log(`[EMAIL] Email de reset envoyé pour ${userName}`);
+    return true;
+  } catch (err) {
+    console.error('[EMAIL] Erreur envoi reset:', err.message);
+    return false;
+  }
+}
+
+module.exports = { sendValidationEmail, sendResetPasswordEmail };
 // Marexsoft Corporation
