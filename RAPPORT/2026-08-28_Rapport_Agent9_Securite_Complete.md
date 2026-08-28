@@ -136,6 +136,10 @@ if (decoded.mustChangePassword) {
 | playwright.config.js | Ajouté au .gitignore |
 | Backup Mega | Archive 954 KB uploadée sur `/Root/BACKUP/` |
 | AGENTS.md | 6 règles permanentes pour opencode |
+| Session info supprimée | Section "Session/Expiration/Cookie/Rate Limit" retirée des paramètres |
+| System info nettoyée | Détails techniques (Express, SQLite, JWT) masqués — affiche juste "IPCE Dashboard" + "Actif" |
+| Sidebar gradient | Courbes décoratives avec CSS variables (light/dark mode) |
+| Dark mode sidebar redesign | Couleurs plus distinctes (#0F172A, #1E293B, #F8FAFC, #94A3B8) |
 
 ---
 
@@ -209,6 +213,9 @@ if (decoded.mustChangePassword) {
 | `f27d001` | fix(security): Plan 12 — 9 correctifs + bonus |
 | `dab6bfa` | docs: update README |
 | `ccab115` | fix(security): XSS, CORS, auth rewrite, 2FA |
+| `c22cf31` | fix(ui): remove session security info from settings |
+| `9c26585` | fix(ui): hide technical details in system info section |
+| `6206dcd` | fix(ui): redesign sidebar dark mode — cleaner colors |
 
 ---
 
@@ -216,15 +223,16 @@ if (decoded.mustChangePassword) {
 
 | Métrique | Valeur |
 |----------|--------|
-| Fichiers modifiés | 53 |
-| Lignes ajoutées | 1 200+ |
-| Lignes supprimées | 500+ |
+| Fichiers modifiés | 55 |
+| Lignes ajoutées | 1 400+ |
+| Lignes supprimées | 600+ |
 | Tests unitaires | 34/34 ✅ |
 | Vulnérabilités corrigées | 15+ |
-| Nouvelles fonctionnalités | 3 (forgot-password, compression PDF, health-check) |
+| Nouvelles fonctionnalités | 4 (forgot-password, compression PDF, health-check, sidebar gradient) |
 | Backup créé | 954 KB sur Mega |
+| Commits totaux | 21 |
 
 ---
 
-**Rapport généré le 28 Août 2026 à 11h35**
+**Rapport mis à jour le 28 Août 2026 à 12h15**
 **Agent 9 — Marexsoft Corporation**
