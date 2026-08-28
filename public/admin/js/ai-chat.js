@@ -374,7 +374,7 @@
   function init() {
     if (document.getElementById('ai-fab')) return;
 
-    // Injecter le bouton dans le notif-fixed-wrapper (à côté de la palette)
+    // Injecter le bouton dans le notif-fixed-wrapper
     const notifWrapper = document.querySelector('.notif-fixed-wrapper');
     if (notifWrapper) {
       const btn = document.createElement('button');
@@ -390,6 +390,10 @@
     panelDiv.innerHTML = buildHTML();
     const panel = panelDiv.querySelector('.ai-panel');
     if (panel) document.body.appendChild(panel);
+
+    // Panel toujours ouvert
+    isOpen = true;
+    panel.classList.add('open');
 
     const fab = document.getElementById('ai-fab');
     fab.addEventListener('click', e => { e.stopPropagation(); togglePanel(); });
