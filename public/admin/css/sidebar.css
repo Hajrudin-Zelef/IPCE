@@ -56,11 +56,11 @@
   height: 100%;
   background: linear-gradient(
     180deg,
-    rgba(227, 28, 35, 0.12) 0%,
-    rgba(227, 28, 35, 0.06) 25%,
-    rgba(227, 28, 35, 0.02) 50%,
-    rgba(227, 28, 35, 0.06) 75%,
-    rgba(227, 28, 35, 0.12) 100%
+    rgba(227, 28, 35, 0.08) 0%,
+    rgba(227, 28, 35, 0.04) 25%,
+    rgba(227, 28, 35, 0.01) 50%,
+    rgba(227, 28, 35, 0.04) 75%,
+    rgba(227, 28, 35, 0.08) 100%
   );
   border-radius: 0 50% 50% 0;
   pointer-events: none;
@@ -76,11 +76,11 @@
   height: 100%;
   background: linear-gradient(
     180deg,
-    rgba(227, 28, 35, 0.08) 0%,
-    rgba(227, 28, 35, 0.03) 30%,
+    rgba(227, 28, 35, 0.06) 0%,
+    rgba(227, 28, 35, 0.02) 30%,
     transparent 50%,
-    rgba(227, 28, 35, 0.03) 70%,
-    rgba(227, 28, 35, 0.08) 100%
+    rgba(227, 28, 35, 0.02) 70%,
+    rgba(227, 28, 35, 0.06) 100%
   );
   border-radius: 50% 0 0 50%;
   pointer-events: none;
