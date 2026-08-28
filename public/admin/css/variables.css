@@ -60,9 +60,9 @@
   --warning-light: rgba(251, 191, 36, 0.15);
   --danger: #F87171;
   --danger-light: rgba(248, 113, 113, 0.15);
-  --text: #F1F5F9;
-  --text-secondary: #CBD5E1;
-  --muted: #64748B;
+  --text: #F8FAFC;
+  --text-secondary: #E2E8F0;
+  --muted: #CBD5E1;
   --border: #1E293B;
   --border-light: #1E293B;
   --header-bg: linear-gradient(135deg, rgba(227, 28, 35, 0.04) 0%, rgba(227, 28, 35, 0.02) 100%);
@@ -160,7 +160,7 @@
 }
 
 [data-theme="dark"] .section-table th {
-  color: #94A3B8;
+  color: var(--text-secondary);
 }
 
 /* Forms */
