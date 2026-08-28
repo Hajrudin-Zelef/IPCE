@@ -7,8 +7,8 @@
 :root {
   --sidebar-width: 280px;
   --sidebar-collapsed-width: 72px;
-  --sidebar-bg: #FFFFFF;
-  --sidebar-border: #E5E7EB;
+  --sidebar-bg: #F0F3F7;
+  --sidebar-border: #E2E5EA;
   --sidebar-hover: rgba(227, 28, 35, 0.06);
   --sidebar-active: rgba(227, 28, 35, 0.1);
   --sidebar-active-bar: #E31C23;
