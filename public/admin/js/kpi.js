@@ -3,12 +3,15 @@ import { escapeHtml } from './api.js';
 
 let activeKPI = null;
 
+function getPrimary() { return getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#E31C23'; }
+function getPrimaryRgb() { return getComputedStyle(document.documentElement).getPropertyValue('--color-primary-rgb').trim() || '227,28,35'; }
+
 const KPI_CONFIG = {
   ca: {
     label: 'CA Equipe',
     icon: '💰',
-    color: '#E31C23',
-    bg: 'rgba(37, 99, 235, 0.08)',
+    get color() { return getPrimary(); },
+    get bg() { return `rgba(${getPrimaryRgb()}, 0.08)`; },
     format: (v) => (v / 1e6).toFixed(1) + 'M',
     objectif: 1e8,
     objectifLabel: '100M',
@@ -16,8 +19,8 @@ const KPI_CONFIG = {
   offres: {
     label: 'Offres',
     icon: '📋',
-    color: '#7C3AED',
-    bg: 'rgba(124, 58, 237, 0.08)',
+    get color() { return getPrimary(); },
+    get bg() { return `rgba(${getPrimaryRgb()}, 0.08)`; },
     format: (v) => v,
     objectif: 6,
     objectifLabel: '6',

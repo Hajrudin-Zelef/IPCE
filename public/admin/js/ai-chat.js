@@ -231,7 +231,7 @@
     const fab = document.getElementById('ai-fab');
     if (godmode) {
       if (title) title.textContent = 'GOD MODE';
-      if (panel) panel.style.borderColor = '#7C3AED';
+      if (panel) panel.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
       if (fab) fab.style.background = 'linear-gradient(135deg, #7C3AED, #EC4899)';
     } else {
       if (title) title.textContent = 'Assistant IA';

@@ -12,7 +12,7 @@
     collecte_pending: { icon: '⏳', color: '#F59E0B', bg: '#FFFBEB' },
     collecte_approved: { icon: '✅', color: '#059669', bg: '#ECFDF5' },
     collecte_rejected: { icon: '❌', color: '#EF4444', bg: '#FEF2F2' },
-    reminder: { icon: '🔔', color: '#7C3AED', bg: '#F5F3FF' },
+    reminder: { icon: '🔔', color: '#E31C23', bg: '#FEF2F2' },
     system: { icon: '⚙️', color: '#64748B', bg: '#F8FAFC' },
     info: { icon: 'ℹ️', color: '#E31C23', bg: '#EFF6FF' },
   };

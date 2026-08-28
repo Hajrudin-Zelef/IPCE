@@ -4,14 +4,14 @@ let chartDonut = null;
 let chartBar = null;
 
 const CHART_COLORS = {
-  primary: '#E31C23',
-  primaryLight: 'rgba(37, 99, 235, 0.1)',
-  purple: '#7C3AED',
-  purpleLight: 'rgba(124, 58, 237, 0.1)',
-  success: '#059669',
-  warning: '#F59E0B',
-  danger: '#EF4444',
-  muted: '#94A3B8',
+  get primary() { return getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#E31C23'; },
+  get primaryLight() { const [r,g,b] = (getComputedStyle(document.documentElement).getPropertyValue('--color-primary-rgb').trim() || '227,28,35').split(',').map(Number); return `rgba(${r},${g},${b},0.1)`; },
+  get purple() { return getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#7C3AED'; },
+  get purpleLight() { const [r,g,b] = (getComputedStyle(document.documentElement).getPropertyValue('--color-primary-rgb').trim() || '227,28,35').split(',').map(Number); return `rgba(${r},${g},${b},0.1)`; },
+  get success() { return '#059669'; },
+  get warning() { return '#F59E0B'; },
+  get danger() { return '#EF4444'; },
+  get muted() { return getComputedStyle(document.documentElement).getPropertyValue('--muted').trim() || '#94A3B8'; },
 };
 
 const CHART_DEFAULTS = {
