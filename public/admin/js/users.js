@@ -118,7 +118,16 @@ window.__load_users = async function() {
           </div>
           <div class="users-form-group">
             <label>Mot de passe</label>
-            <input type="password" id="new-user-pass" placeholder="Min. 8 caractères">
+            <div class="users-pass-field">
+              <input type="text" id="new-user-pass" placeholder="Min. 8 caractères" readonly>
+              <button type="button" class="users-pass-generate" onclick="window.__generatePassword()" title="Générer un mot de passe">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                Générer
+              </button>
+              <button type="button" class="users-pass-copy" onclick="window.__copyPassword()" title="Copier le mot de passe">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
           </div>
         </div>
         <div class="users-form-row">
@@ -184,12 +193,85 @@ window.__load_users = async function() {
         </div>
       </div>
     </div>
+
+    <!-- Success Modal — Mot de passe temporaire (hidden) -->
+    <div class="users-modal-overlay" id="users-success-modal" style="display:none">
+      <div class="users-modal">
+        <div class="users-modal-header" style="border-bottom-color: var(--success);">
+          <div class="users-modal-title" style="color:var(--success);">✅ Compte créé avec succès</div>
+          <button class="users-modal-close" onclick="window.__closeSuccessModal()">&times;</button>
+        </div>
+        <div class="users-modal-body">
+          <p style="font-size:13px;color:var(--muted);margin:0 0 12px">
+            Utilisateur : <strong id="success-user-name"></strong><br>
+            Rôle : <strong id="success-user-role"></strong>
+          </p>
+          <p style="font-size:12px;color:var(--muted);margin:0 0 8px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Mot de passe temporaire</p>
+          <div class="users-pass-display">
+            <input type="text" id="success-pass-value" readonly style="flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:monospace;color:var(--text);background:var(--bg);">
+            <button type="button" class="users-pass-copy" onclick="window.__copySuccessPassword()" title="Copier">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+          <p style="font-size:12px;color:var(--warning);margin:12px 0 0">⚠️ Donnez ce mot de passe au commercial. Il devra le changer à la connexion.</p>
+        </div>
+        <div class="users-modal-actions">
+          <button class="users-create-btn" onclick="window.__closeSuccessModal()">Fermer</button>
+        </div>
+      </div>
+    </div>
   `;
 };
 
 // --- State ---
 let resetTargetId = null;
 let deleteTargetId = null;
+
+// --- Generate Password ---
+window.__generatePassword = function() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*';
+  let pass = '';
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  for (let i = 0; i < 16; i++) pass += chars[array[i] % chars.length];
+  const input = document.getElementById('new-user-pass');
+  input.value = pass;
+  input.type = 'text';
+  input.focus();
+  input.select();
+};
+
+// --- Copy Password ---
+window.__copyPassword = function() {
+  const input = document.getElementById('new-user-pass');
+  if (!input.value) return alert('Générez d\'abord un mot de passe');
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = document.querySelector('.users-pass-copy');
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 1500);
+  });
+};
+
+// --- Success Modal ---
+window.__showSuccessModal = function(nom, role, tempPassword) {
+  document.getElementById('success-user-name').textContent = nom;
+  document.getElementById('success-user-role').textContent = role === 'admin' ? 'Administrateur' : 'Commercial';
+  document.getElementById('success-pass-value').value = tempPassword;
+  document.getElementById('users-success-modal').style.display = 'flex';
+};
+
+window.__closeSuccessModal = function() {
+  document.getElementById('users-success-modal').style.display = 'none';
+};
+
+window.__copySuccessPassword = function() {
+  const input = document.getElementById('success-pass-value');
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = document.querySelector('#users-success-modal .users-pass-copy');
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 1500);
+  });
+};
 
 // --- Toggle Create Form ---
 window.__toggleCreateForm = function() {
@@ -219,7 +301,9 @@ window.__createUser = async function() {
     if (!res.ok) { alert(data.error); return; }
     document.getElementById('new-user-nom').value = '';
     document.getElementById('new-user-pass').value = '';
+    document.getElementById('new-user-pass').type = 'text';
     document.getElementById('users-create-form').style.display = 'none';
+    window.__showSuccessModal(nom, role, data.tempPassword || password);
     window.__load_users();
   } catch { alert('Erreur serveur'); }
   finally { if (btn) { btn.disabled = false; btn.textContent = 'Créer'; } }

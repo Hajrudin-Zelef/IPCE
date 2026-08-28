@@ -260,6 +260,85 @@
   margin-top: 4px;
 }
 
+/* --- Password Field with Generate/Copy --- */
+.users-pass-field {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.users-pass-field input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: monospace;
+  color: var(--text);
+  background: var(--card);
+  transition: border-color var(--transition-fast);
+}
+.users-pass-field input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+.users-pass-generate {
+  padding: 8px 12px;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-sm);
+  background: rgba(37,99,235,0.08);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+}
+.users-pass-generate:hover {
+  background: var(--primary);
+  color: white;
+}
+.users-pass-generate svg {
+  width: 14px;
+  height: 14px;
+}
+.users-pass-copy {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.users-pass-copy:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.users-pass-copy.copied {
+  border-color: var(--success);
+  color: var(--success);
+  background: rgba(16,185,129,0.08);
+}
+.users-pass-copy svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* --- Success Modal Pass Display --- */
+.users-pass-display {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+
 /* --- Modal --- */
 .users-modal-overlay {
   position: fixed;
