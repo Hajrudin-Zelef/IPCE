@@ -89,6 +89,15 @@ function authenticate(req, res, next) {
   // round-trip on every authenticated request. The claim is refreshed on
   // login and on password change, so staleness is bounded by token lifetime.
   if (!PASSWORD_FREE_PATHS.has(req.path) && decoded.mustChangePassword) {
+    // Double-check DB in case the JWT is stale after password change
+    const db = req.app && req.app.get ? req.app.get('db') : null;
+    if (db) {
+      const row = db.prepare('SELECT must_change_password FROM users WHERE id = ?').get(decoded.id);
+      if (row && row.must_change_password === 0) {
+        // DB says password was changed — JWT is stale, allow the request
+        return next();
+      }
+    }
     return res.status(403).json({ error: 'Veuillez d\'abord changer votre mot de passe' });
   }
 
@@ -104,4 +113,5 @@ function requireRole(role) {
   };
 }
 
-module.exports = { authenticate, requireRole, revokeToken, isTokenRevoked };// Marexsoft Corporation
+module.exports = { authenticate, requireRole, revokeToken, isTokenRevoked };
+// Marexsoft Corporation
