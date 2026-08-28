@@ -20,14 +20,13 @@
 
   function buildHTML() {
     return `
-      <button class="ai-fab" id="ai-fab" title="Assistant IA">
+      <button class="ai-header-trigger" id="ai-fab" title="Assistant IA">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2a3 3 0 00-3 3v1a3 3 0 006 0V5a3 3 0 00-3-3z"/>
           <path d="M19 21v-2a4 4 0 00-3-3.87"/>
           <path d="M5 21v-2a4 4 0 013-3.87"/>
           <line x1="12" y1="11" x2="12" y2="17"/>
         </svg>
-        <span class="ai-fab-badge" id="ai-fab-badge"></span>
       </button>
       <div class="ai-panel" id="ai-panel">
         <div class="ai-header">
@@ -343,7 +342,6 @@
     if (panel && fab && !panel.contains(e.target) && !fab.contains(e.target)) {
       isOpen = false; panel.classList.remove('open'); document.removeEventListener('click', handleOutsideClick, true);
     }
-    // Close plus menu on outside click
     const menu = document.getElementById('ai-plus-menu');
     const plusBtn = document.getElementById('ai-plus-btn');
     if (menu && plusBtn && !menu.contains(e.target) && !plusBtn.contains(e.target)) {
@@ -375,13 +373,25 @@
 
   function init() {
     if (document.getElementById('ai-fab')) return;
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = buildHTML();
-    document.body.appendChild(wrapper.firstElementChild);
-    document.body.appendChild(wrapper);
+
+    // Injecter le bouton dans le notif-fixed-wrapper (à côté de la palette)
+    const notifWrapper = document.querySelector('.notif-fixed-wrapper');
+    if (notifWrapper) {
+      const btn = document.createElement('button');
+      btn.className = 'ai-header-trigger';
+      btn.id = 'ai-fab';
+      btn.title = 'Assistant IA';
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 00-3 3v1a3 3 0 006 0V5a3 3 0 00-3-3z"/><path d="M19 21v-2a4 4 0 00-3-3.87"/><path d="M5 21v-2a4 4 0 013-3.87"/><line x1="12" y1="11" x2="12" y2="17"/></svg>`;
+      notifWrapper.insertBefore(btn, notifWrapper.firstChild);
+    }
+
+    // Injecter le panel dans le body
+    const panelDiv = document.createElement('div');
+    panelDiv.innerHTML = buildHTML();
+    const panel = panelDiv.querySelector('.ai-panel');
+    if (panel) document.body.appendChild(panel);
+
     const fab = document.getElementById('ai-fab');
-    const panel = document.getElementById('ai-panel');
-    if (panel && panel.parentElement !== document.body) document.body.appendChild(panel);
     fab.addEventListener('click', e => { e.stopPropagation(); togglePanel(); });
     document.getElementById('ai-close').addEventListener('click', () => { isOpen = false; panel.classList.remove('open'); });
     document.getElementById('ai-clear').addEventListener('click', () => {
