@@ -486,7 +486,7 @@ function createAdminRouter(db) {
       if (!['admin', 'commercial'].includes(role)) {
         return res.status(400).json({ error: 'Rôle invalide' });
       }
-      db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, req.params.id);
+      db.prepare('UPDATE users SET role = ?, token_version = token_version + 1 WHERE id = ?').run(role, req.params.id);
       db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'update_user', 'user:' + req.params.id, `Rôle de "${user.nom}" changé en ${role}`);
     }
     if (email !== undefined) {
@@ -500,7 +500,7 @@ function createAdminRouter(db) {
     if (reset_password) {
       const bcrypt = require('bcryptjs');
       const hash = bcrypt.hashSync(reset_password, 12);
-      db.prepare('UPDATE users SET password = ?, must_change_password = 1 WHERE id = ?').run(hash, req.params.id);
+      db.prepare('UPDATE users SET password = ?, must_change_password = 1, token_version = token_version + 1 WHERE id = ?').run(hash, req.params.id);
       db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'reset_password', 'user:' + req.params.id, `Mot de passe de "${user.nom}" réinitialisé`);
     }
     res.json({ message: 'Utilisateur mis à jour' });

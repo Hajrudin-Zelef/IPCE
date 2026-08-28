@@ -380,7 +380,7 @@ window.__createUser = async function() {
     document.getElementById('new-user-pass').type = 'text';
     document.getElementById('new-user-email').value = '';
     document.getElementById('users-create-form').style.display = 'none';
-    window.__showSuccessModal(nom, role, data.tempPassword || password);
+    window.__showSuccessModal(nom, role, password);
     window.__load_users();
   } catch { alert('Erreur serveur'); }
   finally { if (btn) { btn.disabled = false; btn.textContent = 'Créer'; } }

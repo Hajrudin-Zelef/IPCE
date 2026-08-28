@@ -74,7 +74,7 @@ function createAuthRouter(db) {
     }
 
     const token = jwt.sign(
-      { id: user.id, nom: user.nom, role: user.role, mustChangePassword: user.must_change_password === 1 },
+      { id: user.id, nom: user.nom, role: user.role, mustChangePassword: user.must_change_password === 1, tv: user.token_version || 0 },
       process.env.JWT_SECRET,
       { expiresIn: '8h', jwtid: crypto.randomUUID() }
     );
@@ -132,7 +132,7 @@ function createAuthRouter(db) {
     clearTwoFaFailures(decoded.id);
 
     const token = jwt.sign(
-      { id: user.id, nom: user.nom, role: user.role, mustChangePassword: user.must_change_password === 1 },
+      { id: user.id, nom: user.nom, role: user.role, mustChangePassword: user.must_change_password === 1, tv: user.token_version || 0 },
       process.env.JWT_SECRET,
       { expiresIn: '8h', jwtid: crypto.randomUUID() }
     );
@@ -174,10 +174,10 @@ function createAuthRouter(db) {
     }
 
     const hash = await bcrypt.hash(newPassword, 12);
-    db.prepare('UPDATE users SET password = ?, must_change_password = 0 WHERE id = ?').run(hash, req.user.id);
+    db.prepare('UPDATE users SET password = ?, must_change_password = 0, token_version = token_version + 1 WHERE id = ?').run(hash, req.user.id);
 
     const freshToken = jwt.sign(
-      { id: user.id, nom: user.nom, role: user.role, mustChangePassword: false },
+      { id: user.id, nom: user.nom, role: user.role, mustChangePassword: false, tv: (user.token_version || 0) + 1 },
       process.env.JWT_SECRET,
       { expiresIn: '8h', jwtid: crypto.randomUUID() }
     );
@@ -219,7 +219,7 @@ function createAuthRouter(db) {
 
     db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(req.user.id, 'create_user', 'user:' + result.lastInsertRowid, `Création du compte "${trimmedNom}" (${userRole}) par admin — changement mdp requis`);
 
-    res.status(201).json({ id: result.lastInsertRowid, nom: trimmedNom, role: userRole, tempPassword: password });
+    res.status(201).json({ id: result.lastInsertRowid, nom: trimmedNom, role: userRole });
   });
 
   router.get('/me', authenticate, (req, res) => {
@@ -381,7 +381,7 @@ function createAuthRouter(db) {
     if (!user) return res.status(400).json({ error: 'Token invalide ou expiré' });
 
     const hash = bcrypt.hashSync(newPassword, 12);
-    db.prepare('UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL, must_change_password = 0 WHERE id = ?').run(hash, user.id);
+    db.prepare('UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL, must_change_password = 0, token_version = token_version + 1 WHERE id = ?').run(hash, user.id);
 
     db.prepare('INSERT INTO logs (user_id, action, target, details) VALUES (?, ?, ?, ?)').run(user.id, 'reset_password', 'user:' + user.id, 'Mot de passe réinitialisé via lien');
 

@@ -85,20 +85,26 @@ function authenticate(req, res, next) {
   req.user = decoded;
   req.token = token;
 
-  // Enforce must_change_password directly from the JWT claim — avoids a DB
-  // round-trip on every authenticated request. The claim is refreshed on
-  // login and on password change, so staleness is bounded by token lifetime.
-  if (!PASSWORD_FREE_PATHS.has(req.path) && decoded.mustChangePassword) {
-    // Double-check DB in case the JWT is stale after password change
+  // Check token_version and must_change_password in a single DB query
+  if (!PASSWORD_FREE_PATHS.has(req.path) && (decoded.mustChangePassword || typeof decoded.tv === 'number')) {
     const db = req.app && req.app.get ? req.app.get('db') : null;
     if (db) {
-      const row = db.prepare('SELECT must_change_password FROM users WHERE id = ?').get(decoded.id);
-      if (row && row.must_change_password === 0) {
-        // DB says password was changed — JWT is stale, allow the request
+      const row = db.prepare('SELECT token_version, must_change_password FROM users WHERE id = ?').get(decoded.id);
+      if (!row) {
+        return res.status(401).json({ error: 'Utilisateur introuvable' });
+      }
+      // Token version mismatch → session invalidated (password change, role change, etc.)
+      if (typeof decoded.tv === 'number' && (row.token_version || 0) !== decoded.tv) {
+        return res.status(401).json({ error: 'Session expirée' });
+      }
+      // DB says password was changed — JWT is stale, allow the request
+      if (decoded.mustChangePassword && row.must_change_password === 0) {
         return next();
       }
     }
-    return res.status(403).json({ error: 'Veuillez d\'abord changer votre mot de passe' });
+    if (decoded.mustChangePassword) {
+      return res.status(403).json({ error: 'Veuillez d\'abord changer votre mot de passe' });
+    }
   }
 
   next();

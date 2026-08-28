@@ -203,6 +203,15 @@ wss.on('connection', (ws, req) => {
   }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
+    // Verify token_version matches DB
+    if (typeof decoded.tv === 'number') {
+      const db = app.get('db');
+      const row = db.prepare('SELECT token_version FROM users WHERE id = ?').get(decoded.id);
+      if (!row || (row.token_version || 0) !== decoded.tv) {
+        ws.close(1008, 'Session expirée');
+        return;
+      }
+    }
     ws.userId = decoded.id;
     ws.userRole = decoded.role;
     ws.isAlive = true;

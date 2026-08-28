@@ -43,6 +43,9 @@ function initDB() {
   // Add email column for password reset delivery
   try { db.exec("ALTER TABLE users ADD COLUMN email TEXT"); } catch {}
 
+  // Add token_version for session invalidation on sensitive events
+  try { db.exec("ALTER TABLE users ADD COLUMN token_version INTEGER DEFAULT 0"); } catch {}
+
   // Add collecte detail columns if they don't exist
   try { db.exec("ALTER TABLE collectes ADD COLUMN visites INTEGER DEFAULT 0"); } catch {}
   try { db.exec("ALTER TABLE collectes ADD COLUMN contacts INTEGER DEFAULT 0"); } catch {}

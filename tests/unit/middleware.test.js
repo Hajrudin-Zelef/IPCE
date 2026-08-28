@@ -96,3 +96,41 @@ describe('requireRole middleware', () => {
     expect(next).not.toHaveBeenCalled();
   });
 });
+
+describe('authenticate — token_version', () => {
+  it('should reject token with mismatched tv', () => {
+    const token = jwt.sign({ id: 1, nom: 'admin', role: 'admin', tv: 0 }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const mockDb = {
+      prepare: jest.fn().mockReturnValue({
+        get: jest.fn().mockReturnValue({ token_version: 1, must_change_password: 0 }),
+      }),
+    };
+    const req = {
+      headers: { cookie: `token=${token}`, authorization: '' },
+      app: { get: jest.fn().mockReturnValue(mockDb) },
+    };
+    const res = mockRes();
+    const next = jest.fn();
+    authenticate(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Session expirée' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should accept token with matching tv', () => {
+    const token = jwt.sign({ id: 1, nom: 'admin', role: 'admin', tv: 2 }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const mockDb = {
+      prepare: jest.fn().mockReturnValue({
+        get: jest.fn().mockReturnValue({ token_version: 2, must_change_password: 0 }),
+      }),
+    };
+    const req = {
+      headers: { cookie: `token=${token}`, authorization: '' },
+      app: { get: jest.fn().mockReturnValue(mockDb) },
+    };
+    const res = mockRes();
+    const next = jest.fn();
+    authenticate(req, res, next);
+    expect(next).toHaveBeenCalled();
+  });
+});
