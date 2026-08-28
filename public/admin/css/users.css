@@ -125,7 +125,7 @@
   flex-shrink: 0;
   text-transform: uppercase;
 }
-.user-avatar.admin { background: linear-gradient(135deg, var(--primary-light), #DC2626); }
+.user-avatar.admin { background: linear-gradient(135deg, var(--primary-light), var(--primary-dark)); }
 .user-avatar.commercial { background: linear-gradient(135deg, var(--primary-light), var(--primary)); }
 .user-info { flex: 1; min-width: 0; }
 .user-name {

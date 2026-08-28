@@ -89,7 +89,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background: var(--text);
+  background: var(--primary);
   color: white;
   border: none;
   border-radius: var(--radius-md);
@@ -101,7 +101,7 @@
 }
 
 .btn-export-main:hover {
-  background: var(--text-secondary);
+  background: var(--primary-dark);
   box-shadow: var(--shadow-md);
 }
 

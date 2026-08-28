@@ -1,4 +1,8 @@
 // Marexsoft Corporation
+function css(varName, fallback) {
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim() || fallback;
+}
+
 window.__load_executive = async function() {
   const el = document.getElementById('section-executive-content');
   if (!el) return;
@@ -42,39 +46,39 @@ window.__load_executive = async function() {
   el.innerHTML = `
     <div class="executive-chart-row" style="margin-bottom:24px;">
       <div class="section-card" style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px;">
-        <div style="font-size:13px; font-weight:600; color:#64748B; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:16px;">Atteinte de l'objectif</div>
+        <div style="font-size:13px; font-weight:600; color:${css('--muted','#64748B')}; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:16px;">Atteinte de l'objectif</div>
         <div style="position:relative; width:260px; height:260px;">
           <canvas id="exec-gauge"></canvas>
           <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none;">
             <div style="font-size:42px; font-weight:800; color:${pctObj >= 100 ? '#059669' : getComputedStyle(document.documentElement).getPropertyValue('--primary').trim()};">${pctRaw}%</div>
-            <div style="font-size:12px; color:#94A3B8;">${formatCA(t.ca)} / ${formatCA(objectif)}</div>
+            <div style="font-size:12px; color:${css("--muted","#94A3B8")};">${formatCA(t.ca)} / ${formatCA(objectif)}</div>
           </div>
         </div>
-        <div style="margin-top:14px; font-size:12px; color:#64748B;">
+        <div style="margin-top:14px; font-size:12px; color:${css("--muted","#64748B")};">
           Reste : <strong>${formatCA(Math.max(objectif - t.ca, 0))} FCFA</strong>
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:16px;">
         <div class="section-card" style="flex:1; display:flex; flex-direction:column; justify-content:center;">
-          <div style="font-size:13px; font-weight:600; color:#64748B; text-transform:uppercase; margin-bottom:10px;">Projection fin de mois</div>
+          <div style="font-size:13px; font-weight:600; color:${css("--muted","#64748B")}; text-transform:uppercase; margin-bottom:10px;">Projection fin de mois</div>
           <div style="display:flex; align-items:baseline; gap:10px;">
             <div style="font-size:30px; font-weight:800; color:${projColor};">${pctProj}%</div>
-            <div style="font-size:13px; color:#64748B;">de l'objectif</div>
+            <div style="font-size:13px; color:${css("--muted","#64748B")};">de l'objectif</div>
           </div>
-          <div style="font-size:13px; color:#64748B; margin-top:6px;">
+          <div style="font-size:13px; color:${css("--muted","#64748B")}; margin-top:6px;">
             Rythme actuel : ${formatCA(projection)} FCFA projetés<br>
-            <span style="font-size:11px; color:#94A3B8;">Basé sur ${daysElapsed}/${daysInMonth} jours écoulés</span>
+            <span style="font-size:11px; color:${css("--muted","#94A3B8")};">Basé sur ${daysElapsed}/${daysInMonth} jours écoulés</span>
           </div>
         </div>
         <div class="section-card" style="flex:1;">
-          <div style="font-size:13px; font-weight:600; color:#64748B; text-transform:uppercase; margin-bottom:12px;">Santé business</div>
+          <div style="font-size:13px; font-weight:600; color:${css("--muted","#64748B")}; text-transform:uppercase; margin-bottom:12px;">Santé business</div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
             ${health.map(h => `
-              <div style="padding:10px; background:#F8FAFC; border-radius:8px;">
-                <div style="display:flex; align-items:center; gap:6px; font-size:10px; color:#94A3B8; text-transform:uppercase;">
+              <div style="padding:10px; background:${css("--bg","#F8FAFC")}; border-radius:8px;">
+                <div style="display:flex; align-items:center; gap:6px; font-size:10px; color:${css("--muted","#94A3B8")}; text-transform:uppercase;">
                   <span style="width:8px; height:8px; border-radius:50%; background:${h.ok ? '#059669' : '#EF4444'};"></span>${h.label}
                 </div>
-                <div style="font-size:18px; font-weight:700; color:#0F172A; margin-top:2px;">${h.value}</div>
+                <div style="font-size:18px; font-weight:700; color:${css("--text","#0F172A")}; margin-top:2px;">${h.value}</div>
               </div>
             `).join('')}
           </div>
@@ -97,7 +101,7 @@ window.__load_executive = async function() {
         labels: ['Atteint', 'Restant'],
         datasets: [{
           data: [pctObj, 100 - pctObj],
-          backgroundColor: [pctObj >= 100 ? '#059669' : (getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#E31C23'), '#E2E8F0'],
+          backgroundColor: [pctObj >= 100 ? '#059669' : (getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#E31C23'), getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#E2E8F0'],
           borderWidth: 0,
           circumference: 360,
         }],
@@ -157,23 +161,23 @@ window.__load_executive = async function() {
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
         plugins: {
-          legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 11, weight: '500' }, color: '#64748B' } },
+          legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 11, weight: '500' }, color: css('--muted','#64748B') } },
         },
         scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#94A3B8' } },
+          x: { grid: { display: false }, ticks: { font: { size: 11 }, color: css('--muted','#94A3B8') } },
           y: {
             beginAtZero: true,
             position: 'left',
-            grid: { color: '#F1F5F9' },
-            ticks: { font: { size: 11 }, color: '#94A3B8', callback: v => v + 'M' },
-            title: { display: true, text: 'CA (M FCFA)', font: { size: 10 }, color: '#94A3B8' },
+            grid: { color: css('--border-light','#F1F5F9') },
+            ticks: { font: { size: 11 }, color: css('--muted','#94A3B8'), callback: v => v + 'M' },
+            title: { display: true, text: 'CA (M FCFA)', font: { size: 10 }, color: css('--muted','#94A3B8') },
           },
           y1: {
             beginAtZero: true,
             position: 'right',
             grid: { drawOnChartArea: false },
-            ticks: { font: { size: 11 }, color: '#94A3B8', precision: 0 },
-            title: { display: true, text: 'Volume', font: { size: 10 }, color: '#94A3B8' },
+            ticks: { font: { size: 11 }, color: css('--muted','#94A3B8'), precision: 0 },
+            title: { display: true, text: 'Volume', font: { size: 10 }, color: css('--muted','#94A3B8') },
           },
         },
       },
