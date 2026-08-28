@@ -254,30 +254,22 @@ window.__load_settings = async function() {
             <div class="settings-card-header">
               <div class="settings-card-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
               <div>
-                <div class="settings-card-title">Application</div>
-                <div class="settings-card-subtitle">Version et technos utilisées</div>
+                <div class="settings-card-title">Informations Système</div>
+                <div class="settings-card-subtitle">État du serveur et de l'application</div>
               </div>
             </div>
             <div class="settings-info-grid">
               <div class="settings-info-item">
-                <span class="settings-info-label">Version</span>
-                <span class="settings-info-value">2.0.0</span>
+                <span class="settings-info-label">Application</span>
+                <span class="settings-info-value">IPCE Dashboard</span>
               </div>
               <div class="settings-info-item">
-                <span class="settings-info-label">Runtime</span>
-                <span class="settings-info-value">Node.js</span>
+                <span class="settings-info-label">Statut</span>
+                <span class="settings-info-value" style="color:#2e7d32">● Actif</span>
               </div>
               <div class="settings-info-item">
-                <span class="settings-info-label">Framework</span>
-                <span class="settings-info-value">Express 4.21</span>
-              </div>
-              <div class="settings-info-item">
-                <span class="settings-info-label">Base de données</span>
-                <span class="settings-info-value">SQLite (WAL)</span>
-              </div>
-              <div class="settings-info-item">
-                <span class="settings-info-label">Auth</span>
-                <span class="settings-info-value">JWT + bcrypt</span>
+                <span class="settings-info-label">Sécurité</span>
+                <span class="settings-info-value">2FA + chiffrement</span>
               </div>
               <div class="settings-info-item">
                 <span class="settings-info-label">Utilisateurs</span>
