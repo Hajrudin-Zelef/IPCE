@@ -18,6 +18,9 @@
   --sidebar-item-height: 44px;
   --sidebar-section-gap: 8px;
   --sidebar-group-gap: 24px;
+  --sidebar-gradient-strong: rgba(227, 28, 35, 0.06);
+  --sidebar-gradient-mid: rgba(227, 28, 35, 0.03);
+  --sidebar-gradient-faint: rgba(227, 28, 35, 0.008);
 }
 
 /* --- Dark Mode Variables --- */
@@ -28,6 +31,9 @@
   --sidebar-active: rgba(227, 28, 35, 0.18);
   --sidebar-text: #F1F5F9;
   --sidebar-text-muted: #64748B;
+  --sidebar-gradient-strong: rgba(227, 28, 35, 0.04);
+  --sidebar-gradient-mid: rgba(227, 28, 35, 0.02);
+  --sidebar-gradient-faint: rgba(227, 28, 35, 0.005);
 }
 
 /* --- Sidebar Container --- */
@@ -56,11 +62,11 @@
   height: 100%;
   background: linear-gradient(
     180deg,
-    rgba(227, 28, 35, 0.06) 0%,
-    rgba(227, 28, 35, 0.03) 25%,
-    rgba(227, 28, 35, 0.008) 50%,
-    rgba(227, 28, 35, 0.03) 75%,
-    rgba(227, 28, 35, 0.06) 100%
+    var(--sidebar-gradient-strong) 0%,
+    var(--sidebar-gradient-mid) 25%,
+    var(--sidebar-gradient-faint) 50%,
+    var(--sidebar-gradient-mid) 75%,
+    var(--sidebar-gradient-strong) 100%
   );
   border-radius: 0 50% 50% 0;
   pointer-events: none;
@@ -76,11 +82,11 @@
   height: 100%;
   background: linear-gradient(
     180deg,
-    rgba(227, 28, 35, 0.045) 0%,
-    rgba(227, 28, 35, 0.015) 30%,
+    var(--sidebar-gradient-strong) 0%,
+    var(--sidebar-gradient-faint) 30%,
     transparent 50%,
-    rgba(227, 28, 35, 0.015) 70%,
-    rgba(227, 28, 35, 0.045) 100%
+    var(--sidebar-gradient-faint) 70%,
+    var(--sidebar-gradient-strong) 100%
   );
   border-radius: 50% 0 0 50%;
   pointer-events: none;
