@@ -27,8 +27,49 @@
     return `il y a ${Math.floor(diff / 86400)}j`;
   }
 
+  const PALETTES = {
+    rouge:   { primary: '#E31C23', light: '#EF4444', dark: '#B91C1C', label: 'Rouge' },
+    bleu:    { primary: '#2563EB', light: '#3B82F6', dark: '#1D4ED8', label: 'Bleu' },
+    violet:  { primary: '#7C3AED', light: '#8B5CF6', dark: '#6D28D9', label: 'Violet' },
+    vert:    { primary: '#10B981', light: '#34D399', dark: '#059669', label: 'Vert' },
+    emeraude:{ primary: '#059669', light: '#10B981', dark: '#047857', label: 'Émeraude' },
+    teal:    { primary: '#0891B2', light: '#06B6D4', dark: '#0E7490', label: 'Teal' },
+    orange:  { primary: '#F97316', light: '#FB923C', dark: '#EA580C', label: 'Orange' },
+    jaune:   { primary: '#EAB308', light: '#FACC15', dark: '#CA8A04', label: 'Jaune' },
+    gris:    { primary: '#6B7280', light: '#9CA3AF', dark: '#4B5563', label: 'Gris' },
+    bleupur: { primary: '#0066FF', light: '#3385FF', dark: '#0052CC', label: 'Bleu pur' },
+    rose:    { primary: '#EC4899', light: '#F472B6', dark: '#DB2777', label: 'Rose' },
+  };
+
+  function getCurrentPalette() {
+    try { return localStorage.getItem('ipce_palette') || 'rouge'; } catch (e) { return 'rouge'; }
+  }
+
+  function applyPalette(name) {
+    const p = PALETTES[name];
+    if (!p) return;
+    const r = document.documentElement;
+    r.style.setProperty('--primary', p.primary);
+    r.style.setProperty('--primary-light', p.light);
+    r.style.setProperty('--primary-dark', p.dark);
+    r.style.setProperty('--header-bg', `linear-gradient(135deg, ${p.primary}0a 0%, ${p.primary}06 100%)`);
+    r.style.setProperty('--shadow-glow', `0 0 20px ${p.primary}40`);
+    try { localStorage.setItem('ipce_palette', name); } catch (e) {}
+    const dot = document.getElementById('palette-dot');
+    if (dot) dot.style.background = p.primary;
+  }
+
+  function initPalette() {
+    const name = getCurrentPalette();
+    applyPalette(name);
+  }
+
   function buildHTML() {
     return `
+      <div class="palette-btn" id="palette-btn" title="Couleur d'accent">
+        <span class="palette-dot" id="palette-dot"></span>
+      </div>
+      <div class="palette-dropdown" id="palette-dropdown" style="display:none;"></div>
       <div class="theme-toggle-btn" id="theme-toggle" title="Changer de thème">
         <svg class="theme-toggle-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg class="theme-toggle-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -303,6 +344,32 @@
         localStorage.setItem('ipce_theme', next);
         return;
       }
+      const palBtn = e.target.closest('#palette-btn');
+      if (palBtn) {
+        e.stopPropagation();
+        const dd = document.getElementById('palette-dropdown');
+        if (dd.style.display === 'none') {
+          dd.innerHTML = '<div class="palette-label">Palette d\'accent</div><div class="palette-grid">' +
+            Object.entries(PALETTES).map(([k, v]) =>
+              `<div class="palette-item${getCurrentPalette() === k ? ' active' : ''}" data-palette="${k}" title="${v.label}">
+                <div class="palette-item-swatch" style="background:${v.primary}"></div>
+              </div>`
+            ).join('') + '</div>';
+          dd.style.display = 'block';
+        } else {
+          dd.style.display = 'none';
+        }
+        return;
+      }
+      const palItem = e.target.closest('.palette-item');
+      if (palItem) {
+        e.stopPropagation();
+        applyPalette(palItem.dataset.palette);
+        document.getElementById('palette-dropdown').style.display = 'none';
+        return;
+      }
+      const palDrop = e.target.closest('#palette-dropdown');
+      if (palDrop) { e.stopPropagation(); return; }
       const filterBtn = e.target.closest('.notif-filter');
       if (filterBtn) {
         document.querySelectorAll('.notif-filter').forEach((b) => b.classList.remove('active'));
@@ -344,6 +411,10 @@
           document.getElementById('notif-panel').style.display = 'none';
         }
       }
+      const dd = document.getElementById('palette-dropdown');
+      if (dd && dd.style.display !== 'none' && !e.target.closest('#palette-btn')) {
+        dd.style.display = 'none';
+      }
     });
   }
 
@@ -373,6 +444,48 @@
       [data-theme="dark"] .theme-toggle-btn:hover svg { color: var(--text, #F8FAFC); }
       [data-theme="light"] .theme-toggle-icon-sun { display: none; }
       [data-theme="dark"] .theme-toggle-icon-moon { display: none; }
+      .palette-btn {
+        position: relative; cursor: pointer; width: 34px; height: 34px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 8px; transition: all 0.2s;
+        background: var(--card, #fff); border: 1px solid var(--border, #E2E8F0);
+        box-shadow: 0 2px 8px rgba(15,23,42,0.06);
+      }
+      .palette-btn:hover { background: var(--bg-alt, #F8FAFC); border-color: #CBD5E1; }
+      .palette-dot {
+        width: 16px; height: 16px; border-radius: 50%;
+        background: var(--primary, #E31C23);
+        border: 2px solid var(--card, #fff);
+        box-shadow: 0 0 0 1px var(--border, #E2E8F0);
+        transition: background 0.2s;
+      }
+      [data-theme="dark"] .palette-btn { background: var(--card, #111827); border-color: var(--border, #1E293B); }
+      [data-theme="dark"] .palette-btn:hover { background: var(--bg-alt, #1E293B); }
+      [data-theme="dark"] .palette-dot { border-color: var(--card, #111827); box-shadow: 0 0 0 1px var(--border, #1E293B); }
+      .palette-dropdown {
+        position: fixed; top: 54px; right: 18px; z-index: 9999;
+        background: var(--card, #fff); border: 1px solid var(--border, #E2E8F0);
+        border-radius: 12px; padding: 12px;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        animation: notif-slide 0.15s ease;
+        min-width: 180px;
+      }
+      [data-theme="dark"] .palette-dropdown { background: var(--card, #111827); border-color: var(--border, #1E293B); }
+      .palette-label { font-size: 11px; font-weight: 600; color: var(--muted, #64748B); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+      .palette-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+      .palette-item {
+        width: 34px; height: 34px; border-radius: 50%; border: 2px solid transparent;
+        cursor: pointer; transition: all 0.15s; position: relative;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .palette-item:hover { transform: scale(1.15); }
+      .palette-item.active { border-color: var(--text, #111); }
+      .palette-item.active::after {
+        content: ''; width: 10px; height: 10px; border-radius: 50%;
+        background: var(--card, #fff); position: absolute;
+        box-shadow: 0 0 4px rgba(0,0,0,0.3);
+      }
+      .palette-item-swatch { width: 22px; height: 22px; border-radius: 50%; }
       .notif-bell {
         position: relative; cursor: pointer; width: 34px; height: 34px;
         display: flex; align-items: center; justify-content: center;
@@ -489,6 +602,7 @@
     document.body.appendChild(wrapper);
 
     bindEvents();
+    initPalette();
     fetchNotifications();
     connectWS();
   }
