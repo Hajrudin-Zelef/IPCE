@@ -46,16 +46,23 @@
   overflow: hidden;
 }
 
-/* Courbe décorative ovale rouge clair */
+/* Courbe décorative — fondu haut → milieu → bas */
 .sidebar::before {
   content: '';
   position: absolute;
-  top: -80px;
-  left: -120px;
-  width: 350px;
-  height: 450px;
-  background: radial-gradient(ellipse at center, rgba(227, 28, 35, 0.08) 0%, rgba(227, 28, 35, 0.03) 40%, transparent 70%);
-  border-radius: 50%;
+  top: 0;
+  left: -60px;
+  width: 200px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(227, 28, 35, 0.12) 0%,
+    rgba(227, 28, 35, 0.06) 25%,
+    rgba(227, 28, 35, 0.02) 50%,
+    rgba(227, 28, 35, 0.06) 75%,
+    rgba(227, 28, 35, 0.12) 100%
+  );
+  border-radius: 0 50% 50% 0;
   pointer-events: none;
   z-index: 0;
 }
@@ -63,12 +70,19 @@
 .sidebar::after {
   content: '';
   position: absolute;
-  bottom: -100px;
-  left: -80px;
-  width: 300px;
-  height: 400px;
-  background: radial-gradient(ellipse at center, rgba(227, 28, 35, 0.06) 0%, rgba(227, 28, 35, 0.02) 40%, transparent 70%);
-  border-radius: 50%;
+  top: 0;
+  right: -40px;
+  width: 120px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(227, 28, 35, 0.08) 0%,
+    rgba(227, 28, 35, 0.03) 30%,
+    transparent 50%,
+    rgba(227, 28, 35, 0.03) 70%,
+    rgba(227, 28, 35, 0.08) 100%
+  );
+  border-radius: 50% 0 0 50%;
   pointer-events: none;
   z-index: 0;
 }
